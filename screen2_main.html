@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<!-- saved from url=(0077)file:///C:/Users/Payal%20Sajnani/Downloads/onecare-hospital-selection_15.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare – Select Hospital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-900: #050B24; --blue-500: #0B1956; --blue-100: #B3B8CB; --blue-50: #E7E8EE;
+    --sapphire-50: #ECF0F9; --lavender-100: #F8EFFA; --lavender-800: #746279; --lavender-900: #584B5C;
+    --grey-600: #2C2E2D; --grey-500: #303231; --grey-400: #595B5A; --grey-100: #CCCCCC; --grey-50: #EAEBEA;
+    --white: #FFFFFF;
+    --nav-height: 75px;
+    --sidebar-width: 260px;
+    --shadow-card: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.10);
+    --shadow-nav: 0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body { font-family: 'Open Sans', sans-serif; background: #ECF0F9; min-height: 100vh; overflow-x: hidden; }
+
+  @keyframes fadeSlideDown { from{opacity:0;transform:translateY(-16px);} to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-24px);} to{opacity:1;transform:translateX(0);} }
+  @keyframes fadeSlideUp   { from{opacity:0;transform:translateY(20px);}  to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeIn        { from{opacity:0;transform:translateY(10px);}  to{opacity:1;transform:translateY(0);} }
+  @keyframes pulse         { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
+
+  /* ── TOP NAV ── */
+  .topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);background:#fff;box-shadow:var(--shadow-nav);display:flex;align-items:center;padding:0 24px 0 28px;z-index:100;animation:fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;}
+  .logo-area{display:flex;align-items:center;gap:8px;flex-shrink:0;width:auto;cursor:pointer;border-radius:8px;padding:4px;transition:background .18s;}
+  .logo-area:hover .logo-name .one,.logo-area:hover .logo-name .care,.logo-area:hover .logo-subtitle{color:#B3B8CB;}
+  .logo-svg-stroke{transition:stroke .18s;}
+  .logo-svg-fill{transition:fill .18s;}
+  .logo-area:hover .logo-svg-stroke{stroke:#B3B8CB;}
+  .logo-area:hover .logo-svg-fill{fill:#B3B8CB;}
+  .logo-name .one,.logo-name .care,.logo-subtitle{transition:color .18s;}
+  .logo-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:44px;}
+  .logo-text{display:flex;flex-direction:column;}
+  .logo-name{font-family:'Satoshi','Open Sans',sans-serif;font-size:28px;line-height:1;letter-spacing:-0.5px;}
+  .logo-name .one{font-weight:400;color:#0B1956;}
+  .logo-name .care{font-weight:700;color:#0B1956;}
+  .logo-subtitle{font-family:'Open Sans',sans-serif;font-size:14px;font-weight:400;color:#0B1956;line-height:1.4;}
+  .nav-center{flex:1;display:flex;justify-content:flex-start;padding-left:118px;}
+  .welcome-text{font-family:'Open Sans',sans-serif;font-weight:700;font-size:28px;line-height:40px;color:#0B1956;white-space:nowrap;}
+  .nav-right{display:flex;align-items:center;gap:16px;flex-shrink:0;margin-left:auto;}
+  .search-bar{display:flex;align-items:center;width:280px;height:44px;background:#EAEBEA;border-radius:28px;padding:0 16px;gap:8px;transition:box-shadow .18s,background .18s;cursor:text;}
+  .search-bar:focus-within{background:#fff;box-shadow:0 0 0 2px #0B1956;}
+  .search-input{flex:1;height:auto;background:transparent;border:none;outline:none;padding:0;font-family:'Open Sans',sans-serif;font-weight:400;font-size:14px;line-height:1;color:#49454F;letter-spacing:0;}
+  .search-input::placeholder{color:#49454F;font-weight:600;}
+  .search-icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .bell-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;background:none;border:none;transition:background .18s;position:relative;}
+  .bell-btn:hover{background:#ECF0F9;}
+  .notif-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#EF4444;border-radius:50%;border:2px solid #fff;}
+
+  /* HAMBURGER TOGGLE */
+  .menu-toggle{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:8px;flex-shrink:0;transition:background .18s;margin-right:4px;}
+  .menu-toggle:hover{background:#f0f2f9;}
+  .menu-toggle span{display:block;width:22px;height:2px;background:#0B1956;border-radius:2px;transition:all .28s;}
+  .menu-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .menu-toggle.open span:nth-child(2){opacity:0;}
+  .menu-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  /* SIDEBAR OVERLAY */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:48;opacity:0;transition:opacity .28s;}
+  .sidebar-overlay.visible{display:block;}
+  .sidebar-overlay.open{opacity:1;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{position:fixed;left:0;top:var(--nav-height);width:var(--sidebar-width);height:calc(100vh - var(--nav-height));background:#0B1956;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;z-index:50;animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+  .sidebar-nav{padding:16px 16px 8px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;}
+  .nav-item{display:flex;align-items:center;gap:14px;padding:12px 20px;height:auto;border-radius:10px;cursor:pointer;transition:background .18s;text-decoration:none;}
+  .nav-item.active{background:#fff;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);border-radius:8px;}
+  .nav-item:not(.active):hover{background:rgba(255,255,255,.08);border-radius:8px;}
+  .nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:visible;}
+  .nav-label{font-family:'Open Sans',sans-serif;font-weight:400;font-size:15px;line-height:24px;letter-spacing:.15px;color:#E7E8EE;}
+  .nav-item.active .nav-label{font-weight:700;color:#0B1956;}
+  .sidebar-footer{border-top:.866px solid #E5E7EB;padding:12px 16px;}
+  .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .user-avatar{width:48px;height:48px;background:#B3B8CB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .user-details{display:flex;flex-direction:column;}
+  .user-name{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:1.2;color:#fff;}
+  .user-id{font-family:'Open Sans',sans-serif;font-weight:400;font-size:13px;line-height:25px;color:#B3B8CB;}
+  .logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:auto;padding:10px 16px;border:1px solid #fff;border-radius:10px;cursor:pointer;margin-bottom:12px;background:transparent;transition:background .18s,box-shadow .18s,transform .1s;font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+  .logout-btn:hover{background:rgba(255,255,255,.1);box-shadow:0 2px 10px rgba(0,0,0,.2);transform:translateY(-1px);}
+  .logout-btn:active{background:rgba(255,255,255,.18);transform:translateY(0);}
+  .logout-label{font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+  /* ── MAIN ── */
+  .main{margin-top:var(--nav-height);margin-left:var(--sidebar-width);padding:30px 36px 100px;min-height:calc(100vh - var(--nav-height));background:#ECF0F9;}
+
+  /* ── PAGE HEADER ── */
+  .page-header{margin-bottom:20px;}
+  .page-title{font-size:26px;font-weight:700;color:#0B1956;line-height:1.3;}
+  .page-sub{font-size:18px;font-weight:400;color:#303231;margin-top:2px;}
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar{background:#0B1956;border-radius:8px;padding:0 18px;height:56px;display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .step-done{width:32px;height:32px;background:#FFFFFF;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-done svg{display:block;}
+  .step-arrow{color:#FFFFFF;font-size:14px;opacity:0.7;margin:0 2px;}
+  .step-num{width:32px;height:32px;background:rgba(255,255,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:14px;font-weight:700;flex-shrink:0;}
+  .step-label{font-size:18px;font-weight:700;color:#FEFEFD;margin-left:8px;}
+
+  /* ── CONTENT WRAPPER ── */
+  .content-wrapper{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,.10);padding:24px;}
+  .content-grid{display:grid;grid-template-columns:200px 1fr;gap:22px;align-items:start;}
+
+  /* ── FILTER PANEL ── */
+  .filter-panel{display:flex;flex-direction:column;gap:0;}
+  .filter-header{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .filter-header h2{font-size:20px;font-weight:700;color:#1C1D1D;}
+  .filter-section{margin-bottom:18px;}
+  .filter-section-title{font-size:13px;font-weight:700;color:#595B5A;letter-spacing:.15px;margin-bottom:12px;text-transform:uppercase;}
+  .filter-divider{height:1px;background:#E4E7E9;margin:0 0 18px;}
+  .radio-group,.check-group{display:flex;flex-direction:column;gap:10px;}
+  .radio-item,.check-item{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:#1C1D1D;user-select:none;}
+  .radio-item:hover,.check-item:hover{color:#0B1956;}
+  .radio-custom{width:17px;height:17px;border-radius:50%;border:1.5px solid #ccc;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .18s;}
+  .radio-custom.selected{border-color:#0B1956;}
+  .radio-custom.selected::after{content:'';width:9px;height:9px;border-radius:50%;background:#0B1956;display:block;}
+  .check-custom{width:17px;height:17px;border-radius:3px;border:1.5px solid #A0A1A0;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s;}
+  .check-custom.checked{background:#0B1956;border-color:#0B1956;}
+  .check-custom.checked::after{content:'';width:10px;height:7px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);display:block;}
+
+  /* TalkNow */
+  .talknow{background:#EFF6FF;box-shadow:0 0 0 1px #DBEAFE,0 9px 14px -3px rgba(0,0,0,.10);border-radius:12px;padding:16px;margin:16px 0 0;}
+  .talknow .tn-label{font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:#0B1956;opacity:.6;margin-bottom:6px;}
+  .talknow h3{font-size:15px;font-weight:600;color:#0B1956;margin-bottom:4px;}
+  .talknow p{font-size:13px;color:#303231;margin-bottom:14px;}
+  .talknow-btn{width:100%;padding:9px;background:#0B1956;border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Open Sans',sans-serif;transition:background .18s,transform .1s;}
+  .talknow-btn:hover{background:#0d2070;transform:translateY(-1px);}
+
+  /* ── RIGHT PANEL ── */
+  .right-panel{display:flex;flex-direction:column;gap:24px;}
+  .section-header{margin-bottom:14px;}
+  .section-header h2{font-size:21px;font-weight:700;color:#0B1956;}
+  .section-header p{font-size:13px;color:#303231;margin-top:3px;}
+
+
+
+  /* ── TOP 3 CARDS ── */
+  .top3-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .top-card{background:#fff;border-radius:12px;box-shadow:0 9px 14px -3px rgba(0,0,0,.10),0 3.66px 5.49px -3.66px rgba(0,0,0,.10);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .2s,box-shadow .2s;cursor:pointer;border:1.72px solid transparent;}
+  .top-card:hover{transform:translateY(-3px);box-shadow:0 14px 22px -3px rgba(0,0,0,.14);}
+  .top-card.selected-card{background:#ECF0F9;border-color:#0B1956;border-radius:14px;}
+  .top-card.selected-card:hover{transform:translateY(-2px);}
+
+  /* "Best Match" badge on card 2 */
+  .best-match-badge{position:absolute;top:10px;right:10px;background:#0B1956;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:3;letter-spacing:.3px;}
+
+  .card-img-placeholder{width:100%;height:180px;flex-shrink:0;position:relative;overflow:hidden;}
+  .card-img-placeholder img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .card-img-placeholder.img1{background:linear-gradient(135deg,#b8cce4 0%,#7fa3c4 40%,#5580a0 100%);}
+  .card-img-placeholder.img2{background:linear-gradient(135deg,#c4d4e8 0%,#8aaccc 40%,#607a94 100%);}
+  .card-img-placeholder.img3{background:linear-gradient(135deg,#d4c4b0 0%,#b09070 40%,#806840 100%);}
+  .card-img-placeholder.img4{background:linear-gradient(135deg,#c4b8a0 0%,#a09070 40%,#807050 100%);}
+  .card-img-placeholder.img5{background:linear-gradient(135deg,#b0c4b8 0%,#80a090 40%,#507060 100%);}
+  .card-img-placeholder.img6{background:linear-gradient(135deg,#c4c0b4 0%,#a09880 40%,#807060 100%);}
+  .card-img-placeholder.img7{background:linear-gradient(135deg,#b8c4cc 0%,#8090a0 40%,#506070 100%);}
+  .card-img-placeholder::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60%;background:rgba(0,0,0,.15);}
+
+  .rating-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);border-radius:8px;padding:4px 8px;display:flex;align-items:center;gap:5px;box-shadow:0 1px 3px rgba(0,0,0,.12);z-index:2;font-size:11.5px;}
+  .rating-badge .star{color:#FDC700;font-size:12px;}
+  .rating-badge .score{font-weight:700;color:#0B1956;font-family:'Inter',sans-serif;}
+  .rating-badge .count{color:#6A7282;font-weight:400;font-family:'Inter',sans-serif;}
+
+  .card-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:7px;flex:1;}
+  .card-name{font-size:17px;font-weight:600;color:#0B1956;}
+  .card-tags{display:flex;flex-direction:column;gap:5px;}
+  .tag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;align-self:flex-start;}
+  .tag-blue{background:#DBEAFE;color:#2F4D8A;}
+  .tag-purple{background:#F8EFFA;color:#0B1956;}
+
+  .success-rate{display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#006F2D;}
+  .success-rate::before{content:'↗';font-size:14px;}
+
+  .card-price{margin-top:auto;}
+  .price-amount{font-family:'Open Sans',sans-serif;font-size:22px;font-weight:600;color:#0B1956;}
+  .price-label{font-size:12px;color:#6A7282;margin-top:1px;}
+
+  .card-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+
+  .btn-outline{width:100%;padding:9px;border:1.37px solid #0B1956;border-radius:9px;background:#fff;color:#0B1956;font-size:14px;font-weight:600;cursor:pointer;font-family:'Open Sans',sans-serif;transition:background .18s,color .18s;}
+  .btn-outline:hover{background:#ECF0F9;}
+  .btn-solid{width:100%;padding:9px;border:none;border-radius:9px;background:#0B1956;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Open Sans',sans-serif;transition:background .18s,transform .1s;}
+  .btn-solid:hover{background:#0d2070;transform:translateY(-1px);}
+  .btn-selected{width:100%;padding:9px;border:none;border-radius:9px;background:#0B1956;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Open Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+  /* ── MORE HOSPITALS ── */
+  .section-title{font-size:21px;font-weight:700;color:#0B1956;margin-bottom:14px;}
+  .list-cards{display:flex;flex-direction:column;gap:14px;}
+
+  .list-card{background:#fff;border:1.5px solid #E3E1E1;border-radius:12px;box-shadow:0 3.66px 5.49px -0.91px rgba(0,0,0,.10),0 1.83px 3.66px -1.83px rgba(0,0,0,.10);display:flex;align-items:stretch;overflow:hidden;min-height:160px;transition:transform .2s,box-shadow .2s,border-color .2s;cursor:pointer;}
+  .list-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px -3px rgba(0,0,0,.13);}
+  .list-card.selected-list-card{border-color:#0B1956;background:#F8FAFF;}
+
+  .list-card-img{width:200px;flex-shrink:0;position:relative;overflow:hidden;}
+  .list-card-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+  .list-card-img .rating-badge{z-index:2;}
+  .list-card-img .cmp-radio{z-index:3;}
+  .list-card-inner{flex:1;display:flex;flex-direction:column;}
+  .list-card-top-row{display:flex;align-items:stretch;padding:18px 20px 12px;}
+  .list-card-meta{flex:1;}
+  .list-card-name{font-size:17px;font-weight:600;color:#0B1956;margin-bottom:6px;}
+  .list-card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .list-card-price-col{flex-shrink:0;text-align:right;padding-left:20px;padding-right:16px;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:8px;}
+  .list-price-amount{font-family:'Inter',sans-serif;font-size:21px;font-weight:600;color:#0B1956;}
+  .list-price-label{font-size:12px;color:#6A7282;}
+
+  .list-card-bottom{border-top:1px solid #D8DADB;display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:10px 20px 14px;margin:0 16px;}
+  .list-card-bottom .btn-outline{width:auto;padding:8px 22px;font-size:13px;}
+  .list-card-bottom .btn-solid{width:auto;padding:8px 22px;font-size:13px;}
+  .list-card-bottom .btn-selected{width:auto;padding:8px 22px;font-size:13px;}
+
+  /* Selected checkmark on list card */
+  .list-selected-badge{display:none;align-items:center;gap:4px;background:#ECF0F9;color:#0B1956;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;margin-right:auto;}
+  .list-selected-badge.visible{display:flex;}
+
+  .explore-btn{width:100%;padding:13px;border:1.37px solid #0B1956;border-radius:9px;background:#fff;color:#0B1956;font-size:14px;font-weight:600;cursor:pointer;font-family:'Open Sans',sans-serif;margin-top:18px;transition:background .18s;}
+  .explore-btn:hover{background:#ECF0F9;}
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar{position:fixed;bottom:0;left:var(--sidebar-width);right:0;background:#fff;border-top:1.4px solid #E5E7EB;padding:14px 36px;display:flex;justify-content:space-between;align-items:center;z-index:80;}
+  .back-btn{display:flex;align-items:center;gap:8px;padding:13px 22px;border:1.8px solid #ccc;border-radius:12px;background:#fff;color:#0B1956;font-size:15px;font-weight:700;cursor:pointer;font-family:'Open Sans',sans-serif;transition:background .15s;}
+  .back-btn:hover{background:#f5f5f5;}
+  .proceed-btn{display:flex;align-items:center;gap:10px;padding:13px 28px;border:none;border-radius:12px;background:#0B1956;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Open Sans',sans-serif;box-shadow:0 5.72px 8.58px -1.43px rgba(0,0,0,.10);transition:background .15s,opacity .15s;}
+  .proceed-btn:hover{background:#0d2070;}
+  .proceed-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* Bottom bar selection summary */
+  .bottom-selection{display:flex;align-items:center;gap:10px;}
+  .bottom-selection-text{font-size:13px;color:#595B5A;}
+  .bottom-selection-name{font-size:14px;font-weight:700;color:#0B1956;}
+  /* ── SIDEBAR OVERLAY (always in DOM, hidden by default) ── */
+  .sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 48;
+    opacity: 0;
+    transition: opacity .28s;
+  }
+  .sidebar-overlay.visible { display: block; }
+  .sidebar-overlay.open    { opacity: 1; }
+
+  /* ── FILTER TOGGLE BUTTON (hidden on desktop) ── */
+  .filter-toggle {
+    display: none;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    background: #ECF0F9;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0B1956;
+    margin-bottom: 4px;
+  }
+  .filter-toggle svg { flex-shrink: 0; transition: transform .25s; }
+  .filter-toggle.open svg { transform: rotate(180deg); }
+
+  .filter-collapsible {
+    overflow: hidden;
+    transition: max-height .35s cubic-bezier(.22,1,.36,1), opacity .3s;
+    max-height: 2000px;
+    opacity: 1;
+  }
+  .filter-collapsible.collapsed { max-height: 0; opacity: 0; }
+
+  /* ─── ≤ 1100px: sidebar becomes a drawer ─── */
+  @media (max-width: 1100px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform .3s cubic-bezier(.22,1,.36,1);
+      animation: none;
+      z-index: 200;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .menu-toggle {
+      display: flex !important;
+    }
+
+    .main        { margin-left: 0 !important; }
+    .bottom-bar  { left: 0 !important; }
+    .nav-center  { padding-left: 12px; }
+    .welcome-text { font-size: 22px; }
+  }
+
+  /* ─── ≤ 960px: filter moves to top, cards reflow ─── */
+  @media (max-width: 960px) {
+    .content-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px;
+    }
+    .filter-panel-wrapper { order: -1; }
+    .filter-toggle { display: flex; }
+    .filter-collapsible.collapsed { max-height: 0; opacity: 0; }
+
+    /* Pill-style filter items */
+    .radio-group, .check-group {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .radio-item, .check-item {
+      background: #F5F5F5;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      gap: 0;
+    }
+    .radio-custom, .check-custom { display: none; }
+    .radio-item.active-filter, .check-item.active-filter {
+      background: #0B1956;
+      color: #fff;
+      font-weight: 600;
+    }
+    .filter-divider { margin: 10px 0; }
+    .talknow { display: none; }
+
+    /* Top 3 → 2 columns */
+    .top3-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ─── ≤ 640px: mobile ─── */
+  @media (max-width: 640px) {
+    .topnav { padding: 0 12px; gap: 0; }
+    .nav-center { display: none; }
+    .search-bar { width: 160px; height: 38px; padding: 0 12px; }
+
+    .main { padding: 16px 14px 90px; }
+    .page-title { font-size: 20px; }
+    .page-sub   { font-size: 14px; }
+
+    .progress-bar { padding: 0 12px; gap: 5px; height: 46px; }
+    .step-done, .step-num { width: 26px; height: 26px; font-size: 11px; }
+    .step-label { font-size: 13px; margin-left: 6px; }
+    .step-done svg { width: 13px; height: 13px; }
+
+    .content-wrapper { padding: 14px 12px; border-radius: 10px; }
+
+    /* Top 3 → 1 column */
+    .top3-grid { grid-template-columns: 1fr; }
+    .card-img-placeholder { height: 155px; }
+
+    /* List cards → image on top */
+    .list-card { flex-direction: column; min-height: unset; }
+    .list-card-img { width: 100%; height: 120px; }
+    .list-card-top-row { padding: 12px 14px 8px; flex-wrap: wrap; gap: 8px; }
+    .list-card-price-col { padding-left: 0; padding-right: 0; width: 100%; text-align: left; }
+    .list-price-amount { font-size: 18px; }
+    .list-card-bottom { margin: 0 10px; padding: 8px 10px 12px; gap: 8px; }
+    .list-card-bottom .btn-solid,
+    .list-card-bottom .btn-selected { padding: 8px 16px; font-size: 13px; }
+
+    .bottom-bar { padding: 10px 14px; }
+    .bottom-selection { display: none; }
+    .back-btn    { padding: 10px 14px; font-size: 13px; }
+    .proceed-btn { padding: 10px 18px; font-size: 13px; }
+
+    .section-header h2, .section-title { font-size: 17px; }
+  }
+
+  /* ─── ≤ 400px: very small ─── */
+  @media (max-width: 400px) {
+    .search-bar { display: none; }
+    .step-label { display: none; }
+    .step-arrow { font-size: 11px; margin: 0; }
+  }
+
+
+/* ── SCROLL REVEAL ── */
+.sr { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.sr.revealed { opacity: 1; transform: translateY(0); }
+.sr-d1 { transition-delay: 0.05s; }
+.sr-d2 { transition-delay: 0.12s; }
+.sr-d3 { transition-delay: 0.19s; }
+.sr-d4 { transition-delay: 0.26s; }
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="topnav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center"><span class="welcome-text">Welcome Michael!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="bell-btn" id="notifBtn">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+      <span class="notif-dot"></span>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <span class="nav-label">My Journey</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<main class="main">
+  <div class="page-header sr sr-d1">
+    <div class="page-title">Cost Overview &amp; Package Selection</div>
+    <div class="page-sub">Customize your medical tourism package</div>
+  </div>
+
+  <div class="progress-bar sr sr-d2">
+    <div class="step-done">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="step-arrow">›</span>
+    <div class="step-done">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="step-arrow">›</span>
+    <div class="step-done">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="step-arrow">›</span>
+    <div class="step-done">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="step-arrow">›</span>
+    <div class="step-num" style="background:rgba(255,255,255,0.35);">5</div>
+    <span class="step-arrow">›</span>
+    <div class="step-num">6</div>
+    <span class="step-label">Select Hospital</span>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="content-grid">
+
+      <!-- FILTER PANEL -->
+      <div class="filter-panel-wrapper sr sr-d3">
+        <button class="filter-toggle open" id="filterToggle">
+          <span style="display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B1956" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Filter By
+          </span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B1956" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="filter-collapsible" id="filterCollapsible">
+          <div class="filter-panel">
+            <div class="filter-header">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C1D1D" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              <h2>Filter By:</h2>
+            </div>
+
+            <div class="filter-section">
+              <div class="filter-section-title">City</div>
+              <div class="radio-group" id="cityRadios">
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>Mumbai</span></label>
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>Pune</span></label>
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>Delhi</span></label>
+                <label class="radio-item active-filter"><div class="radio-custom selected" data-radio="city"></div><span>Chennai</span></label>
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>Bengaluru</span></label>
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>Kolkata</span></label>
+                <label class="radio-item"><div class="radio-custom" data-radio="city"></div><span>All Cities</span></label>
+              </div>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <div class="filter-section">
+              <div class="filter-section-title">Refine</div>
+              <div class="check-group">
+                <label class="check-item"><div class="check-custom" data-check=""></div><span>Best expertise</span></label>
+                <label class="check-item"><div class="check-custom" data-check=""></div><span>Best value</span></label>
+                <label class="check-item"><div class="check-custom" data-check=""></div><span>Fastest availability</span></label>
+                <label class="check-item"><div class="check-custom" data-check=""></div><span>Premium recovery</span></label>
+                <label class="check-item"><div class="check-custom" data-check=""></div><span>Closest city</span></label>
+              </div>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <div class="filter-section">
+              <div class="filter-section-title">Compare</div>
+              <label class="check-item" id="compareToggleLabel">
+                <div class="check-custom" id="compareCheckbox"></div>
+                <span>Compare up to 3</span>
+              </label>
+              <div id="comparePanel" style="display:none;margin-top:12px;">
+                <div id="compareSlots" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+                  <div style="font-size:12px;color:#A0A1A0;font-style:italic;">Select hospitals using the radio buttons on each card</div>
+                </div>
+                <button id="compareBtn" style="width:100%;padding:9px;background:#0B1956;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Open Sans',sans-serif;opacity:.4;pointer-events:none;transition:opacity .2s;">Compare Hospitals</button>
+              </div>
+            </div>
+          </div><!-- end filter-panel -->
+
+          <div class="talknow">
+            <div class="tn-label">Need help choosing?</div>
+            <h3>Compare hospitals?</h3>
+            <p>Chat with a care coordinator</p>
+            <button class="talknow-btn" id="talkNowBtn">Talk Now</button>
+          </div>
+        </div><!-- end filter-collapsible -->
+      </div><!-- end filter-panel-wrapper -->
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+
+        <!-- RECOMMENDED -->
+        <div>
+          <div class="section-header">
+            <h2>Recommended Hospitals</h2>
+            <p>Top 3 hospitals for orthopedic treatment in Mumbai based on your needs</p>
+          </div>
+          <div class="top3-grid">
+
+            <!-- Card 1: Jaslok -->
+            <div class="top-card" data-id="jaslok" data-name="Jaslok Hospital" data-price="$4,600" data-rating="4.8" data-reviews="2847" data-success="95" data-spec="Orthopedic Excellence" data-accred="NABH Accredited" data-img="img1">
+              <div class="card-img-placeholder img1">
+                <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&h=360&fit=crop&auto=format" alt="Jaslok Hospital" />
+                <div class="rating-badge"><span class="star">★</span><span class="score">4.8</span><span class="count">(2,847)</span></div>
+                <div class="cmp-radio" data-id="jaslok" title="Add to comparison"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Jaslok Hospital</div>
+                <div class="card-tags">
+                  <span class="tag tag-blue">Orthopedic Excellence</span>
+                  <span class="tag tag-purple">NABH Accredited</span>
+                </div>
+                <div class="success-rate">95% Success Rate</div>
+                <div class="card-price">
+                  <div class="price-amount">$4,600</div>
+                  <div class="price-label">Treatment Cost</div>
+                </div>
+                <div class="card-actions">
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="top-card selected-card" data-id="zen" data-name="Zen Multispecialty" data-price="$3,900" data-rating="4.7" data-reviews="1923" data-success="92" data-spec="Joint Replacement" data-accred="NABH Accredited" data-img="img2">
+              <div class="best-match-badge">★ Best Match</div>
+              <div class="card-img-placeholder img2">
+                <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&h=360&fit=crop&auto=format" alt="Zen Multispecialty" />
+                <div class="rating-badge"><span class="star">★</span><span class="score">4.7</span><span class="count">(1,923)</span></div>
+                <div class="cmp-radio" data-id="zen" title="Add to comparison"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Zen Multispecialty</div>
+                <div class="card-tags">
+                  <span class="tag tag-blue">Joint Replacement</span>
+                  <span class="tag tag-purple">NABH Accredited</span>
+                </div>
+                <div class="success-rate">92% Success Rate</div>
+                <div class="card-price">
+                  <div class="price-amount">$3,900</div>
+                  <div class="price-label">Treatment Cost</div>
+                </div>
+                <div class="card-actions">
+                  <button class="btn-outline" onclick="window.location.href='screen3_main.html'">View Details</button>
+                  <button class="btn-selected select-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> Selected</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Seven Hills -->
+            <div class="top-card" data-id="sevenhills" data-name="Seven Hills Hospital" data-price="$3,700" data-rating="4.9" data-reviews="3156" data-success="94" data-spec="Sports Medicine" data-accred="JCI &amp; NABH" data-img="img3">
+              <div class="card-img-placeholder img3">
+                <img src="images/portal/hospital-3.jpg" alt="Seven Hills Hospital" />
+                <div class="rating-badge"><span class="star">★</span><span class="score">4.9</span><span class="count">(3,156)</span></div>
+                <div class="cmp-radio" data-id="sevenhills" title="Add to comparison"></div>
+              </div>
+              <div class="card-body">
+                <div class="card-name">Seven Hills Hospital</div>
+                <div class="card-tags">
+                  <span class="tag tag-blue">Sports Medicine</span>
+                  <span class="tag tag-purple">JCI &amp; NABH</span>
+                </div>
+                <div class="success-rate">94% Success Rate</div>
+                <div class="card-price">
+                  <div class="price-amount">$3,700</div>
+                  <div class="price-label">Treatment Cost</div>
+                </div>
+                <div class="card-actions">
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- MORE HOSPITALS -->
+        <div>
+          <div class="section-title">More Hospitals of Mumbai</div>
+          <div class="list-cards">
+
+            <!-- Godrej -->
+            <div class="list-card" data-id="godrej" data-name="Godrej Hospital" data-price="$3,136" data-rating="4.7" data-reviews="1789" data-success="92" data-spec="Orthopedic Care" data-accred="NABH Accredited" data-img="img4">
+              <div class="list-card-img">
+                <img src="images/portal/hospital-7.jpg" alt="Godrej Hospital" />
+                <div class="rating-badge" style="top:10px;left:10px;"><span class="star">★</span><span class="score">4.7</span><span class="count">(1,789)</span></div>
+                <div class="cmp-radio" data-id="godrej" title="Add to comparison"></div>
+              </div>
+              <div class="list-card-inner">
+                <div class="list-card-top-row">
+                  <div class="list-card-meta">
+                    <div class="list-card-name">Godrej Hospital</div>
+                    <div class="list-card-tags"><span class="tag tag-blue">Orthopedic Care</span><span class="tag tag-purple">NABH Accredited</span></div>
+                    <div class="success-rate">92% Success Rate</div>
+                  </div>
+                  <div class="list-card-price-col"><div class="list-price-amount">$3,136</div><div class="list-price-label">Treatment Cost</div></div>
+                </div>
+                <div class="list-card-bottom">
+                  <div class="list-selected-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#0B1956" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> Selected</div>
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Holy Family -->
+            <div class="list-card" data-id="holyfamily" data-name="Holy Family Hospital" data-price="$3,500" data-rating="4.6" data-reviews="2104" data-success="95" data-spec="Joint Replacement" data-accred="NABH Accredited" data-img="img5">
+              <div class="list-card-img">
+                <img src="images/portal/hospital-1.jpg"Holy Family Hospital" />
+                <div class="rating-badge" style="top:10px;left:10px;"><span class="star">★</span><span class="score">4.6</span><span class="count">(2,104)</span></div>
+                <div class="cmp-radio" data-id="holyfamily" title="Add to comparison"></div>
+              </div>
+              <div class="list-card-inner">
+                <div class="list-card-top-row">
+                  <div class="list-card-meta">
+                    <div class="list-card-name">Holy Family Hospital</div>
+                    <div class="list-card-tags"><span class="tag tag-blue">Joint Replacement</span><span class="tag tag-purple">NABH Accredited</span></div>
+                    <div class="success-rate">95% Success Rate</div>
+                  </div>
+                  <div class="list-card-price-col"><div class="list-price-amount">$3,500</div><div class="list-price-label">Treatment Cost</div></div>
+                </div>
+                <div class="list-card-bottom">
+                  <div class="list-selected-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#0B1956" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> Selected</div>
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kohinoor -->
+            <div class="list-card" data-id="kohinoor" data-name="Kohinoor Hospital" data-price="$4,182" data-rating="4.8" data-reviews="3421" data-success="97" data-spec="Multispecialty" data-accred="NABH Accredited" data-img="img6">
+              <div class="list-card-img">
+                <img src="images/portal/hospital-4.jpg" alt="Kohinoor Hospital" />
+                <div class="rating-badge" style="top:10px;left:10px;"><span class="star">★</span><span class="score">4.8</span><span class="count">(3,421)</span></div>
+                <div class="cmp-radio" data-id="kohinoor" title="Add to comparison"></div>
+              </div>
+              <div class="list-card-inner">
+                <div class="list-card-top-row">
+                  <div class="list-card-meta">
+                    <div class="list-card-name">Kohinoor Hospital</div>
+                    <div class="list-card-tags"><span class="tag tag-blue">Multispecialty</span><span class="tag tag-purple">NABH Accredited</span></div>
+                    <div class="success-rate">97% Success Rate</div>
+                  </div>
+                  <div class="list-card-price-col"><div class="list-price-amount">$4,182</div><div class="list-price-label">Treatment Cost</div></div>
+                </div>
+                <div class="list-card-bottom">
+                  <div class="list-selected-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#0B1956" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> Selected</div>
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- CityCare -->
+            <div class="list-card" data-id="citycare" data-name="CityCare Hospital" data-price="$4,500" data-rating="4.5" data-reviews="987" data-success="93" data-spec="Orthopedic Care" data-accred="NABH Accredited" data-img="img7">
+              <div class="list-card-img">
+                <img src="images/portal/hospital-6.jpg" alt="CityCare Hospital" />
+                <div class="rating-badge" style="top:10px;left:10px;"><span class="star">★</span><span class="score">4.5</span><span class="count">(987)</span></div>
+                <div class="cmp-radio" data-id="citycare" title="Add to comparison"></div>
+              </div>
+              <div class="list-card-inner">
+                <div class="list-card-top-row">
+                  <div class="list-card-meta">
+                    <div class="list-card-name">CityCare Hospital</div>
+                    <div class="list-card-tags"><span class="tag tag-blue">Orthopedic Care</span><span class="tag tag-purple">NABH Accredited</span></div>
+                    <div class="success-rate">93% Success Rate</div>
+                  </div>
+                  <div class="list-card-price-col"><div class="list-price-amount">$4,500</div><div class="list-price-label">Treatment Cost</div></div>
+                </div>
+                <div class="list-card-bottom">
+                  <div class="list-selected-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#0B1956" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> Selected</div>
+                  <button class="btn-outline">View Details</button>
+                  <button class="btn-solid select-btn">Select Hospital</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <button class="explore-btn" id="exploreBtn">Explore More Hospitals</button>
+        </div>
+
+      </div><!-- end right-panel -->
+    </div><!-- end content-grid -->
+  </div><!-- end content-wrapper -->
+</main>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="back-btn" onclick="window.location.href='screen1_main.html'">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B1956" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    Back to City Selection
+  </button>
+  <div class="bottom-selection">
+    <span class="bottom-selection-text" id="bottomText">Hospital selected:</span>
+    <span class="bottom-selection-name" id="bottomName">Zen Multispecialty</span>
+  </div>
+  <button class="proceed-btn" id="proceedBtn">
+    Proceed to Room Selection
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+</div>
+
+
+
+<style>
+  /* ── Compare radio on cards ── */
+  .cmp-radio {
+    position: absolute; top: 10px; right: 10px; z-index: 4;
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,.9);
+    background: rgba(255,255,255,.25);
+    cursor: pointer; transition: all .18s;
+    display: none; /* hidden until compare mode is on */
+    box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  }
+  .cmp-radio:hover { background: rgba(255,255,255,.55); }
+  .cmp-radio.checked {
+    background: #0B1956;
+    border-color: #fff;
+  }
+  .cmp-radio.checked::after {
+    content: '';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-56%) rotate(-45deg);
+    width: 9px; height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+  }
+  body.compare-mode .cmp-radio { display: block; }
+
+  /* ── Compare slot in sidebar ── */
+  .compare-slot {
+    display: flex; align-items: center; gap: 6px;
+    background: #ECF0F9; border-radius: 8px; padding: 7px 10px;
+    font-size: 12px; font-weight: 600; color: #0B1956;
+    animation: fadeIn .2s ease both;
+  }
+  .compare-slot .cmp-remove {
+    margin-left: auto; background: none; border: none;
+    cursor: pointer; color: #B3B8CB; font-size: 15px; line-height: 1;
+    padding: 0; transition: color .15s;
+  }
+  .compare-slot .cmp-remove:hover { color: #EF4444; }
+
+  /* ── Compare Modal ── */
+  .cmp-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(5,11,36,.72); z-index: 500;
+    align-items: flex-start; justify-content: center;
+    padding: 36px 16px 36px; overflow-y: auto;
+  }
+  .cmp-overlay.open { display: flex; }
+  .cmp-modal {
+    background: #fff; border-radius: 18px; width: 100%; max-width: 980px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.28); animation: fadeSlideUp .28s ease both;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .cmp-header {
+    background: #0B1956; padding: 20px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cmp-header h2 { color: #fff; font-size: 20px; font-weight: 700; }
+  .cmp-close {
+    width: 36px; height: 36px; background: rgba(255,255,255,.15); border: none;
+    border-radius: 50%; color: #fff; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: background .18s;
+  }
+  .cmp-close:hover { background: rgba(255,255,255,.28); }
+  .cmp-body { overflow-x: auto; }
+  .cmp-table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  .cmp-table .cmp-col-hd { background: #F8FAFF; }
+  .cmp-table .cmp-col-hd td {
+    padding: 16px 20px; font-weight: 700; font-size: 15px; color: #0B1956;
+    border-bottom: 2px solid #E7E8EE; text-align: center; vertical-align: bottom;
+  }
+  .cmp-table .cmp-col-hd td:first-child { text-align: left; color: #595B5A; font-size: 13px; font-weight: 600; }
+  .cmp-img-prev {
+    width: 100%; height: 72px; border-radius: 8px; margin-bottom: 8px;
+  }
+  .cmp-table .cmp-row td {
+    padding: 13px 20px; font-size: 14px; color: #303231;
+    border-bottom: 1px solid #F0F2F5; text-align: center; vertical-align: middle;
+  }
+  .cmp-table .cmp-row td:first-child {
+    text-align: left; font-weight: 600; color: #595B5A; font-size: 13px;
+    background: #FAFAFA; white-space: nowrap;
+  }
+  .cmp-table .cmp-row:hover td { background: #F8FAFF; }
+  .cmp-table .cmp-row:hover td:first-child { background: #F0F2F5; }
+  .cmp-tag-g { display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;background:#DCFCE7;color:#166534; }
+  .cmp-tag-b { display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;background:#DBEAFE;color:#2F4D8A; }
+  .cmp-bar-wrap { display:flex;align-items:center;gap:7px;justify-content:center; }
+  .cmp-bar { flex:1;min-width:44px;height:6px;background:#E7E8EE;border-radius:4px;overflow:hidden; }
+  .cmp-bar-fill { height:100%;border-radius:4px;background:#0B1956; }
+  .cmp-sel-btn {
+    display:block;margin:0 auto;padding:7px 18px;background:#0B1956;color:#fff;
+    border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+    font-family:'Open Sans',sans-serif;transition:background .18s;
+  }
+  .cmp-sel-btn:hover { background:#0d2070; }
+  .cmp-sel-btn.picked { background:#006F2D; pointer-events:none; }
+  .cmp-footer { padding:14px 24px;border-top:1px solid #E7E8EE;background:#FAFAFA;text-align:right; }
+  .cmp-footer button {
+    padding:9px 22px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:'Open Sans',sans-serif;border:1.5px solid #0B1956;
+    background:#fff;color:#0B1956;transition:background .18s;
+  }
+  .cmp-footer button:hover { background:#ECF0F9; }
+
+  /* ── Confirm Select Modal ── */
+  .sel-overlay {
+    display:none;position:fixed;inset:0;background:rgba(5,11,36,.65);
+    z-index:600;align-items:center;justify-content:center;padding:20px;
+  }
+  .sel-overlay.open { display:flex; }
+  .sel-modal {
+    background:#fff;border-radius:18px;width:100%;max-width:420px;
+    box-shadow:0 24px 60px rgba(0,0,0,.25);animation:fadeSlideUp .25s ease both;overflow:hidden;
+  }
+  .sel-modal-header {
+    background:#0B1956;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .sel-modal-header h3 { color:#fff;font-size:17px;font-weight:700; }
+  .sel-modal-close {
+    width:32px;height:32px;background:rgba(255,255,255,.15);border:none;border-radius:50%;
+    color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .sel-modal-body { padding:24px; }
+  .sel-img {
+    width:100%;height:140px;border-radius:10px;margin-bottom:16px;overflow:hidden;
+  }
+  .sel-name { font-size:20px;font-weight:700;color:#0B1956;margin-bottom:4px; }
+  .sel-tags { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px; }
+  .sel-row { display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F0F2F5; }
+  .sel-row:last-of-type { border-bottom:none; }
+  .sel-row-lbl { font-size:13px;color:#595B5A;font-weight:600; }
+  .sel-row-val { font-size:14px;color:#0B1956;font-weight:700; }
+  .sel-price-box {
+    background:#0B1956;border-radius:12px;padding:14px 18px;margin:16px 0;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .sel-price-box span { color:rgba(255,255,255,.7);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px; }
+  .sel-price-box strong { color:#fff;font-size:26px;font-weight:700; }
+  .sel-confirm-btn {
+    width:100%;padding:13px;background:#0B1956;border:none;border-radius:11px;
+    color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+    font-family:'Open Sans',sans-serif;transition:background .18s;margin-top:4px;
+  }
+  .sel-confirm-btn:hover { background:#0d2070; }
+</style>
+
+<!-- ── Comparison modal ── -->
+<div class="cmp-overlay" id="cmpOverlay">
+  <div class="cmp-modal">
+    <div class="cmp-header">
+      <h2>Hospital Comparison</h2>
+      <button class="cmp-close" id="cmpClose">✕</button>
+    </div>
+    <div class="cmp-body"><table class="cmp-table" id="cmpTable"></table></div>
+    <div class="cmp-footer"><button onclick="closeCmp()">Close</button></div>
+  </div>
+</div>
+
+<!-- ── Select confirmation modal ── -->
+<div class="sel-overlay" id="selOverlay">
+  <div class="sel-modal">
+    <div class="sel-modal-header">
+      <h3>Confirm Hospital Selection</h3>
+      <button class="sel-modal-close" onclick="closeSel()">✕</button>
+    </div>
+    <div class="sel-modal-body" id="selBody"></div>
+  </div>
+</div>
+
+<script>
+  /* ── Hospital data ─────────────────────────── */
+  const HD = {
+    jaslok:     { name:'Jaslok Hospital',       price:'$4,600', rating:'4.8', reviews:'2,847', success:95, spec:'Orthopedic Excellence', accred:'NABH Accredited', beds:650, estd:1974, grad:'linear-gradient(135deg,#b8cce4,#5580a0)', img:'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&h=200&fit=crop&auto=format' },
+    zen:        { name:'Zen Multispecialty',     price:'$3,900', rating:'4.7', reviews:'1,923', success:92, spec:'Joint Replacement',     accred:'NABH Accredited', beds:500, estd:1983, grad:'linear-gradient(135deg,#c4d4e8,#607a94)', img:'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&h=200&fit=crop&auto=format' },
+    sevenhills: { name:'Seven Hills Hospital',   price:'$3,700', rating:'4.9', reviews:'3,156', success:94, spec:'Sports Medicine',       accred:'JCI & NABH',      beds:450, estd:1991, grad:'linear-gradient(135deg,#d4c4b0,#806840)', img:'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=600&h=200&fit=crop&auto=format' },
+    godrej:     { name:'Godrej Hospital',        price:'$3,136', rating:'4.7', reviews:'1,789', success:92, spec:'Orthopedic Care',       accred:'NABH Accredited', beds:350, estd:2009, grad:'linear-gradient(135deg,#c4b8a0,#807050)', img:'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=600&h=200&fit=crop&auto=format' },
+    holyfamily: { name:'Holy Family Hospital',   price:'$3,500', rating:'4.6', reviews:'2,104', success:95, spec:'Joint Replacement',     accred:'NABH Accredited', beds:400, estd:1953, grad:'linear-gradient(135deg,#b0c4b8,#507060)', img:'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=600&h=200&fit=crop&auto=format' },
+    kohinoor:   { name:'Kohinoor Hospital',      price:'$4,182', rating:'4.8', reviews:'3,421', success:97, spec:'Multispecialty',        accred:'NABH Accredited', beds:550, estd:2007, grad:'linear-gradient(135deg,#c4c0b4,#807060)', img:'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=600&h=200&fit=crop&auto=format' },
+    citycare:   { name:'CityCare Hospital',      price:'$4,500', rating:'4.5', reviews:'987',   success:93, spec:'Orthopedic Care',       accred:'NABH Accredited', beds:300, estd:2015, grad:'linear-gradient(135deg,#b8c4cc,#506070)', img:'https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=600&h=200&fit=crop&auto=format' },
+  };
+
+  /* ── Sidebar ───────────────────────────────── */
+  const menuToggle     = document.getElementById('menuToggle');
+  const sidebar        = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  function openSidebar()  { sidebar.classList.add('open'); menuToggle.classList.add('open'); sidebarOverlay.classList.add('visible'); requestAnimationFrame(()=>sidebarOverlay.classList.add('open')); document.body.style.overflow='hidden'; }
+  function closeSidebar() { sidebar.classList.remove('open'); menuToggle.classList.remove('open'); sidebarOverlay.classList.remove('open'); document.body.style.overflow=''; sidebarOverlay.addEventListener('transitionend',()=>sidebarOverlay.classList.remove('visible'),{once:true}); }
+  menuToggle.addEventListener('click',()=>sidebar.classList.contains('open')?closeSidebar():openSidebar());
+  sidebarOverlay.addEventListener('click',closeSidebar);
+  window.addEventListener('resize',()=>{ if(window.innerWidth>1100) closeSidebar(); });
+
+  /* ── Sidebar nav ───────────────────────────── */
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click',function(){ document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); this.classList.add('active'); });
+  });
+
+  /* ── Filter accordion ──────────────────────── */
+  const filterToggle      = document.getElementById('filterToggle');
+  const filterCollapsible = document.getElementById('filterCollapsible');
+  filterToggle.addEventListener('click',()=>{ const c=filterCollapsible.classList.toggle('collapsed'); filterToggle.classList.toggle('open',!c); });
+  function initFilter(){ if(window.innerWidth<=960){filterCollapsible.classList.add('collapsed');filterToggle.classList.remove('open');}else{filterCollapsible.classList.remove('collapsed');filterToggle.classList.add('open');} }
+  window.addEventListener('resize',initFilter); initFilter();
+
+  /* ── Radio filters ─────────────────────────── */
+  document.querySelectorAll('[data-radio]').forEach(r=>{
+    r.parentElement.addEventListener('click',()=>{
+      const g=r.dataset.radio;
+      document.querySelectorAll(`[data-radio="${g}"]`).forEach(x=>{x.classList.remove('selected');x.parentElement.classList.remove('active-filter');});
+      r.classList.add('selected'); r.parentElement.classList.add('active-filter');
+    });
+  });
+  document.querySelector('[data-radio].selected')?.parentElement.classList.add('active-filter');
+
+  /* ── Checkboxes (refine) ───────────────────── */
+  document.querySelectorAll('[data-check]').forEach(c=>{
+    c.parentElement.addEventListener('click',()=>{ c.classList.toggle('checked'); c.parentElement.classList.toggle('active-filter',c.classList.contains('checked')); });
+  });
+
+  /* ── Compare mode toggle (filter checkbox) ─── */
+  let compareMode = false;
+  let compareList = [];
+  const compareCheckbox = document.getElementById('compareCheckbox');
+  const comparePanel    = document.getElementById('comparePanel');
+
+  document.getElementById('compareToggleLabel').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    compareMode = !compareMode;
+    compareCheckbox.classList.toggle('checked', compareMode);
+    document.getElementById('compareToggleLabel').classList.toggle('active-filter', compareMode);
+    comparePanel.style.display = compareMode ? 'block' : 'none';
+    document.body.classList.toggle('compare-mode', compareMode);
+    if (!compareMode) {
+      compareList = [];
+      document.querySelectorAll('.cmp-radio').forEach(r=>r.classList.remove('checked'));
+      document.querySelectorAll('.top-card,.list-card').forEach(c=>c.classList.remove('cmp-highlighted'));
+      renderCompareSlots();
+    }
+  });
+
+  /* ── Compare radio clicks ──────────────────── */
+  document.querySelectorAll('.cmp-radio').forEach(radio=>{
+    radio.addEventListener('click', e=>{
+      e.stopPropagation();
+      if (!compareMode) return;
+      const id = radio.dataset.id;
+      if (compareList.includes(id)) {
+        compareList = compareList.filter(x=>x!==id);
+        document.querySelectorAll(`.cmp-radio[data-id="${id}"]`).forEach(r=>r.classList.remove('checked'));
+        getCard(id)?.classList.remove('cmp-highlighted');
+      } else {
+        if (compareList.length >= 3) return;
+        compareList.push(id);
+        document.querySelectorAll(`.cmp-radio[data-id="${id}"]`).forEach(r=>r.classList.add('checked'));
+        getCard(id)?.classList.add('cmp-highlighted');
+      }
+      renderCompareSlots();
+    });
+  });
+
+  function getCard(id){
+    return document.querySelector(`.top-card[data-id="${id}"]`) || document.querySelector(`.list-card[data-id="${id}"]`);
+  }
+
+  function renderCompareSlots(){
+    const slots = document.getElementById('compareSlots');
+    const btn   = document.getElementById('compareBtn');
+    slots.innerHTML = '';
+    if (compareList.length === 0) {
+      slots.innerHTML = '<div style="font-size:12px;color:#A0A1A0;font-style:italic;">Select hospitals using the radio buttons on each card</div>';
+    } else {
+      compareList.forEach(id=>{
+        const el = document.createElement('div');
+        el.className = 'compare-slot';
+        el.innerHTML = `<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">${HD[id].name}</span>
+          <button class="cmp-remove" onclick="removeFromCompare('${id}')">✕</button>`;
+        slots.appendChild(el);
+      });
+    }
+    const can = compareList.length >= 2;
+    btn.style.opacity       = can ? '1' : '.4';
+    btn.style.pointerEvents = can ? 'auto' : 'none';
+    btn.style.cursor        = can ? 'pointer' : 'not-allowed';
+  }
+
+  function removeFromCompare(id){
+    compareList = compareList.filter(x=>x!==id);
+    document.querySelectorAll(`.cmp-radio[data-id="${id}"]`).forEach(r=>r.classList.remove('checked'));
+    getCard(id)?.classList.remove('cmp-highlighted');
+    renderCompareSlots();
+  }
+
+  /* ── Open comparison table ─────────────────── */
+  document.getElementById('compareBtn').addEventListener('click', openCmp);
+
+  function openCmp(){
+    const list = compareList.map(id=>({id,...HD[id]}));
+    const prices   = list.map(h=>parseInt(h.price.replace(/\D/g,'')));
+    const minPrice = Math.min(...prices);
+    const maxRating  = Math.max(...list.map(h=>parseFloat(h.rating)));
+    const maxSuccess = Math.max(...list.map(h=>h.success));
+
+    let html = '<tbody>';
+    // header
+    html += '<tr class="cmp-col-hd"><td>Hospital</td>';
+    list.forEach(h=>{
+      html += `<td><div class="cmp-img-prev" style="background:${h.grad}"></div>
+        <div style="font-weight:700;color:#0B1956;">${h.name}</div>
+        <div style="font-size:12px;color:#6A7282;margin-top:2px;">Mumbai</div></td>`;
+    });
+    html += '</tr>';
+
+    // cost
+    html += '<tr class="cmp-row"><td>💰 Treatment Cost</td>';
+    list.forEach((h,i)=>{
+      const best = prices[i]===minPrice;
+      html += `<td><div style="font-size:20px;font-weight:700;color:#0B1956;">${h.price}</div>${best?'<div style="margin-top:4px;"><span class="cmp-tag-g">Best Value</span></div>':''}</td>`;
+    });
+    html += '</tr>';
+
+    // rating
+    html += '<tr class="cmp-row"><td>⭐ Rating</td>';
+    list.forEach(h=>{
+      const best = parseFloat(h.rating)===maxRating;
+      const stars = '★'.repeat(Math.round(parseFloat(h.rating)))+'☆'.repeat(5-Math.round(parseFloat(h.rating)));
+      html += `<td><span style="color:#FDC700;">${stars}</span><br><strong style="color:#0B1956;">${h.rating}</strong> <span style="font-size:12px;color:#6A7282;">(${h.reviews})</span>${best?'<div style="margin-top:4px;"><span class="cmp-tag-g">Highest Rated</span></div>':''}</td>`;
+    });
+    html += '</tr>';
+
+    // success
+    html += '<tr class="cmp-row"><td>📈 Success Rate</td>';
+    list.forEach(h=>{
+      const best = h.success===maxSuccess;
+      html += `<td><div class="cmp-bar-wrap"><div class="cmp-bar"><div class="cmp-bar-fill" style="width:${h.success}%"></div></div><strong style="color:${best?'#006F2D':'#0B1956'};white-space:nowrap;">${h.success}%</strong></div>${best?'<div style="margin-top:5px;"><span class="cmp-tag-g">Best Rate</span></div>':''}</td>`;
+    });
+    html += '</tr>';
+
+    // spec
+    html += '<tr class="cmp-row"><td>🏥 Speciality</td>';
+    list.forEach(h=>{ html += `<td><span class="cmp-tag-b">${h.spec}</span></td>`; });
+    html += '</tr>';
+
+    // accred
+    html += '<tr class="cmp-row"><td>🏅 Accreditation</td>';
+    list.forEach(h=>{ html += `<td><span class="cmp-tag-g">${h.accred}</span></td>`; });
+    html += '</tr>';
+
+    // beds
+    html += '<tr class="cmp-row"><td>🛏 Total Beds</td>';
+    const maxBeds = Math.max(...list.map(h=>h.beds));
+    list.forEach(h=>{ html += `<td><strong style="color:${h.beds===maxBeds?'#006F2D':'#0B1956'};">${h.beds}</strong></td>`; });
+    html += '</tr>';
+
+    // estd
+    html += '<tr class="cmp-row"><td>📅 Established</td>';
+    list.forEach(h=>{ html += `<td>${h.estd}</td>`; });
+    html += '</tr>';
+
+    // select btn
+    html += '<tr class="cmp-row"><td></td>';
+    list.forEach(h=>{
+      const picked = h.id === selectedId;
+      html += `<td><button class="cmp-sel-btn${picked?' picked':''}" data-selid="${h.id}">${picked?'✓ Selected':'Select'}</button></td>`;
+    });
+    html += '</tr></tbody>';
+
+    document.getElementById('cmpTable').innerHTML = html;
+
+    // wire cmp select buttons
+    document.querySelectorAll('.cmp-sel-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const id = btn.dataset.selid;
+        selectHospital(id);
+        document.querySelectorAll('.cmp-sel-btn').forEach(b=>{ b.classList.remove('picked'); b.textContent='Select'; });
+        btn.classList.add('picked'); btn.textContent='✓ Selected';
+      });
+    });
+
+    document.getElementById('cmpOverlay').classList.add('open');
+  }
+
+  function closeCmp(){ document.getElementById('cmpOverlay').classList.remove('open'); }
+  document.getElementById('cmpClose').addEventListener('click', closeCmp);
+  document.getElementById('cmpOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('cmpOverlay')) closeCmp(); });
+
+  /* ── Select hospital (confirmation modal) ─── */
+  let selectedId = 'zen';
+
+  function selectHospital(id){
+    selectedId = id;
+    const h = HD[id];
+    // update all cards
+    document.querySelectorAll('.top-card').forEach(c=>{
+      const sel = c.dataset.id===id;
+      c.classList.toggle('selected-card',sel);
+      const btn = c.querySelector('.select-btn');
+      btn.className = sel ? 'btn-selected select-btn' : 'btn-solid select-btn';
+      btn.innerHTML = sel ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Selected' : 'Select Hospital';
+    });
+    document.querySelectorAll('.list-card').forEach(c=>{
+      const sel = c.dataset.id===id;
+      c.classList.toggle('selected-list-card',sel);
+      const badge = c.querySelector('.list-selected-badge');
+      if(badge) badge.classList.toggle('visible',sel);
+      const btn = c.querySelector('.select-btn');
+      btn.className = sel ? 'btn-selected select-btn' : 'btn-solid select-btn';
+      btn.innerHTML = sel ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Selected' : 'Select Hospital';
+    });
+    document.getElementById('bottomName').textContent = h.name;
+  }
+
+  function openSelModal(id){
+    const h = HD[id];
+    const stars = '★'.repeat(Math.round(parseFloat(h.rating)))+'☆'.repeat(5-Math.round(parseFloat(h.rating)));
+    document.getElementById('selBody').innerHTML = `
+      <div class="sel-img" style="background:${h.grad};overflow:hidden;">
+        <img src="${h.img}" alt="${h.name}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display='none'" />
+      </div>
+      <div class="sel-name">${h.name}</div>
+      <div class="sel-tags">
+        <span class="tag tag-blue">${h.spec}</span>
+        <span class="tag tag-purple">${h.accred}</span>
+      </div>
+      <div class="sel-price-box">
+        <span>Treatment Cost</span>
+        <strong>${h.price}</strong>
+      </div>
+      <div class="sel-row"><span class="sel-row-lbl">⭐ Rating</span><span class="sel-row-val"><span style="color:#FDC700;">${stars}</span> ${h.rating} (${h.reviews} reviews)</span></div>
+      <div class="sel-row"><span class="sel-row-lbl">📈 Success Rate</span><span class="sel-row-val">${h.success}%</span></div>
+      <div class="sel-row"><span class="sel-row-lbl">🛏 Total Beds</span><span class="sel-row-val">${h.beds}</span></div>
+      <div class="sel-row"><span class="sel-row-lbl">📅 Established</span><span class="sel-row-val">${h.estd}</span></div>
+      <button class="sel-confirm-btn" onclick="confirmSelection('${id}')">Confirm Selection</button>
+    `;
+    document.getElementById('selOverlay').classList.add('open');
+  }
+
+  function confirmSelection(id){
+    selectHospital(id);
+    closeSel();
+
+    const h = HD[id];
+    const payload = {
+      patient_id:         'MT-123456',
+      patient_name:       'Michael',
+      treatment_type:     'Joint Replacement',
+      city:               localStorage.getItem('onecare_city') || 'Mumbai',
+      hospital_name:      h.name,
+      hospital_specialty: h.spec,
+      treatment_cost:     h.price,
+      rating:             h.rating,
+      accreditation:      h.accred
+    };
+
+    fetch('api/save_selection.php', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    })
+    .catch(() => {}); // silent fail — UI already updated
+  }
+  function closeSel(){ document.getElementById('selOverlay').classList.remove('open'); }
+  document.getElementById('selOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('selOverlay')) closeSel(); });
+
+  /* ── Card click wiring ─────────────────────── */
+  document.querySelectorAll('.top-card, .list-card').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(e.target.closest('.select-btn')) openSelModal(card.dataset.id);
+    });
+  });
+
+  /* ── Search ────────────────────────────────── */
+  document.getElementById('searchInput').addEventListener('input', e=>{
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('.top-card, .list-card').forEach(card=>{
+      const match = !q || card.dataset.name.toLowerCase().includes(q) || card.dataset.spec.toLowerCase().includes(q);
+      card.style.opacity = match ? '1' : '0.3';
+      card.style.pointerEvents = match ? '' : 'none';
+    });
+  });
+
+  /* ── Proceed btn ───────────────────────────── */
+  document.getElementById('proceedBtn').addEventListener('click', function(){
+    this.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17 4 12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Confirmed!';
+    this.style.background='#006F2D';
+    setTimeout(()=>{ this.innerHTML='Proceed to Room Selection <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>'; this.style.background=''; },2200);
+  });
+
+  /* ── Explore btn ───────────────────────────── */
+  document.getElementById('exploreBtn').addEventListener('click', function(){
+    this.textContent='Loading more…'; this.disabled=true;
+    setTimeout(()=>{ this.textContent='Explore More Hospitals'; this.disabled=false; },1500);
+  });
+
+  /* ── Talk Now ──────────────────────────────── */
+  document.getElementById('talkNowBtn')?.addEventListener('click', function(){
+    this.textContent='Connecting…';
+    setTimeout(()=>{ this.textContent='Talk Now'; },2000);
+  });
+
+  /* ── Back btn ──────────────────────────────── */
+
+  /* ── Keyboard escape ───────────────────────── */
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){ closeCmp(); closeSel(); }
+  });
+
+  /* ── Highlight style for cmp selected cards ── */
+  const style = document.createElement('style');
+  style.textContent = `.cmp-highlighted { outline: 2.5px solid #0B1956; outline-offset: -2px; }`;
+  document.head.appendChild(style);
+
+  /* ── Init ──────────────────────────────────── */
+  selectHospital('zen');
+  renderCompareSlots();
+</script>
+
+
+
+<script>
+/* scroll reveal */
+(function () {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -36px 0px' });
+  function init() { document.querySelectorAll('.sr').forEach(function (el) { io.observe(el); }); }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+})();
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body></html>

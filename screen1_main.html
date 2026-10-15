@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare Patient Portal - Package Selection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-900: #050B24; --blue-500: #0B1956; --blue-100: #B3B8CB; --blue-50: #E7E8EE;
+    --sapphire-50: #ECF0F9; --lavender-100: #F8EFFA; --lavender-800: #746279; --lavender-900: #584B5C;
+    --grey-600: #2C2E2D; --grey-500: #303231; --grey-400: #595B5A; --grey-100: #CCCCCC; --grey-50: #EAEBEA;
+    --white: #FFFFFF;
+    --nav-height: 75px;
+    --sidebar-width: 260px;
+    --shadow-card: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.10);
+    --shadow-nav: 0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #ECF0F9;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* PAGE LOAD ANIMATIONS */
+  @keyframes fadeSlideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-24px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ── TOP NAV ── */
+  .topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);background:#fff;box-shadow:var(--shadow-nav);display:flex;align-items:center;padding:0 24px 0 28px;z-index:100;animation:fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;}
+  .logo-area{display:flex;align-items:center;gap:8px;flex-shrink:0;width:auto;cursor:pointer;border-radius:8px;padding:4px;transition:background .18s;}
+  .logo-area:hover .logo-name .one,.logo-area:hover .logo-name .care,.logo-area:hover .logo-subtitle{color:#B3B8CB;}
+  .logo-svg-stroke{transition:stroke .18s;}
+  .logo-svg-fill{transition:fill .18s;}
+  .logo-area:hover .logo-svg-stroke{stroke:#B3B8CB;}
+  .logo-area:hover .logo-svg-fill{fill:#B3B8CB;}
+  .logo-name .one,.logo-name .care,.logo-subtitle{transition:color .18s;}
+  .logo-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:44px;}
+  .logo-text{display:flex;flex-direction:column;}
+  .logo-name{font-family:'Satoshi','Open Sans',sans-serif;font-size:28px;line-height:1;letter-spacing:-0.5px;}
+  .logo-name .one{font-weight:400;color:#0B1956;}
+  .logo-name .care{font-weight:700;color:#0B1956;}
+  .logo-subtitle{font-family:'Open Sans',sans-serif;font-size:14px;font-weight:400;color:#0B1956;line-height:1.4;}
+  .nav-center{flex:1;display:flex;justify-content:flex-start;padding-left:118px;}
+  .welcome-text{font-family:'Open Sans',sans-serif;font-weight:700;font-size:28px;line-height:40px;color:#0B1956;white-space:nowrap;}
+  .nav-right{display:flex;align-items:center;gap:16px;flex-shrink:0;margin-left:auto;}
+  .search-bar{display:flex;align-items:center;width:280px;height:44px;background:#EAEBEA;border-radius:28px;padding:0 16px;gap:8px;transition:box-shadow .18s;cursor:text;}
+  .search-input{flex:1;height:auto;background:transparent;border:none;outline:none;padding:0;font-family:'Open Sans',sans-serif;font-weight:400;font-size:14px;line-height:1;color:#49454F;letter-spacing:0;}
+  .search-input::placeholder{color:#49454F;font-weight:600;}
+  .search-icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .bell-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;background:none;border:none;}
+
+  /* HAMBURGER TOGGLE */
+  .menu-toggle{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:8px;flex-shrink:0;transition:background .18s;margin-right:4px;}
+  .menu-toggle:hover{background:#f0f2f9;}
+  .menu-toggle span{display:block;width:22px;height:2px;background:#0B1956;border-radius:2px;transition:all .28s;}
+  .menu-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .menu-toggle.open span:nth-child(2){opacity:0;}
+  .menu-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+  /* SIDEBAR OVERLAY */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:48;opacity:0;transition:opacity .28s;}
+  .sidebar-overlay.visible{display:block;}
+  .sidebar-overlay.open{opacity:1;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{position:fixed;left:0;top:var(--nav-height);width:var(--sidebar-width);height:calc(100vh - var(--nav-height));background:#0B1956;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;z-index:50;animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+  .sidebar-nav{padding:16px 16px 8px;display:flex;flex-direction:column;gap:2px;flex:1;}
+  .nav-item{display:flex;align-items:center;gap:14px;padding:12px 20px;height:auto;border-radius:10px;cursor:pointer;transition:background .18s;text-decoration:none;}
+  .nav-item.active{background:#fff;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);border-radius:8px;}
+  .nav-item:not(.active):hover{background:rgba(255,255,255,.08);border-radius:8px;}
+  .nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:visible;}
+  .nav-label{font-family:'Open Sans',sans-serif;font-weight:400;font-size:15px;line-height:24px;letter-spacing:.15px;color:#E7E8EE;}
+  .nav-item.active .nav-label{font-weight:700;color:#0B1956;}
+  .sidebar-footer{border-top:.866px solid #E5E7EB;padding:12px 16px;}
+  .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .user-avatar{width:48px;height:48px;background:#B3B8CB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .user-details{display:flex;flex-direction:column;}
+  .user-name{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:1.2;color:#fff;}
+  .user-id{font-family:'Open Sans',sans-serif;font-weight:400;font-size:13px;line-height:25px;color:#B3B8CB;}
+  .logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:auto;padding:10px 16px;border:1px solid #fff;border-radius:10px;cursor:pointer;margin-bottom:12px;background:transparent;transition:background .18s,box-shadow .18s,transform .1s;font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+  .logout-btn:hover{background:rgba(255,255,255,.1);box-shadow:0 2px 10px rgba(0,0,0,.2);transform:translateY(-1px);}
+  .logout-btn:active{background:rgba(255,255,255,.18);transform:translateY(0);}
+  .logout-label{font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    margin-top: 75px;
+    margin-left: var(--sidebar-width);
+    min-height: calc(100vh - 75px);
+    background: #ECF0F9;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content-area {
+    flex: 1;
+    padding: 30px 36px 100px;
+  }
+
+  /* Page header */
+  .page-header {
+    margin-bottom: 20px;
+  }
+
+  .page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0B1956;
+    line-height: 1.3;
+  }
+
+  .page-sub {
+    font-size: 18px;
+    font-weight: 400;
+    color: #303231;
+    margin-top: 2px;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    background: #0B1956;
+    border-radius: 8px;
+    padding: 0 18px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .step-done {
+    width: 32px; height: 32px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-done svg { display: block; }
+
+  .step-arrow {
+    color: #FFFFFF;
+    font-size: 14px;
+    opacity: 0.7;
+    margin: 0 2px;
+  }
+
+  .step-num {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #FEFEFD;
+    margin-left: 8px;
+  }
+
+  /* Card container */
+  .card-container {
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0px 6.37px 9.56px -1.59px rgba(0,0,0,0.1), 0px 3.19px 6.37px -3.19px rgba(0,0,0,0.1);
+    padding: 28px 28px 0;
+    margin-bottom: 22px;
+  }
+
+  .card-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0B1956;
+    margin-bottom: 20px;
+  }
+
+  /* City grid */
+  .city-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-bottom: 28px;
+  }
+
+  .city-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 10.67px 16px -3.2px rgba(0,0,0,0.1), 0px 4.27px 6.4px -4.27px rgba(0,0,0,0.1);
+    cursor: pointer;
+    position: relative;
+    border: 1.6px solid transparent;
+    background: #FFFFFF;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .city-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 14px 22px -4px rgba(0,0,0,0.15);
+  }
+
+  .city-card.selected {
+    border-color: #5C658E;
+    background: #ECF0F9;
+  }
+
+  .city-card.selected .select-radio-inner {
+    background: #0B1956;
+    border-color: #0B1956;
+  }
+
+  .city-card.selected .select-radio-inner::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .city-img-wrap {
+    position: relative;
+    height: 180px;
+    background: #333;
+    overflow: hidden;
+  }
+
+  .city-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .city-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.20) 50%, rgba(0,0,0,0) 100%);
+  }
+
+  .select-radio {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 22px;
+    height: 22px;
+    z-index: 2;
+  }
+
+  .select-radio-inner {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.6px solid #FFFFFF;
+    background: rgba(255,255,255,0.8);
+    position: relative;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .city-label {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+  }
+
+  .city-label svg { flex-shrink: 0; }
+
+  .city-label-name {
+    font-size: 21px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.2;
+  }
+
+  .city-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: inherit;
+  }
+
+  .hosp-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hosp-num {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0B1956;
+  }
+
+  .hosp-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: #303231;
+  }
+
+
+  /* City selected badge */
+  .city-selected-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px 5px 10px;
+    background: #ECF0F9;
+    border-top: 1px solid #B3B8CB;
+    color: #0B1956;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .city-card.selected .city-selected-badge {
+    display: flex;
+  }
+  /* ── BOTTOM ACTION BAR ───────────────────────────────── */
+  .action-bar {
+    position: fixed;
+    bottom: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    height: 80px;
+    background: #FFFFFF;
+    border-top: 1.4px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    z-index: 80;
+  }
+
+  .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.8px solid #CCCCCC;
+    border-radius: 12px;
+    padding: 0 22px;
+    height: 52px;
+    background: transparent;
+    color: #0B1956;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-back:hover { background: #F5F5F5; }
+
+  .btn-proceed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #0B1956;
+    border: none;
+    border-radius: 10px;
+    padding: 0 28px;
+    height: 52px;
+    color: #FFFFFF;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0px 5.72px 8.58px -1.43px rgba(0,0,0,0.1), 0px 2.86px 5.72px -2.86px rgba(0,0,0,0.1);
+    transition: background 0.15s;
+  }
+
+  .btn-proceed:hover { background: #0d2070; }
+
+  /* SVG icon helpers */
+  svg { display: block; }
+
+  /* ─── ≤ 1100px: sidebar becomes a drawer ─── */
+  @media (max-width: 1100px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform .3s cubic-bezier(.22,1,.36,1);
+      animation: none;
+      z-index: 200;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .menu-toggle {
+      display: flex !important;
+    }
+
+    .main        { margin-left: 0 !important; }
+    .action-bar  { left: 0 !important; }
+    .nav-center  { padding-left: 12px; }
+    .welcome-text { font-size: 22px; }
+  }
+
+  /* ─── ≤ 960px: city grid → 2 columns ─── */
+  @media (max-width: 960px) {
+    .city-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .content-area { padding: 24px 24px 100px; }
+  }
+
+  /* ─── ≤ 640px: mobile ─── */
+  @media (max-width: 640px) {
+    .topnav { padding: 0 12px; gap: 0; }
+    .nav-center { display: none; }
+    .search-bar { width: 160px; height: 38px; padding: 0 12px; }
+
+    .content-area { padding: 16px 14px 90px; }
+    .page-title { font-size: 20px; }
+    .page-sub   { font-size: 14px; }
+
+    .progress-bar { padding: 0 12px; gap: 5px; height: 46px; }
+    .step-done, .step-num { width: 26px; height: 26px; font-size: 11px; }
+    .step-label { font-size: 13px; margin-left: 6px; }
+    .step-done svg { width: 13px; height: 13px; }
+
+    .card-container { padding: 16px 14px 0; border-radius: 10px; }
+    .card-section-title { font-size: 17px; margin-bottom: 14px; }
+
+    /* City grid → 1 column */
+    .city-grid { grid-template-columns: 1fr !important; gap: 14px; }
+    .city-img-wrap { height: 155px; }
+    .city-label-name { font-size: 18px; }
+
+    .action-bar { padding: 0 16px; height: 70px; }
+    .btn-back { height: 44px; padding: 0 16px; font-size: 13px; }
+    .btn-proceed { height: 44px; padding: 0 18px; font-size: 13px; }
+  }
+
+  /* ─── ≤ 400px: very small ─── */
+  @media (max-width: 400px) {
+    .search-bar { display: none; }
+    .step-label { display: none; }
+    .step-arrow { font-size: 11px; margin: 0; }
+    .btn-back span { display: none; }
+  }
+
+/* ── SCROLL REVEAL ── */
+.sr { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.sr.revealed { opacity: 1; transform: translateY(0); }
+.sr-d1 { transition-delay: 0.05s; }
+.sr-d2 { transition-delay: 0.12s; }
+.sr-d3 { transition-delay: 0.19s; }
+.sr-d4 { transition-delay: 0.26s; }
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<header class="topnav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center"><span class="welcome-text">Welcome Michael!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="bell-btn" id="notifBtn" style="position:relative;">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <span class="nav-label">My Journey</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<main class="main">
+  <div class="content-area">
+
+    <!-- Page header -->
+    <div class="page-header sr sr-d1">
+      <div class="page-title">Cost Overview &amp; Package Selection</div>
+      <div class="page-sub">Customize your medical tourism package</div>
+    </div>
+
+    <!-- Progress stepper -->
+    <div class="progress-bar sr sr-d2">
+      <!-- Step 1 done -->
+      <div class="step-done">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="step-arrow">›</span>
+      <!-- Step 2 done -->
+      <div class="step-done">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="step-arrow">›</span>
+      <!-- Step 3 city (number by default, tick after city selected) -->
+      <div class="step-num" id="step3">3</div>
+      <span class="step-arrow">›</span>
+      <!-- Step 4 pending -->
+      <div class="step-num">4</div>
+      <span class="step-arrow">›</span>
+      <!-- Step 5 pending -->
+      <div class="step-num">5</div>
+      <span class="step-arrow">›</span>
+      <!-- Step 6 active -->
+      <div class="step-num" style="background:rgba(255,255,255,0.35);">6</div>
+      <span class="step-label">Select City</span>
+    </div>
+
+    <!-- Card with city grid -->
+    <div class="card-container sr sr-d3">
+      <div class="card-section-title">Select City</div>
+      <div class="city-grid">
+
+        <!-- Mumbai (selected) -->
+        <div class="city-card selected" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/mumbai2.jpg" alt="Mumbai" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Mumbai</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+              <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+              <span class="hosp-num">45</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+        <!-- Delhi -->
+        <div class="city-card" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/delhi-2.jpg" alt="Delhi" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Delhi</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+              <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+              <span class="hosp-num">38</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+        <!-- Bangalore -->
+        <div class="city-card" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/iskcon-temple-bangalore-india-898111733502472.jpg" alt="Bangalore" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Bangalore</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+             <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+              <span class="hosp-num">32</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+        <!-- Chennai -->
+        <div class="city-card" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/chennai.jpg" alt="Chennai" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Chennai</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+              <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+              <span class="hosp-num">28</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+        <!-- Kolkata -->
+        <div class="city-card" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/kolkata.jpg" alt="Kolkata" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Kolkata</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+              <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+              <span class="hosp-num">25</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+        <!-- Pune -->
+        <div class="city-card" onclick="selectCity(this)">
+          <div class="city-img-wrap">
+            <img src="images/portal/pune.jpg" alt="Pune" onerror="this.style.background='#557'">
+            <div class="city-img-overlay"></div>
+            <div class="select-radio"><div class="select-radio-inner"></div></div>
+            <div class="city-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="9" r="2.5" stroke="#fff" stroke-width="2" fill="none"/>
+              </svg>
+              <span class="city-label-name">Pune</span>
+            </div>
+          </div>
+          <div class="city-meta">
+            <div class="hosp-count">
+             <svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.6641 5.32959V8.88354" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 12.4396H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 15.9926H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.4465 7.10791H8.89258" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.999 10.659H17.776C18.2473 10.659 18.6992 10.8462 19.0325 11.1795C19.3657 11.5127 19.5529 11.9647 19.5529 12.436V17.7669C19.5529 18.2382 19.3657 18.6901 19.0325 19.0234C18.6992 19.3566 18.2473 19.5439 17.776 19.5439H3.56018C3.08889 19.5439 2.63691 19.3566 2.30367 19.0234C1.97042 18.6901 1.7832 18.2382 1.7832 17.7669V9.7705C1.7832 9.29922 1.97042 8.84724 2.30367 8.51399C2.63691 8.18075 3.08889 7.99353 3.56018 7.99353H5.33715" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.9978 19.5465V3.55371C15.9978 3.08242 15.8106 2.63044 15.4773 2.2972C15.1441 1.96395 14.6921 1.77673 14.2208 1.77673H7.11291C6.64163 1.77673 6.18965 1.96395 5.8564 2.2972C5.52315 2.63044 5.33594 3.08242 5.33594 3.55371V19.5465" stroke="#0B1956" stroke-width="1.77697" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+              <span class="hosp-num">22</span>
+            </div>
+            <span class="hosp-label">Hospitals Available</span>
+          </div>
+        </div>
+          <div class="city-selected-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="#0B1956"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            City Selected
+          </div>
+
+      </div><!-- /city-grid -->
+    </div><!-- /card-container -->
+
+  </div><!-- /content-area -->
+</main>
+
+<!-- ── BOTTOM ACTION BAR ── -->
+<footer class="action-bar">
+  <button class="btn-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <polyline points="15 18 9 12 15 6" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back to Add-on Services
+  </button>
+  <button class="btn-proceed" onclick="proceedToHospitals()">
+    Proceed to Hospital Selection
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <polyline points="9 18 15 12 9 6" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</footer>
+
+<script>
+  // ── SIDEBAR ───────────────────────────────────────────
+  const menuToggle     = document.getElementById('menuToggle');
+  const sidebar        = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    menuToggle.classList.add('open');
+    sidebarOverlay.classList.add('visible');
+    requestAnimationFrame(() => sidebarOverlay.classList.add('open'));
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    menuToggle.classList.remove('open');
+    sidebarOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    sidebarOverlay.addEventListener('transitionend', () => sidebarOverlay.classList.remove('visible'), { once: true });
+  }
+  menuToggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+  sidebarOverlay.addEventListener('click', closeSidebar);
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1100) closeSidebar();
+  });
+
+  // ── SELECT CITY ───────────────────────────────────────
+  function selectCity(card) {
+    document.querySelectorAll('.city-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    var s3 = document.getElementById('step3');
+    if (s3 && s3.classList.contains('step-num')) {
+      s3.className = 'step-done';
+      s3.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    }
+  }
+
+  // ── PROCEED: store city then go to Screen2 ──────────
+  function proceedToHospitals() {
+    const selectedCard = document.querySelector('.city-card.selected');
+    const cityName = selectedCard ? selectedCard.querySelector('.city-label-name')?.textContent.trim() : 'Mumbai';
+    localStorage.setItem('onecare_city', cityName);
+    window.location.href = 'screen2_main.html';
+  }
+</script>
+
+
+<script>
+/* scroll reveal */
+(function () {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -36px 0px' });
+  function init() { document.querySelectorAll('.sr').forEach(function (el) { io.observe(el); }); }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+})();
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare - Deposit Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+
+<style>
+  
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  font-family: 'Open Sans', sans-serif;
+  background: #ECF0F9;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+:root {
+  --nav-height: 75px;
+  --sidebar-width: 260px;
+  --shadow-nav: 0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);
+}
+
+/* ── PAGE LOAD ANIMATIONS ── */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-24px);}to{opacity:1;transform:translateX(0);}}
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  background: #fff;
+  box-shadow: var(--shadow-nav);
+  display: flex;
+  align-items: center;
+  padding: 0 24px 0 28px;
+  z-index: 100;
+  animation: fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* LOGO */
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  width: auto;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px;
+  transition: background .18s;
+}
+.logo-area:hover .logo-name .one,
+.logo-area:hover .logo-name .care,
+.logo-area:hover .logo-subtitle { color: #B3B8CB; }
+.logo-svg-stroke { transition: stroke .18s; }
+.logo-svg-fill   { transition: fill .18s; }
+.logo-area:hover .logo-svg-stroke { stroke: #B3B8CB; }
+.logo-area:hover .logo-svg-fill   { fill: #B3B8CB; }
+.logo-name .one, .logo-name .care, .logo-subtitle { transition: color .18s; }
+.logo-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 36px; height: 44px; }
+.logo-text { display: flex; flex-direction: column; }
+.logo-name { font-family: 'Satoshi','Open Sans',sans-serif; font-size: 28px; line-height: 1; letter-spacing: -0.5px; }
+.logo-name .one  { font-weight: 400; color: #0B1956; }
+.logo-name .care { font-weight: 700; color: #0B1956; }
+.logo-subtitle { font-family: 'Open Sans',sans-serif; font-size: 14px; font-weight: 400; color: #0B1956; line-height: 1.4; }
+
+.nav-center { flex: 1; display: flex; justify-content: flex-start; padding-left: 118px; }
+.welcome-text { font-family: 'Open Sans',sans-serif; font-weight: 700; font-size: 28px; line-height: 40px; color: #0B1956; white-space: nowrap; }
+.nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; margin-left: auto; }
+
+/* Search */
+.search-bar { display: flex; align-items: center; width: 280px; height: 44px; background: #EAEBEA; border-radius: 28px; padding: 0 16px; gap: 8px; transition: box-shadow .18s; cursor: text; }
+.search-input { flex: 1; height: auto; background: transparent; border: none; outline: none; padding: 0; font-family: 'Open Sans',sans-serif; font-weight: 600; font-size: 14px; color: #49454F; }
+.search-input::placeholder { color: #49454F; font-weight: 600; }
+.search-icon-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* Bell */
+.bell-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; background: none; border: none; position: relative; transition: background .2s; }
+.bell-btn:hover { background: #ECF0F9; }
+.notif-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #E53E3E; border-radius: 50%; border: 2px solid white; }
+
+/* HAMBURGER */
+.menu-toggle { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; cursor: pointer; border: none; background: transparent; padding: 4px; border-radius: 8px; flex-shrink: 0; transition: background .18s; }
+.menu-toggle:hover { background: #f0f2f9; }
+.menu-toggle span { display: block; width: 22px; height: 2px; background: #0B1956; border-radius: 2px; transition: all .3s; }
+.menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-toggle.open span:nth-child(2) { opacity: 0; }
+.menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* OVERLAY */
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 49; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.sidebar-overlay.active { opacity: 1; pointer-events: all; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--nav-height);
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--nav-height));
+  background: #0B1956;
+  box-shadow: 0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 50;
+  animation: fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;
+}
+.sidebar-nav { padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 20px; height: auto; border-radius: 10px; cursor: pointer; transition: background .18s; text-decoration: none; }
+.nav-item.active { background: #fff; box-shadow: 0px 15.582px 23.373px -4.675px rgba(0,0,0,.1); border-radius: 8px; }
+.nav-item:not(.active):hover { background: rgba(255,255,255,.08); border-radius: 8px; }
+.nav-icon { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.nav-label { font-family: 'Open Sans',sans-serif; font-weight: 400; font-size: 15px; line-height: 24px; letter-spacing: .15px; color: #E7E8EE; text-decoration: none; }
+.nav-item.active .nav-label { font-weight: 700; color: #0B1956; }
+
+/* SIDEBAR FOOTER */
+.sidebar-footer { border-top: .866px solid #E5E7EB; padding: 12px 16px; }
+.user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.user-avatar { width: 48px; height: 48px; background: #B3B8CB; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.user-details { display: flex; flex-direction: column; }
+.user-name { font-family: 'Open Sans',sans-serif; font-weight: 700; font-size: 16px; line-height: 1.2; color: #fff; }
+.user-id { font-family: 'Open Sans',sans-serif; font-weight: 400; font-size: 13px; line-height: 25px; color: #B3B8CB; }
+.logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: auto; padding: 10px 16px; border: 1px solid #fff; border-radius: 10px; cursor: pointer; margin-bottom: 12px; background: transparent; transition: background .18s, box-shadow .18s, transform .1s; }
+.logout-btn:hover { background: rgba(255,255,255,.1); box-shadow: 0 2px 10px rgba(0,0,0,.2); transform: translateY(-1px); }
+.logout-btn:active { background: rgba(255,255,255,.18); transform: translateY(0); }
+.logout-label { font-family: 'Open Sans',sans-serif; font-weight: 500; font-size: 14px; line-height: 24px; letter-spacing: .15px; color: #fff; }
+
+/* ── MAIN ── */
+.main-content { margin-left: var(--sidebar-width); padding-top: var(--nav-height); width: calc(100% - var(--sidebar-width)); overflow-x: clip; }
+.dashboard-layout { display: flex; flex-direction: column; align-items: flex-start; padding: 20px 40px 50px; width: 100%; min-height: calc(100vh - var(--nav-height)); background: #ECF0F9; box-sizing: border-box; gap: 22px; }
+
+/* ── CARDS ── */
+.card {
+  background: #FFFFFF;
+  border: 0.767047px solid #E5E7EB;
+  box-shadow: 0px 4.09555px 6.14332px -1.02389px rgba(0,0,0,0.1), 0px 2.04777px 4.09555px -2.04777px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── PAGE TITLE AREA ── */
+.page-title-area { display: flex; flex-direction: column; gap: 0px; width: 100%; }
+.page-back-row { display: flex; flex-direction: row; align-items: center; gap: 5px; }
+.back-arrow { display: flex; align-items: center; cursor: pointer; padding: 6px; border-radius: 8px; transition: background 0.2s; }
+.back-arrow:hover { background: #D1D9F0; }
+.page-title { font-family: 'Open Sans', sans-serif; font-weight: 700; font-size: 19px; line-height: 30px; color: #0B1956; }
+.page-subtitle { font-family: 'Open Sans', sans-serif; font-weight: 400; font-size: 11px; line-height: 143.7%; color: #303231; padding-left: 26px; padding-top: 4px; }
+
+/* ── TWO-COLUMN LAYOUT ── */
+.deposit-layout { display: flex; flex-direction: row; gap: 24px; width: 100%; align-items: flex-start; }
+.deposit-main { display: flex; flex-direction: column; gap: 20px; flex: 1; min-width: 0; }
+.deposit-sidebar { display: flex; flex-direction: column; gap: 20px; width: 340px; flex-shrink: 0; }
+
+/* ── REVIEW BOOKING CARD ── */
+.review-card { padding: 24px; display: flex; flex-direction: column; gap: 0; }
+.review-card-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 17px; line-height: 26px; color: #0B1956; margin-bottom: 20px; }
+.booking-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 16px; margin-bottom: 0; }
+.booking-detail-item { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; padding: 10px; border-radius: 10px; transition: background 0.2s, transform 0.15s; }
+.booking-detail-item:hover { background: #F5F7FF; transform: translateY(-1px); }
+.booking-detail-icon { width: 40px; height: 40px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.booking-detail-text { display: flex; flex-direction: column; gap: 2px; }
+.booking-detail-label { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #6A7282; }
+.booking-detail-value { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; line-height: 22px; color: #0B1956; }
+.booking-detail-sub { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #4A5565; }
+
+/* ── COST BREAKDOWN ── */
+.cost-breakdown-section { border-top: 1px solid #E5E7EB; margin-top: 22px; padding-top: 20px; display: flex; flex-direction: column; gap: 14px; }
+.cost-breakdown-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; line-height: 22px; color: #0B1956; }
+.cost-line { display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; padding: 6px 8px; border-radius: 8px; transition: background 0.15s; }
+.cost-line:hover { background: #F9FAFB; }
+.cost-line-label { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 13px; line-height: 22px; color: #364153; }
+.cost-line-value { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; line-height: 22px; color: #0B1956; }
+.cost-badge { background: #E7E8EE; border-radius: 999px; padding: 3px 10px; }
+.cost-badge span { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; line-height: 18px; color: #0B1956; }
+.cost-total-row { display: flex; flex-direction: row; justify-content: space-between; align-items: center; border-top: 1.5px solid #0B1956; padding-top: 14px; margin-top: 6px; }
+.cost-total-label { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; line-height: 26px; color: #0B1956; }
+.cost-total-value { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 19px; line-height: 28px; color: #0B1956; }
+
+/* ── ESTIMATE ACCEPTED BANNER ── */
+.estimate-banner {
+  background: #0B1956;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1);
+}
+.estimate-icon-circle { width: 48px; height: 48px; background: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.estimate-text-group { display: flex; flex-direction: column; gap: 4px; }
+.estimate-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px; line-height: 25px; color: #FFFFFF; }
+.estimate-subtitle { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 13px; line-height: 22px; color: rgba(255,255,255,0.9); }
+
+/* ── DEPOSIT PAYMENT CARD ── */
+.deposit-card { padding: 24px 28px 28px; display: flex; flex-direction: column; gap: 0; }
+.deposit-card-section-label { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 19px; line-height: 25px; color: #0B1956; margin-bottom: 4px; }
+.deposit-card-sub { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 13px; line-height: 22px; color: #4A5565; margin-bottom: 20px; }
+.deposit-amount-box {
+  background: #F9FAFB;
+  border: 0.77px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.deposit-amount-box:hover { border-color: #0B1956; box-shadow: 0 0 0 3px rgba(11,25,86,0.06); }
+.deposit-amount-left { display: flex; flex-direction: column; gap: 4px; }
+.deposit-amount-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; line-height: 25px; color: #0B1956; }
+.deposit-amount-desc { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #4A5565; }
+.deposit-amount-value { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 25px; line-height: 42px; color: #0B1956; }
+.pay-btn {
+  width: 100%;
+  height: 58px;
+  background: #0B1956;
+  border: none;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1);
+  transition: background 0.2s, transform 0.2s;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.pay-btn:hover { background: #1a2d6e; transform: translateY(-2px); }
+.pay-btn span { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; line-height: 25px; color: #FFFFFF; }
+.stripe-note { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 13px; line-height: 20px; color: #6A7282; text-align: center; width: 100%; }
+
+/* ── SIDEBAR CARDS ── */
+.sidebar-card {
+  background: #FFFFFF;
+  box-shadow: 0px 4.16px 6.24px -1.04px rgba(0,0,0,0.1), 0px 2.08px 4.16px -2.08px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  padding: 22px 22px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.sidebar-card-header { display: flex; flex-direction: row; align-items: center; gap: 10px; margin-bottom: 16px; }
+.sidebar-card-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sidebar-card-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; line-height: 22px; color: #0B1956; }
+
+/* Payment Timeline */
+.timeline-item-row { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.timeline-dot-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.timeline-dot-filled { width: 26px; height: 26px; background: #0B1956; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.timeline-dot-outline { width: 26px; height: 26px; background: #DBEAFE; border: 1.56px solid #0B1956; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.timeline-dot-inner { width: 9px; height: 9px; background: #0B1956; border-radius: 50%; }
+.timeline-connector { width: 2px; height: 44px; background: #E5E7EB; border-radius: 0; flex-shrink: 0; }
+.timeline-text { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+.timeline-label { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; line-height: 22px; color: #0B1956; }
+.timeline-sub { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #4A5565; }
+.timeline-date { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #6A7282; }
+
+/* Cancellation Policy Card */
+.cancel-card {
+  background: #FFFBEB;
+  border: 1.56px solid #FEE685;
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.cancel-card-header { display: flex; flex-direction: row; align-items: center; gap: 10px; margin-bottom: 16px; }
+.cancel-card-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; line-height: 22px; color: #7B3306; }
+.cancel-policy-list { display: flex; flex-direction: column; gap: 12px; }
+.cancel-policy-item { display: flex; flex-direction: row; align-items: flex-start; gap: 8px; }
+.cancel-policy-text { display: flex; flex-direction: column; }
+.cancel-policy-label { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; line-height: 18px; color: #7B3306; }
+.cancel-policy-desc { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #973C00; }
+
+/* Whats Included Card */
+.included-card {
+  background: #EFF6FF;
+  border: 1.56px solid #BEDBFF;
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.included-card-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; line-height: 22px; color: #0B1956; margin-bottom: 14px; }
+.included-list { display: flex; flex-direction: column; gap: 11px; }
+.included-item { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.included-item-text { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #364153; }
+
+/* Need Help Card */
+.help-list { display: flex; flex-direction: column; gap: 14px; padding-bottom: 22px; }
+.help-link-item { display: flex; flex-direction: row; align-items: center; padding: 0 0 0 12px; gap: 12px; width: 100%; height: 62px; background: #F9FAFB; border-radius: 10px; transition: background 0.2s, transform 0.15s; }
+.help-link-item:hover { background: #ECF0F9 !important; transform: translateX(3px); }
+.help-link-icon { width: 40px; height: 40px; background: #0B1956; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.help-link-text { display: flex; flex-direction: column; }
+.help-link-label { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 11px; line-height: 18px; color: #0B1956; }
+.help-link-sub { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 11px; line-height: 18px; color: #4A5565; }
+
+/* ── PAYMENT METHOD TABS ── */
+.pm-section-label { font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:#0B1956; margin-bottom:10px; }
+.pm-tabs { display:flex; gap:10px; margin-bottom:20px; }
+.pm-tab { flex:1; height:46px; border:1.5px solid #E5E7EB; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; font-family:'Inter',sans-serif; font-weight:600; font-size:13px; color:#6A7282; transition:all 0.2s; }
+.pm-tab:hover { border-color:#0B1956; color:#0B1956; background:#F5F7FF; }
+.pm-tab.active { border-color:#0B1956; background:#ECF0F9; color:#0B1956; box-shadow:0 0 0 3px rgba(11,25,86,0.1); }
+
+/* ── PAYMENT FORMS ── */
+.pm-form { display:none; flex-direction:column; gap:14px; margin-bottom:22px; animation:slideIn 0.22s ease; }
+.pm-form.visible { display:flex; }
+@keyframes slideIn { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+.form-row-2 { display:flex; gap:12px; }
+.form-group { display:flex; flex-direction:column; gap:6px; flex:1; }
+.form-lbl { font-family:'Inter',sans-serif; font-size:12px; font-weight:500; color:#6A7282; }
+.form-inp { height:46px; border:1.5px solid #E5E7EB; border-radius:10px; padding:0 14px; font-family:'Inter',sans-serif; font-size:14px; color:#0B1956; outline:none; background:#fff; transition:border-color 0.2s, box-shadow 0.2s; }
+.form-inp:focus { border-color:#0B1956; box-shadow:0 0 0 3px rgba(11,25,86,0.08); }
+.form-inp.valid { border-color:#22C55E; }
+.form-inp.error { border-color:#E53E3E; box-shadow:0 0 0 3px rgba(229,62,62,0.08); }
+.form-err { font-family:'Inter',sans-serif; font-size:11px; color:#E53E3E; display:none; margin-top:2px; }
+.form-err.show { display:block; }
+.card-brands { display:flex; gap:5px; }
+.card-brand-pill { height:22px; border:1px solid #E5E7EB; border-radius:4px; padding:2px 7px; font-family:'Inter',sans-serif; font-size:10px; font-weight:700; display:flex; align-items:center; background:#fff; }
+
+/* ── PAY BUTTON STATES ── */
+.pay-btn-spinner { position:absolute; width:22px; height:22px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+.pay-btn.loading .pay-btn-spinner { display:block; }
+.pay-btn.loading .pay-btn-inner { opacity:0; }
+.pay-btn-inner { display:flex; align-items:center; gap:10px; }
+@keyframes spin { to{transform:rotate(360deg);} }
+@keyframes pulse-ring { 0%{box-shadow:0 0 0 0 rgba(11,25,86,0.35);} 70%{box-shadow:0 0 0 10px rgba(11,25,86,0);} 100%{box-shadow:0 0 0 0 rgba(11,25,86,0);} }
+.pay-btn.pulse { animation:pulse-ring 1.8s ease infinite; }
+
+/* ── SUCCESS STATE ── */
+.payment-success { display:none; flex-direction:column; align-items:center; gap:18px; padding:36px 20px; text-align:center; }
+.payment-success.visible { display:flex; }
+.success-check { width:80px; height:80px; background:#ECFDF5; border-radius:50%; display:flex; align-items:center; justify-content:center; animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
+.success-h { font-family:'Inter',sans-serif; font-weight:700; font-size:19px; color:#0B1956; }
+.success-p { font-family:'Inter',sans-serif; font-size:13px; color:#4A5565; max-width:380px; line-height:1.6; }
+.success-meta { width:100%; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:14px; padding:18px 20px; display:flex; flex-direction:column; gap:10px; text-align:left; }
+.success-meta-row { display:flex; justify-content:space-between; align-items:center; }
+.sml { font-family:'Inter',sans-serif; font-size:13px; color:#6A7282; }
+.smv { font-family:'Inter',sans-serif; font-weight:600; font-size:13px; color:#0B1956; }
+.success-ref { font-family:'Inter',sans-serif; font-size:12px; color:#9CA3AF; }
+.success-actions { display:flex; gap:10px; width:100%; }
+.s-btn-dl {
+  flex:1;
+  height:48px;
+  background:#fff;
+  color:#0B1956;
+  border:1.5px solid #D1D9F0;
+  border-radius:12px;
+  font-family:'Inter',sans-serif;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  transition:background 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+.s-btn-dl:hover { background:#ECF0F9; }
+.s-btn-view {
+  flex:1;
+  height:48px;
+  background:#0B1956;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-family:'Inter',sans-serif;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  transition:background 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+.s-btn-view:hover { background:#1a2d6e; }
+
+.paid-badge { display:inline-flex; align-items:center; gap:4px; background:#ECFDF5; border-radius:999px; padding:2px 10px; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; color:#15803d; margin-top:4px; }
+.modal-summary-box { background:#ECF0F9; border-radius:10px; padding:14px 16px; margin-bottom:20px; }
+.modal-row { display:flex; justify-content:space-between; margin-bottom:6px; }
+.modal-row:last-child { margin-bottom:0; }
+.ml { font-size:12px; color:#595B5A; font-weight:500; }
+.mv { font-size:13px; color:#0B1956; font-weight:700; }
+
+/* ── CARD FADE IN ── */
+.card, .estimate-banner, .sidebar-card, .cancel-card, .included-card {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.card--visible, .estimate-banner--visible, .sidebar-card--visible, .cancel-card--visible, .included-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── TOAST ── */
+#toastContainer { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.oc-toast { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: 600; font-size: 13px; color: #fff; background: #0B1956; box-shadow: 0 8px 24px rgba(11,25,86,0.25); opacity: 0; transform: translateY(12px) scale(0.96); transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; white-space: nowrap; }
+.oc-toast--show { opacity: 1; transform: translateY(0) scale(1); }
+.oc-toast--success { background: #15803d; }
+.oc-toast--error { background: #b91c1c; }
+
+/* ── MODAL SYSTEM ── */
+.oc-modal { position: fixed; inset: 0; background: rgba(11,25,86,0.52); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease; }
+.oc-modal--open { opacity: 1; visibility: visible; }
+.oc-modal-box { background: #fff; border-radius: 20px; padding: 32px; width: 90%; max-width: 460px; position: relative; box-shadow: 0 24px 64px rgba(11,25,86,0.22); transform: scale(0.92) translateY(16px); transition: transform 0.25s ease; }
+.oc-modal--open .oc-modal-box { transform: scale(1) translateY(0); }
+.oc-modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #ECF0F9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #0B1956; transition: background 0.2s; }
+.oc-modal-close:hover { background: #D1D9F0; }
+.oc-modal-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.oc-modal-title { font-weight: 700; font-size: 18px; color: #0B1956; margin-bottom: 8px; }
+.oc-modal-body { font-weight: 400; font-size: 13px; color: #595B5A; line-height: 20px; margin-bottom: 24px; }
+.oc-modal-btns { display: flex; gap: 10px; }
+.oc-btn-primary { flex: 1; height: 44px; background: #0B1956; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+.oc-btn-primary:hover { background: #1a2d6e; }
+.oc-btn-secondary { flex: 1; height: 44px; background: #fff; color: #0B1956; border: 1.5px solid #D1D9F0; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+.oc-btn-secondary:hover { background: #ECF0F9; }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel { position: absolute; top: calc(100% + 10px); right: 0; width: 320px; background: #fff; border-radius: 16px; box-shadow: 0 16px 48px rgba(11,25,86,0.18); z-index: 500; overflow: hidden; display: none; border: 1px solid #E5E7EB; }
+.notif-panel--open { display: block; animation: fadeDown 0.2s ease; }
+@keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.notif-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 10px; border-bottom: 1px solid #F0F0F0; }
+.notif-panel-title { font-weight: 700; font-size: 14px; color: #0B1956; }
+.notif-mark-all { font-size: 11px; font-weight: 600; color: #0B1956; background: none; border: none; cursor: pointer; opacity: 0.7; }
+.notif-mark-all:hover { opacity: 1; }
+.notif-list { max-height: 280px; overflow-y: auto; }
+.notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #F7F7F7; position: relative; cursor: pointer; transition: background 0.15s; }
+.notif-item:hover { background: #F7F9FF; }
+.notif-item.notif-unread { background: #F5F7FF; }
+.notif-item-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.notif-item-body { flex: 1; }
+.notif-item-text { font-size: 12px; font-weight: 500; color: #303231; line-height: 17px; }
+.notif-item-time { font-size: 11px; color: #9CA3AF; margin-top: 3px; }
+.notif-unread-dot { width: 8px; height: 8px; background: #0B1956; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+
+/* ── SCROLL TO TOP ── */
+#scrollTopBtn { position: fixed; bottom: 32px; right: 32px; width: 42px; height: 42px; background: #0B1956; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 6px 20px rgba(11,25,86,0.28); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; }
+#scrollTopBtn.scrolltop--visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+#scrollTopBtn:hover { background: #1a2d6e; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .menu-toggle { display: flex; }
+  .nav-center { display: none; }
+  .search-bar { width: 200px; }
+  .sidebar { transform: translateX(-100%); transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: none; animation: none; }
+  .sidebar.open { transform: translateX(0); box-shadow: 6px 0 32px rgba(0,0,0,.2); }
+  .sidebar-overlay { display: block; }
+  .main-content { margin-left: 0; width: 100%; }
+}
+@media (max-width: 899px) {
+  :root { --nav-height: 64px; }
+  .top-nav { padding: 8px 16px; }
+  .logo-icon { width: 30px; height: 36px; }
+  .logo-icon svg { width: 30px; height: 36px; }
+  .logo-name { font-size: 22px; }
+  .logo-subtitle { font-size: 12px; }
+  .search-bar { width: 40px; height: 40px; border-radius: 50%; padding: 0; justify-content: center; }
+  .search-input { display: none; }
+  .search-icon-btn { width: 40px; height: 40px; }
+  .bell-btn { width: 40px; height: 40px; }
+  .deposit-layout { flex-direction: column; }
+  .deposit-sidebar { width: 100%; }
+  .booking-details-grid { grid-template-columns: 1fr; }
+  .dashboard-layout { padding: 16px 20px 40px; }
+}
+@media (max-width: 600px) {
+  :root { --nav-height: 56px; }
+  .top-nav { padding: 6px 12px; gap: 6px; }
+  .logo-icon { width: 26px; height: 32px; }
+  .logo-icon svg { width: 26px; height: 32px; }
+  .logo-name { font-size: 18px; line-height: 24px; }
+  .logo-subtitle { font-size: 11px; line-height: 16px; }
+  .nav-right { gap: 6px; }
+  .search-bar { width: 34px; height: 34px; border-radius: 50%; padding: 0; justify-content: center; }
+  .search-input { display: none; }
+  .search-icon-btn { width: 34px; height: 34px; }
+  .bell-btn { width: 34px; height: 34px; }
+  .bell-btn svg { width: 20px; height: 20px; }
+  .sidebar { top: var(--nav-height); height: calc(100vh - var(--nav-height)); transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); animation: none; }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-nav { padding: 16px; gap: 8px; }
+  .nav-label { font-size: 15px; }
+  .sidebar-footer { padding: 16px 16px 0; }
+  .logout-btn { width: 100%; height: 48px; margin-bottom: 16px; }
+  .main-content { margin-left: 0; width: 100%; }
+  .dashboard-layout { padding: 12px 12px 32px; gap: 14px; }
+  .deposit-layout { flex-direction: column; }
+  .deposit-sidebar { width: 100%; }
+  .booking-details-grid { grid-template-columns: 1fr; }
+  .pm-tabs { flex-wrap: wrap; }
+  .form-row-2 { flex-direction: column; }
+}
+@media (max-width: 380px) {
+  .logo-subtitle { display: none; }
+}
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toastContainer"></div>
+
+<!-- ── SCROLL TO TOP ── -->
+<button id="scrollTopBtn" title="Back to top" aria-label="Scroll to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- ── LOGOUT MODAL ── -->
+<div class="oc-modal" id="logoutModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#FEF3C7;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M10 5H5v15h5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/><path d="M16 17l4-4.5-4-4.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="12.5" x2="20" y2="12.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="oc-modal-title">Log Out?</div>
+    <div class="oc-modal-body">You'll be signed out of the OneCare Patient Portal. Make sure you've downloaded any reports you need before leaving.</div>
+    <div class="oc-modal-btns">
+      <button class="oc-btn-secondary oc-modal-close">Stay Signed In</button>
+      <button class="oc-btn-primary" id="logoutConfirmBtn" style="background:#b91c1c;">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PAY CONFIRM MODAL ── -->
+<div class="oc-modal" id="payModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#E7F5EC;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/></svg>
+    </div>
+    <div class="oc-modal-title">Confirm Deposit Payment</div>
+    <div class="oc-modal-body">Please review your payment details before confirming.</div>
+    <div class="modal-summary-box">
+      <div class="modal-row"><span class="ml">Deposit Amount</span><span class="mv">$620.00</span></div>
+      <div class="modal-row"><span class="ml">Procedure</span><span class="mv">Knee Replacement</span></div>
+      <div class="modal-row"><span class="ml">Hospital</span><span class="mv">Apollo Hospital, Mumbai</span></div>
+      <div class="modal-row"><span class="ml">Surgery Date</span><span class="mv">April 15, 2026</span></div>
+      <div class="modal-row" id="modalMethodRow" style="padding-top:8px;margin-top:2px;border-top:1px solid #D1D9F0;"><span class="ml">Payment Method</span><span class="mv" id="modalMethodVal">Card</span></div>
+      <div class="modal-row" style="padding-top:4px;"><span class="ml">Remaining Balance</span><span class="mv">$5,580 (due Apr 8)</span></div>
+    </div>
+    <div class="oc-modal-btns">
+      <button class="oc-btn-secondary oc-modal-close">Review Again</button>
+      <button class="oc-btn-primary" id="payConfirmBtn">Confirm &amp; Pay →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIDEBAR OVERLAY ── -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ── TOP NAVIGATION ── -->
+<header class="top-nav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center">
+    <span class="welcome-text">Welcome Michael!</span>
+  </div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" type="text" id="searchInput" placeholder="Search" autocomplete="off" />
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="bell-btn" id="notifBtn">
+      <div class="notif-dot"></div>
+     <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </div>
+    <div class="nav-item"></div>
+    <a href="arrival_trial.html" class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <span class="nav-label">My Journey</span>
+    </a>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="main-content">
+  <div class="dashboard-layout">
+
+    <!-- PAGE TITLE -->
+    <div class="page-title-area">
+      <div class="page-back-row">
+        <div class="back-arrow" id="backArrow">
+          <svg width="6" height="12" viewBox="0 0 9 18" fill="none"><path d="M8 1L1 9L8 17" stroke="#0B1956" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="page-title">Deposit Payment</div>
+      </div>
+      <div class="page-subtitle">Confirm your booking by paying deposit amount</div>
+    </div>
+
+    <!-- TWO-COLUMN LAYOUT -->
+    <div class="deposit-layout">
+
+      <!-- LEFT: MAIN COLUMN -->
+      <div class="deposit-main">
+
+        <!-- REVIEW YOUR BOOKING CARD -->
+        <div class="card review-card">
+          <div class="review-card-title">Review Your Booking</div>
+          <div class="booking-details-grid">
+            <!-- Procedure -->
+            <div class="booking-detail-item">
+              <div class="booking-detail-icon">
+                <svg width="18" height="18" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_6039_10799)">
+                    <path d="M18.7632 10.2322H16.648C16.2752 10.2314 15.9125 10.3527 15.6152 10.5776C15.318 10.8025 15.1025 11.1185 15.0019 11.4774L12.9976 18.6077C12.9846 18.652 12.9577 18.6909 12.9208 18.7186C12.8839 18.7463 12.839 18.7612 12.7929 18.7612C12.7467 18.7612 12.7018 18.7463 12.6649 18.7186C12.628 18.6909 12.6011 18.652 12.5882 18.6077L7.88012 1.85665C7.8672 1.81236 7.84026 1.77345 7.80336 1.74577C7.76645 1.71809 7.72156 1.70313 7.67542 1.70312C7.62928 1.70313 7.58439 1.71809 7.54748 1.74577C7.51058 1.77345 7.48364 1.81236 7.47072 1.85665L5.46639 8.98694C5.36615 9.34444 5.152 9.65947 4.85645 9.88421C4.5609 10.1089 4.2001 10.2311 3.82881 10.2322H1.70508" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+                  <defs><clipPath id="clip0_6039_10799"><rect width="20.4697" height="20.4697" fill="white"/></clipPath></defs>
+                </svg>
+              </div>
+              <div class="booking-detail-text">
+                <div class="booking-detail-label">Procedure</div>
+                <div class="booking-detail-value">Knee Replacement Surgery</div>
+                <div class="booking-detail-sub">with Dr. Anil Kumar</div>
+              </div>
+            </div>
+            <!-- Hospital -->
+            <div class="booking-detail-item">
+              <div class="booking-detail-icon">
+                <svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_6039_10810)">
+                    <path d="M5.11719 18.7612V3.40894C5.11719 2.95653 5.29691 2.52265 5.61681 2.20275C5.93671 1.88284 6.37059 1.70313 6.823 1.70312H13.6462C14.0987 1.70313 14.5325 1.88284 14.8524 2.20275C15.1723 2.52265 15.3521 2.95653 15.3521 3.40894V18.7612H5.11719Z" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5.1167 10.2422H3.41089C2.95848 10.2422 2.5246 10.4219 2.2047 10.7418C1.8848 11.0617 1.70508 11.4956 1.70508 11.948V17.0654C1.70508 17.5178 1.8848 17.9517 2.2047 18.2716C2.5246 18.5915 2.95848 18.7712 3.41089 18.7712H5.1167" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15.3516 7.67969H17.0574C17.5098 7.67969 17.9437 7.85941 18.2636 8.17931C18.5835 8.49921 18.7632 8.93309 18.7632 9.3855V17.0617C18.7632 17.5141 18.5835 17.9479 18.2636 18.2678C17.9437 18.5877 17.5098 18.7675 17.0574 18.7675H15.3516" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.52734 5.11719H11.939" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.52734 8.52344H11.939" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.52734 11.9453H11.939" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.52734 15.3516H11.939" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+                  <defs><clipPath id="clip0_6039_10810"><rect width="20.4697" height="20.4697" fill="white"/></clipPath></defs>
+                </svg>
+              </div>
+              <div class="booking-detail-text">
+                <div class="booking-detail-label">Hospital</div>
+                <div class="booking-detail-value">Apollo Hospital</div>
+                <div class="booking-detail-sub">Mumbai, India</div>
+              </div>
+            </div>
+            <!-- Surgery Date -->
+            <div class="booking-detail-item">
+              <div class="booking-detail-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.7"/><path d="M3 10h18" stroke="#0B1956" stroke-width="1.7"/><path d="M8 2v4M16 2v4" stroke="#0B1956" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </div>
+              <div class="booking-detail-text">
+                <div class="booking-detail-label">Surgery Date</div>
+                <div class="booking-detail-value">April 15, 2026</div>
+              </div>
+            </div>
+            <!-- Accommodation -->
+            <div class="booking-detail-item">
+              <div class="booking-detail-icon">
+                <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_6039_10839)">
+                    <path d="M1.70508 3.41406V17.0606" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1.70508 6.82812H17.0574C17.5098 6.82812 17.9437 7.00784 18.2636 7.32775C18.5835 7.64765 18.7632 8.08153 18.7632 8.53394V17.063" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1.70508 14.5078H18.7632" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5.11719 6.82812V14.5043" stroke="#0B1956" stroke-width="1.70581" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+                  <defs><clipPath id="clip0_6039_10839"><rect width="20.4697" height="20.4697" fill="white"/></clipPath></defs>
+                </svg>
+              </div>
+              <div class="booking-detail-text">
+                <div class="booking-detail-label">Accommodation</div>
+                <div class="booking-detail-value">Deluxe Private Room</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COST BREAKDOWN -->
+          <div class="cost-breakdown-section">
+            <div class="cost-breakdown-title">Cost Breakdown</div>
+            <div class="cost-line">
+              <span class="cost-line-label">Surgery Fee</span>
+              <span class="cost-line-value">$4,800</span>
+            </div>
+            <div class="cost-line">
+              <span class="cost-line-label">Hospital Stay (5 nights)</span>
+              <span class="cost-line-value">$1,400</span>
+            </div>
+            <div class="cost-line">
+              <span class="cost-line-label">Hospital Services</span>
+              <div class="cost-badge"><span>Included</span></div>
+            </div>
+            <div class="cost-line">
+              <span class="cost-line-label">All Meals &amp; Dietary Plan</span>
+              <div class="cost-badge"><span>Included</span></div>
+            </div>
+            <div class="cost-total-row">
+              <span class="cost-total-label">Total Package Cost</span>
+              <span class="cost-total-value">$6,200</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESTIMATE ACCEPTED BANNER -->
+        <div class="estimate-banner" id="estimateBanner">
+          <div class="estimate-icon-circle">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2.2"/></svg>
+          </div>
+          <div class="estimate-text-group">
+            <div class="estimate-title">Estimate Accepted</div>
+            <div class="estimate-subtitle">Please proceed with deposit payment to confirm your booking</div>
+          </div>
+        </div>
+
+        <!-- DEPOSIT PAYMENT CARD -->
+        <div class="card deposit-card" id="depositCard">
+
+          <!-- FORM VIEW -->
+          <div id="depositFormView">
+            <div class="deposit-card-section-label">Deposit Payment Required</div>
+            <div class="deposit-card-sub">Pay deposit amount to confirm your booking</div>
+
+            <div class="deposit-amount-box" id="amountBox">
+              <div class="deposit-amount-left">
+                <div class="deposit-amount-title">Deposit Amount</div>
+                <div class="deposit-amount-desc">This amount will be adjusted in your total package cost</div>
+              </div>
+              <div class="deposit-amount-value">$620</div>
+            </div>
+
+            <!-- PAYMENT METHOD TABS -->
+            <div class="pm-section-label">Select Payment Method</div>
+            <div class="pm-tabs" id="pmTabs">
+              <button class="pm-tab active" data-method="card">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/></svg>
+                Card
+              </button>
+              <button class="pm-tab" data-method="upi">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                UPI
+              </button>
+              <button class="pm-tab" data-method="wallet">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="13" r="1" fill="currentColor"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/></svg>
+                Wallet
+              </button>
+            </div>
+
+            <!-- CARD FORM -->
+            <div class="pm-form visible" id="formCard">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+                <span style="font-family:Inter;font-size:12px;font-weight:500;color:#6A7282;">Card Details</span>
+                <div class="card-brands"><div class="card-brand-pill" style="color:#1A56DB;">VISA</div><div class="card-brand-pill" style="color:#E53E3E;">MC</div><div class="card-brand-pill" style="color:#2563EB;">AMEX</div></div>
+              </div>
+              <div class="form-group">
+                <label class="form-lbl">Card Number</label>
+                <input class="form-inp valid" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" value="4111 1111 1111 1111"/>
+                <span class="form-err" id="cardNumberErr">Please enter a valid 16-digit card number.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-lbl">Cardholder Name</label>
+                <input class="form-inp valid" id="cardName" placeholder="Michael" value="Michael"/>
+                <span class="form-err" id="cardNameErr">Please enter the cardholder name.</span>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-lbl">Expiry Date</label>
+                  <input class="form-inp valid" id="cardExpiry" placeholder="MM / YY" maxlength="7" inputmode="numeric" value="12 / 27"/>
+                  <span class="form-err" id="cardExpiryErr">Invalid expiry date.</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-lbl">CVV</label>
+                  <input class="form-inp valid" id="cardCvv" placeholder="•••" maxlength="4" type="password" value="123"/>
+                  <span class="form-err" id="cardCvvErr">Invalid CVV.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- UPI FORM -->
+            <div class="pm-form" id="formUpi">
+              <div class="form-group">
+                <label class="form-lbl">UPI ID / VPA</label>
+                <input class="form-inp" id="upiId" placeholder="yourname@upi"/>
+                <span class="form-err" id="upiIdErr">Please enter a valid UPI ID (e.g. name@upi).</span>
+              </div>
+            </div>
+
+            <!-- WALLET FORM -->
+            <div class="pm-form" id="formWallet">
+              <div class="form-group">
+                <label class="form-lbl">Select Wallet</label>
+                <select class="form-inp" id="walletSelect" style="cursor:pointer;">
+                  <option value="">— Choose Wallet —</option>
+                  <option>Paytm</option><option>PhonePe</option><option>Google Pay</option><option>Amazon Pay</option>
+                </select>
+                <span class="form-err" id="walletErr">Please select a wallet.</span>
+              </div>
+            </div>
+
+            <button class="pay-btn pulse" id="payDepositBtn">
+              <div class="pay-btn-spinner"></div>
+              <div class="pay-btn-inner">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#FFFFFF" stroke-width="2.05"/><path d="M2 10h20" stroke="#FFFFFF" stroke-width="2.05"/></svg>
+                <span id="payBtnTxt">Pay Deposit &amp; Confirm Booking</span>
+              </div>
+            </button>
+            <div class="stripe-note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="display:inline-block;margin-right:4px;vertical-align:middle;"><path d="M12 2L3 7v6c0 5.25 3.75 10.15 9 11.35C17.25 23.15 21 18.25 21 13V7L12 2z" stroke="#6A7282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Secure payment powered by Stripe &bull; Your payment is protected
+            </div>
+          </div>
+
+          <!-- SUCCESS VIEW -->
+          <div class="payment-success" id="paymentSuccess">
+            <div class="success-check">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/></svg>
+            </div>
+            <div class="success-h">Payment Successful! 🎉</div>
+            <div class="success-p">Your deposit of <strong>$620</strong> has been received. Your Knee Replacement Surgery at Apollo Hospital is now confirmed for April 15, 2026.</div>
+            <div class="success-meta">
+              <div class="success-meta-row"><span class="sml">Transaction ID</span><span class="smv" id="txnId">—</span></div>
+              <div class="success-meta-row"><span class="sml">Amount Paid</span><span class="smv">$620.00</span></div>
+              <div class="success-meta-row"><span class="sml">Payment Method</span><span class="smv" id="successMethod">—</span></div>
+              <div class="success-meta-row"><span class="sml">Date &amp; Time</span><span class="smv" id="payDateTime">—</span></div>
+              <div class="success-meta-row" style="margin-top:6px;padding-top:10px;border-top:1px solid #E5E7EB;"><span class="sml">Remaining Balance</span><span class="smv">$5,580 (due Apr 8, 2026)</span></div>
+            </div>
+            <div class="success-ref">Reference: <strong id="refCode">—</strong></div>
+            <div class="success-actions">
+              <button class="s-btn-dl" id="dlReceiptBtn">&#8595; Download Receipt</button>
+              <a href="arrival_trial.html" class="s-btn-view" id="viewBookingBtn">Go to My Journey</a>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- end deposit-main -->
+
+      <!-- RIGHT: SIDEBAR COLUMN -->
+      <div class="deposit-sidebar">
+
+        <!-- PAYMENT TIMELINE -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <div class="sidebar-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.73"/><path d="M12 7v5l3 3" stroke="#0B1956" stroke-width="1.73" stroke-linecap="round"/></svg>
+            </div>
+            <div class="sidebar-card-title">Payment Timeline</div>
+          </div>
+          <div style="padding-bottom:20px;">
+            <div class="timeline-item-row">
+              <div class="timeline-dot-col">
+                <div class="timeline-dot-filled">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#FFFFFF" stroke-width="2.05"/><path d="M2 10h20" stroke="#FFFFFF" stroke-width="2.05"/></svg>
+                </div>
+                <div class="timeline-connector"></div>
+              </div>
+              <div class="timeline-text">
+                <div class="timeline-label">Deposit - $620</div>
+                <div class="timeline-sub">Due today (10% of total)</div>
+                <div id="paidBadge"></div>
+              </div>
+            </div>
+            <div class="timeline-item-row" style="margin-bottom:0;">
+              <div class="timeline-dot-col">
+                <div class="timeline-dot-outline">
+                  <div class="timeline-dot-inner"></div>
+                </div>
+              </div>
+              <div class="timeline-text">
+                <div class="timeline-label">Remaining - $5,580</div>
+                <div class="timeline-sub">Due 7 days before surgery</div>
+                <div class="timeline-date">(April 8, 2026)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CANCELLATION POLICY -->
+        <div class="cancel-card">
+          <div class="cancel-card-header">
+            <svg width="17" height="17" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.3207 11.2607C17.3207 15.5906 14.2897 17.7556 10.6872 19.0113C10.4986 19.0752 10.2937 19.0722 10.107 19.0026C6.49581 17.7556 3.46484 15.5906 3.46484 11.2607V5.19873C3.46484 4.96905 3.55608 4.74879 3.71849 4.58638C3.88089 4.42398 4.10116 4.33274 4.33084 4.33274C6.06282 4.33274 8.2278 3.29355 9.73462 1.97724C9.91809 1.8205 10.1515 1.73438 10.3928 1.73438C10.6341 1.73438 10.8675 1.8205 11.0509 1.97724C12.5664 3.30221 14.7227 4.33274 16.4547 4.33274C16.6844 4.33274 16.9047 4.42398 17.0671 4.58638C17.2295 4.74879 17.3207 4.96905 17.3207 5.19873V11.2607Z" stroke="#7B3306" stroke-width="1.73198" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="cancel-card-title">Cancellation Policy</div>
+          </div>
+          <div class="cancel-policy-list">
+            <div class="cancel-policy-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:2px;"><path d="M9 12l2 2 4-4" stroke="#7B3306" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#7B3306" stroke-width="1.7"/></svg>
+              <div class="cancel-policy-text">
+                <div class="cancel-policy-label">100% Refund</div>
+                <div class="cancel-policy-desc">Cancel 30+ days before surgery</div>
+              </div>
+            </div>
+            <div class="cancel-policy-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:2px;"><path d="M9 12l2 2 4-4" stroke="#7B3306" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#7B3306" stroke-width="1.7"/></svg>
+              <div class="cancel-policy-text">
+                <div class="cancel-policy-label">50% Refund</div>
+                <div class="cancel-policy-desc">Cancel 14-29 days before</div>
+              </div>
+            </div>
+            <div class="cancel-policy-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:2px;"><path d="M9 12l2 2 4-4" stroke="#7B3306" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#7B3306" stroke-width="1.7"/></svg>
+              <div class="cancel-policy-text">
+                <div class="cancel-policy-label">No Refund</div>
+                <div class="cancel-policy-desc">Cancel less than 14 days</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHAT'S INCLUDED -->
+        <div class="included-card">
+          <div class="included-card-title">What's Included</div>
+          <div class="included-list">
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">Complete surgery with expert surgeon</span>
+            </div>
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">5 nights in deluxe private room</span>
+            </div>
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">All meals (breakfast, lunch, dinner)</span>
+            </div>
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">Post-surgery consultations</span>
+            </div>
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">Medications during hospital stay</span>
+            </div>
+            <div class="included-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.7"/></svg>
+              <span class="included-item-text">24/7 nursing care</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEED HELP -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <div class="sidebar-card-icon">
+              <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_6039_11014)">
+                  <path d="M10.3904 19.0464C15.1731 19.0464 19.0503 15.1692 19.0503 10.3865C19.0503 5.60374 15.1731 1.72656 10.3904 1.72656C5.60764 1.72656 1.73047 5.60374 1.73047 10.3865C1.73047 15.1692 5.60764 19.0464 10.3904 19.0464Z" stroke="#0B1956" stroke-width="1.73198" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M7.87109 7.79055C8.07469 7.21178 8.47655 6.72374 9.0055 6.41287C9.53445 6.102 10.1564 5.98836 10.7611 6.09209C11.3658 6.19581 11.9142 6.5102 12.3094 6.97957C12.7045 7.44894 12.9207 8.043 12.9198 8.65654C12.9198 10.3885 10.3218 11.2545 10.3218 11.2545" stroke="#0B1956" stroke-width="1.73198" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10.3906 14.7188H10.399" stroke="#0B1956" stroke-width="1.73198" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs><clipPath id="clip0_6039_11014"><rect width="20.7838" height="20.7838" fill="white"/></clipPath></defs>
+              </svg>
+            </div>
+            <div class="sidebar-card-title">Need Help?</div>
+          </div>
+          <div class="help-list">
+            <div class="help-link-item">
+              <div class="help-link-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2C7.8 21 3 16.2 3 6a2 2 0 0 1 2-2z" stroke="#FFFFFF" stroke-width="1.56" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="help-link-text">
+                <div class="help-link-label">Call Us</div>
+                <div class="help-link-sub">+1 (234) 567-890</div>
+              </div>
+            </div>
+            <div class="help-link-item">
+              <div class="help-link-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#FFFFFF" stroke-width="1.56"/><path d="M3 7l9 7 9-7" stroke="#FFFFFF" stroke-width="1.56"/></svg>
+              </div>
+              <div class="help-link-text">
+                <div class="help-link-label">Email Support</div>
+                <div class="help-link-sub">support@onecare.com</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end deposit-sidebar -->
+    </div><!-- end deposit-layout -->
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `oc-toast oc-toast--${type}`;
+  const icons = { success:'✓', error:'✕', info:'ℹ', warning:'⚠' };
+  t.innerHTML = `<span>${icons[type]||'ℹ'}</span>${msg}`;
+  c.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('oc-toast--show')));
+  setTimeout(() => { t.classList.remove('oc-toast--show'); setTimeout(() => t.remove(), 350); }, 3200);
+}
+
+// ═══════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('oc-modal--open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('oc-modal--open'); }
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('oc-modal')) closeModal(e.target.id);
+  if (e.target.classList.contains('oc-modal-close')) closeModal(e.target.closest('.oc-modal').id);
+});
+
+// ═══════════════════════════════════════════════════════
+// HAMBURGER / SIDEBAR
+// ═══════════════════════════════════════════════════════
+(function(){
+  var toggle  = document.getElementById('menuToggle');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active');    toggle.classList.add('open');    document.body.style.overflow = 'hidden'; }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow = ''; }
+  toggle.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+  overlay.addEventListener('click', closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){
+    item.addEventListener('click', function(){ if(window.innerWidth <= 1100) closeSidebar(); });
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+// LOGOUT
+// ═══════════════════════════════════════════════════════
+document.getElementById('logoutBtn').addEventListener('click', () => openModal('logoutModal'));
+document.getElementById('logoutConfirmBtn').addEventListener('click', () => { closeModal('logoutModal'); });
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+let notifOpen = false;
+const notifBtn = document.getElementById('notifBtn');
+const notifDot = notifBtn.querySelector('.notif-dot');
+const notifPanel = document.createElement('div');
+notifPanel.className = 'notif-panel';
+notifPanel.innerHTML = `
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-all" id="markAllRead">Mark all read</button>
+  </div>
+  <div class="notif-list">
+    <div class="notif-item notif-unread">
+      <div class="notif-item-icon" style="background:#ECF0F9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Your estimate has been accepted. Pay deposit to confirm.</div><div class="notif-item-time">Just now</div></div>
+      <div class="notif-unread-dot"></div>
+    </div>
+    <div class="notif-item notif-unread">
+      <div class="notif-item-icon" style="background:#FEF3C7;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19h20L12 2z" stroke="#F59E0B" stroke-width="2"/><path d="M12 10v4M12 17h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Remaining balance of $5,580 due April 8, 2026.</div><div class="notif-item-time">Today</div></div>
+      <div class="notif-unread-dot"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-item-icon" style="background:#ECF0F9;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="2"/><path d="M3 10h18" stroke="#0B1956" stroke-width="2"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Surgery scheduled: April 15, 2026 at Apollo Hospital.</div><div class="notif-item-time">Yesterday</div></div>
+    </div>
+  </div>`;
+notifBtn.style.position = 'relative';
+notifBtn.appendChild(notifPanel);
+notifBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  notifOpen = !notifOpen;
+  notifPanel.classList.toggle('notif-panel--open', notifOpen);
+});
+document.addEventListener('click', () => { notifOpen = false; notifPanel.classList.remove('notif-panel--open'); });
+notifPanel.addEventListener('click', e => e.stopPropagation());
+document.getElementById('markAllRead').addEventListener('click', e => {
+  e.stopPropagation();
+  notifPanel.querySelectorAll('.notif-unread').forEach(n => n.classList.remove('notif-unread'));
+  notifPanel.querySelectorAll('.notif-unread-dot').forEach(d => d.remove());
+  notifDot.style.opacity = '0';
+});
+
+// ═══════════════════════════════════════════════════════
+// NAV ITEMS
+// ═══════════════════════════════════════════════════════
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+// BACK ARROW
+// ═══════════════════════════════════════════════════════
+document.getElementById('backArrow').addEventListener('click', () => {
+  window.location.href = 'package-selection.html';
+});
+
+// ═══════════════════════════════════════════════════════
+// PAYMENT METHOD TABS
+// ═══════════════════════════════════════════════════════
+let currentMethod = 'card';
+document.querySelectorAll('.pm-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.pm-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    currentMethod = this.dataset.method;
+    document.getElementById('formCard').classList.toggle('visible', currentMethod === 'card');
+    document.getElementById('formUpi').classList.toggle('visible', currentMethod === 'upi');
+    document.getElementById('formWallet').classList.toggle('visible', currentMethod === 'wallet');
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+// CARD INPUT FORMATTING & LIVE VALIDATION
+// ═══════════════════════════════════════════════════════
+function setValidity(el, valid, errId) {
+  el.classList.toggle('valid', valid);
+  el.classList.toggle('error', !valid && el.value.length > 0);
+  const err = document.getElementById(errId);
+  if (err) err.classList.toggle('show', !valid && el.value.length > 0);
+}
+document.getElementById('cardNumber').addEventListener('input', function() {
+  let v = this.value.replace(/\D/g, '').slice(0, 16);
+  this.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+  setValidity(this, v.length === 16, 'cardNumberErr');
+});
+document.getElementById('cardName').addEventListener('input', function() {
+  setValidity(this, this.value.trim().length >= 2, 'cardNameErr');
+});
+document.getElementById('cardExpiry').addEventListener('input', function() {
+  let v = this.value.replace(/\D/g, '').slice(0, 4);
+  if (v.length >= 3) v = v.slice(0, 2) + ' / ' + v.slice(2);
+  this.value = v;
+  const parts = v.replace(/\s/g, '').split('/');
+  const valid = parts.length === 2 && parseInt(parts[0]) >= 1 && parseInt(parts[0]) <= 12 && parts[1].length === 2;
+  setValidity(this, valid, 'cardExpiryErr');
+});
+document.getElementById('cardCvv').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g, '').slice(0, 4);
+  setValidity(this, this.value.length >= 3, 'cardCvvErr');
+});
+document.getElementById('upiId').addEventListener('input', function() {
+  setValidity(this, /^[\w.\-+]+@[\w]+$/.test(this.value.trim()), 'upiIdErr');
+});
+
+// ═══════════════════════════════════════════════════════
+// FORM VALIDATION
+// ═══════════════════════════════════════════════════════
+function validateForm() {
+  if (currentMethod === 'card') {
+    const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+    const name = document.getElementById('cardName').value.trim();
+    const exp = document.getElementById('cardExpiry').value.replace(/\s/g, '');
+    const cvv = document.getElementById('cardCvv').value;
+    if (num.length !== 16) { document.getElementById('cardNumber').classList.add('error'); return false; }
+    if (name.length < 2) { document.getElementById('cardName').classList.add('error'); return false; }
+    if (exp.length < 4) { document.getElementById('cardExpiry').classList.add('error'); return false; }
+    if (cvv.length < 3) { document.getElementById('cardCvv').classList.add('error'); return false; }
+  }
+  if (currentMethod === 'upi') {
+    const u = document.getElementById('upiId').value.trim();
+    if (!/^[\w.\-+]+@[\w]+$/.test(u)) return false;
+  }
+  if (currentMethod === 'wallet') {
+    if (!document.getElementById('walletSelect').value) { document.getElementById('walletSelect').classList.add('error'); return false; }
+  }
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+// PAY BUTTON → OPENS CONFIRM MODAL
+// ═══════════════════════════════════════════════════════
+document.getElementById('payDepositBtn').addEventListener('click', () => {
+  if (!validateForm()) return;
+  const methodLabels = {
+    card: 'Card ••••' + document.getElementById('cardNumber').value.replace(/\s/g,'').slice(-4),
+    upi: 'UPI — ' + document.getElementById('upiId').value,
+    wallet: 'Wallet — ' + document.getElementById('walletSelect').value
+  };
+  document.getElementById('modalMethodVal').textContent = methodLabels[currentMethod] || 'Card';
+  openModal('payModal');
+});
+document.getElementById('payConfirmBtn').addEventListener('click', () => {
+  closeModal('payModal');
+  processPayment();
+});
+
+// ═══════════════════════════════════════════════════════
+// PAYMENT PROCESSING → SUCCESS
+// ═══════════════════════════════════════════════════════
+function processPayment() {
+  const btn = document.getElementById('payDepositBtn');
+  btn.classList.add('loading');
+  btn.classList.remove('pulse');
+  btn.disabled = true;
+  document.getElementById('payBtnTxt').textContent = 'Processing…';
+  setTimeout(showSuccess, 2800);
+}
+
+function showSuccess() {
+  const txnId = 'TXN-OC-' + Math.random().toString(36).slice(2, 10).toUpperCase();
+  const refCode = 'REF-' + Date.now().toString().slice(-8);
+  const now = new Date();
+  const dtStr = now.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+              + ' ' + now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+  const methodStr = {
+    card: 'Credit Card ••••' + document.getElementById('cardNumber').value.replace(/\s/g,'').slice(-4),
+    upi: 'UPI — ' + document.getElementById('upiId').value,
+    wallet: document.getElementById('walletSelect').value + ' Wallet'
+  }[currentMethod] || 'Card';
+  document.getElementById('txnId').textContent = txnId;
+  document.getElementById('refCode').textContent = refCode;
+  document.getElementById('payDateTime').textContent = dtStr;
+  document.getElementById('successMethod').textContent = methodStr;
+  document.getElementById('depositFormView').style.display = 'none';
+  document.getElementById('paymentSuccess').classList.add('visible');
+  const banner = document.getElementById('estimateBanner');
+  if (banner) {
+    banner.querySelector('.estimate-title').textContent = 'Payment Confirmed ✓';
+    banner.querySelector('.estimate-subtitle').textContent = 'Your booking is confirmed. A confirmation email has been sent.';
+  }
+  const pb = document.getElementById('paidBadge');
+  if (pb) pb.innerHTML = '<div class="paid-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg> Paid</div>';
+  fireConfetti();
+}
+
+// ═══════════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════════
+function fireConfetti() {
+  const colors = ['#0B1956','#22C55E','#FEE685','#BEDBFF','#ffffff','#E53E3E','#F59E0B'];
+  for (let i = 0; i < 65; i++) {
+    const el = document.createElement('div');
+    const sz = Math.random() * 9 + 4;
+    el.style.cssText = `position:fixed;top:45%;left:${25 + Math.random()*50}%;width:${sz}px;height:${sz}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'3px'};pointer-events:none;z-index:9999;transition:transform ${.6+Math.random()*.9}s ease-out,opacity .4s ease ${.6+Math.random()*.5}s;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const a = Math.random() * Math.PI * 2;
+      const d = 100 + Math.random() * 230;
+      el.style.transform = `translate(${Math.cos(a)*d}px,${-Math.random()*320-50}px) rotate(${Math.random()*720}deg)`;
+      el.style.opacity = '0';
+    }));
+    setTimeout(() => el.remove(), 1800);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SUCCESS ACTIONS
+// ═══════════════════════════════════════════════════════
+document.getElementById('dlReceiptBtn').addEventListener('click', () => {
+  setTimeout(() => {
+    const txn = document.getElementById('txnId').textContent;
+    const ref = document.getElementById('refCode').textContent;
+    const dt = document.getElementById('payDateTime').textContent;
+    const method = document.getElementById('successMethod').textContent;
+    const content = `OneCare Patient Portal – Deposit Receipt\n${'─'.repeat(40)}\nTransaction ID : ${txn}\nReference      : ${ref}\nDate & Time    : ${dt}\nPayment Method : ${method}\nAmount Paid    : $620.00\nProcedure      : Knee Replacement Surgery\nHospital       : Apollo Hospital, Mumbai\nSurgery Date   : April 15, 2026\nRemaining Bal. : $5,580.00 (due April 8, 2026)\n${'─'.repeat(40)}\nThank you for choosing OneCare.`;
+    const a = document.createElement('a');
+    a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
+    a.download = 'onecare_deposit_receipt.txt';
+    a.click();
+  }, 500);
+});
+
+// ═══════════════════════════════════════════════════════
+// CARD FADE-IN (IntersectionObserver)
+// ═══════════════════════════════════════════════════════
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('card--visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.card, .estimate-banner, .sidebar-card, .cancel-card, .included-card').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 60}ms`;
+  observer.observe(el);
+});
+
+// ═══════════════════════════════════════════════════════
+// SCROLL TO TOP
+// ═══════════════════════════════════════════════════════
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+const mainContent = document.querySelector('.main-content');
+if (mainContent) mainContent.addEventListener('scroll', () => scrollTopBtn.classList.toggle('scrolltop--visible', mainContent.scrollTop > 300));
+window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('scrolltop--visible', window.scrollY > 300));
+scrollTopBtn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' }); });
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>

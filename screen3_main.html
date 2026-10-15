@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare Patient Portal - Hospital Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-500: #0B1956;
+    --blue-100: #B3B8CB;
+    --blue-50: #E7E8EE;
+    --sapphire-50: #ECF0F9;
+    --lavender-100: #F8EFFA;
+    --grey-500: #303231;
+    --grey-50: #EAEBEA;
+    --white: #FFFFFF;
+    --yellow: #FDC700;
+    --green: #00B74A;
+    --lace: #F9F6F1;
+    --shadow-card: 0px 4.247px 6.371px -1.062px rgba(0,0,0,.1), 0px 2.124px 4.247px -2.124px rgba(0,0,0,.1);
+    --shadow-nav: 0px 1.558px 4.675px rgba(0,0,0,.1), 0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);
+    --nav-height: 75px;
+    --sidebar-width: 260px;
+    --radius-card: 14.87px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #ECF0F9;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  @keyframes fadeSlideDown { from{opacity:0;transform:translateY(-16px);} to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeSlideLeft { from{opacity:0;transform:translateX(-24px);} to{opacity:1;transform:translateX(0);} }
+  @keyframes fadeSlideUp   { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ─── TOP NAV ─── */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-height);
+    background: #fff;
+    box-shadow: var(--shadow-nav);
+    display: flex; align-items: center;
+    padding: 0 24px 0 28px;
+    z-index: 100;
+    animation: fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .logo-area { display:flex; align-items:center; gap:8px; flex-shrink:0; cursor:pointer; border-radius:8px; padding:4px; transition:background .18s; }
+  .logo-icon  { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:36px; height:44px; }
+  .logo-text  { display:flex; flex-direction:column; }
+  .logo-name  { font-family:'Satoshi','Open Sans',sans-serif; font-size:24px; line-height:1; letter-spacing:-0.5px; }
+  .logo-name .one  { font-weight:400; color:#0B1956; }
+  .logo-name .care { font-weight:700; color:#0B1956; }
+  .logo-subtitle { font-family:'Open Sans',sans-serif; font-size:14px; font-weight:400; color:#0B1956; line-height:1.4; }
+  .nav-center { flex:1; display:flex; justify-content:flex-start; padding-left:118px; }
+  .welcome-text { font-family:'Open Sans',sans-serif; font-weight:700; font-size:24px; line-height:40px; color:#0B1956; white-space:nowrap; }
+  .nav-right { display:flex; align-items:center; gap:16px; flex-shrink:0; margin-left:auto; }
+  .search-bar { display:flex; align-items:center; width:280px; height:44px; background:#EAEBEA; border-radius:28px; padding:0 16px; gap:8px; }
+  .search-input { flex:1; background:transparent; border:none; outline:none; font-family:'Open Sans',sans-serif; font-weight:600; font-size:14px; color:#49454F; }
+  .search-input::placeholder { color:#49454F; }
+  .bell-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; background:none; border:none; }
+
+  .menu-toggle { display:none; flex-direction:column; justify-content:center; align-items:center; gap:5px; width:40px; height:40px; cursor:pointer; border:none; background:transparent; padding:4px; border-radius:8px; flex-shrink:0; transition:background .18s; margin-right:4px; }
+  .menu-toggle:hover { background:#f0f2f9; }
+  .menu-toggle span { display:block; width:22px; height:2px; background:#0B1956; border-radius:2px; transition:all .28s; }
+  .menu-toggle.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .menu-toggle.open span:nth-child(2) { opacity:0; }
+  .menu-toggle.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+  /* ── SIDEBAR OVERLAY ── */
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:48;opacity:0;transition:opacity .28s;}
+  .sidebar-overlay.visible{display:block;}
+  .sidebar-overlay.open{opacity:1;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{position:fixed;left:0;top:var(--nav-height);width:var(--sidebar-width);height:calc(100vh - var(--nav-height));background:#0B1956;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;z-index:50;animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+  .sidebar-nav{padding:16px 16px 8px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;}
+  .nav-item{display:flex;align-items:center;gap:14px;padding:12px 20px;height:auto;border-radius:10px;cursor:pointer;transition:background .18s;text-decoration:none;}
+  .nav-item.active{background:#fff;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);border-radius:8px;}
+  .nav-item:not(.active):hover{background:rgba(255,255,255,.08);border-radius:8px;}
+  .nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:visible;}
+  .nav-label{font-family:'Open Sans',sans-serif;font-weight:400;font-size:15px;line-height:24px;letter-spacing:.15px;color:#E7E8EE;}
+  .nav-item.active .nav-label{font-weight:700;color:#0B1956;}
+  .nav-label{text-decoration: none;}
+  .sidebar-footer{border-top:.866px solid #E5E7EB;padding:12px 16px;}
+  .user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .user-avatar{width:48px;height:48px;background:#B3B8CB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .user-details{display:flex;flex-direction:column;}
+  .user-name{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:1.2;color:#fff;}
+  .user-id{font-family:'Open Sans',sans-serif;font-weight:400;font-size:13px;line-height:25px;color:#B3B8CB;}
+  .logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:auto;padding:10px 16px;border:1px solid #fff;border-radius:10px;cursor:pointer;margin-bottom:12px;background:transparent;transition:background .18s,box-shadow .18s,transform .1s;font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+  .logout-btn:hover{background:rgba(255,255,255,.1);box-shadow:0 2px 10px rgba(0,0,0,.2);transform:translateY(-1px);}
+  .logout-btn:active{background:rgba(255,255,255,.18);transform:translateY(0);}
+  .logout-label{font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+  /* ─── MAIN ─── */
+  .main {
+    margin-top: var(--nav-height);
+    margin-left: var(--sidebar-width);
+    min-height: calc(100vh - var(--nav-height));
+    background: #ECF0F9;
+    padding-bottom: 120px;
+  }
+  .content-area { padding: 24px 32px 24px; }
+
+  /* ─── BACK BUTTON ─── */
+  .back-btn {
+    display: inline-flex; align-items:center; gap:8px;
+    font-family:'Inter',sans-serif; font-weight:500; font-size:16px; line-height:26px;
+    color:#0B1956; cursor:pointer; border:none; background:none; padding:0; margin-bottom:16px;
+    transition: opacity .18s;
+  }
+  .back-btn:hover { opacity:.7; }
+
+  /* ─── SECTION CARD ─── */
+  .card {
+    background:#fff;
+    border:0.796px solid #F3F4F6;
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius-card);
+    margin-bottom: 20px;
+    padding: 28px 30px;
+    animation: fadeSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  /* ─── HOSPITAL OVERVIEW CARD ─── */
+  .overview-inner {
+    display: flex; gap: 28px; align-items: flex-start;
+  }
+  .hosp-img {
+    width: 280px; min-width: 280px; height: 210px;
+    background: linear-gradient(135deg, #8fa3c8 0%, #b3c3dc 100%);
+    border-radius: 14px;
+    box-shadow: 0px 4px 6px -1px rgba(0,0,0,.1), 0px 2px 4px -2px rgba(0,0,0,.1);
+    overflow: hidden; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hosp-img svg { opacity:.4; }
+  .hosp-img img { display:block; }
+  .hosp-info { flex: 1; min-width: 0; }
+  .hosp-name {
+    font-family:'Open Sans',sans-serif; font-weight:700; font-size:26px; line-height:38px; color:#0B1956;
+    margin-bottom:4px;
+  }
+  .stars-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .star-icons { display:flex; gap:3px; }
+  .rating-num { font-family:'Inter',sans-serif; font-weight:700; font-size:17px; color:#0B1956; }
+  .reviews-text { font-family:'Open Sans',sans-serif; font-weight:400; font-size:16px; color:#303231; }
+  .hosp-desc {
+    font-family:'Open Sans',sans-serif; font-weight:400; font-size:16px; line-height:24px;
+    color:#303231; margin-bottom:16px; max-width:680px;
+  }
+
+  /* BADGES */
+  .badges-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .badge {
+    display:flex; align-items:center; gap:6px;
+    padding:6px 13px; border-radius:10px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; line-height:21px; color:#0B1956;
+  }
+  .badge-blue { background:#ECF0F9; }
+  .badge-lace { background:#F9F6F1; }
+
+  /* STATS ROW */
+  .stats-row {
+    background:#ECF0F9; border-radius:10.6px;
+    display:flex; align-items:stretch;
+    margin-bottom:16px;
+  }
+  .stat-cell {
+    flex:1; padding:14px 16px; text-align:center;
+    border-left:.796px solid #8F95B1;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .stat-cell:first-child { border-left:none; }
+  .stat-icon { color:#0B1956; margin-bottom:2px; }
+  .stat-val { font-family:'Open Sans',sans-serif; font-weight:700; font-size:19px; color:#0B1956; line-height:28px; }
+  .stat-lbl { font-family:'Open Sans',sans-serif; font-weight:400; font-size:14px; color:#303231; text-transform:uppercase; letter-spacing:.5px; }
+
+  /* SPECIALTIES */
+  .specialties-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .spec-label-row { display:flex; align-items:center; gap:6px; }
+  .spec-title { font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:#0B1956; text-transform:uppercase; letter-spacing:.35px; }
+  .spec-chips { display:flex; gap:10px; flex-wrap:wrap; }
+  .spec-chip {
+    background:#F8EFFA; border-radius:10px;
+    padding:8px 18px;
+    font-family:'Inter',sans-serif; font-weight:500; font-size:14px; color:#0B1956;
+  }
+
+  /* TREATMENT COST BOX */
+  .cost-box {
+    background:#0B1956; border-radius:15px;
+    padding:14px 24px; text-align:center;
+    min-width:130px; flex-shrink:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow: 0px 4px 6px -1px rgba(0,0,0,.1);
+    align-self: flex-start;
+    margin-left:auto;
+  }
+  .cost-amount { font-family:'Open Sans',sans-serif; font-weight:700; font-size:26px; color:#fff; line-height:38px; }
+  .cost-lbl    { font-family:'Open Sans',sans-serif; font-weight:700; font-size:14px; color:#fff; text-transform:uppercase; letter-spacing:.3px; opacity:.9; }
+
+  /* ─── SECTION HEADING ─── */
+  .section-head {
+    display:flex; align-items:center; gap:14px; margin-bottom:20px;
+  }
+  .section-icon-wrap {
+    width:42px; height:42px; background:#E7E8EE; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .section-title { font-family:'Open Sans',sans-serif; font-weight:700; font-size:24px; line-height:30px; color:#0B1956; }
+
+  /* ─── TREATMENT COST INCLUDES ─── */
+  .includes-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:6px 40px;
+    margin-bottom:16px;
+  }
+  .include-item { display:flex; align-items:center; gap:10px; }
+  .bullet { width:9px; height:9px; background:#747675; border-radius:50%; flex-shrink:0; }
+  .bullet.dark { background:#747675; }
+  .include-text { font-family:'Open Sans',sans-serif; font-weight:400; font-size:15px; line-height:22px; color:#303231; }
+  .insurance-note {
+    background:#FDF7E6; border-radius:10.6px; padding:14px 16px;
+    font-family:'Open Sans',sans-serif; font-weight:500; font-size:13px; color:#AA7E00; line-height:15px;
+  }
+
+  /* ─── INSURANCE PROVIDERS ─── */
+  .insurance-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+    margin-bottom:10px;
+  }
+  .insure-chip {
+    display:flex; align-items:center; gap:10px;
+    background:#ECF0F9; border-radius:10.55px; padding:14px 16px;
+    height:55px;
+  }
+  .insure-chip-text { font-family:'Open Sans',sans-serif; font-weight:600; font-size:15px; color:#0B1956; }
+  .insure-note {
+    font-family:'Open Sans',sans-serif; font-weight:400; font-size:14px; color:#303231;
+    margin-top:8px;
+  }
+
+  /* ─── HOSPITAL PHOTOS ─── */
+  .photo-main {
+    width:100%; height:420px;
+    background:linear-gradient(135deg,#a4b5cc,#c5d2e1);
+    border-radius:11px; margin-bottom:14px;
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .photo-main-inner { color:rgba(255,255,255,.5); font-size:14px; }
+  .photo-nav {
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:40px; height:40px; background:rgba(10,10,10,.65);
+    border-radius:50%; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .photo-nav.left  { left:12px; }
+  .photo-nav.right { right:12px; }
+  .photo-counter {
+    position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.59); border-radius:999px; padding:6px 14px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:#fff;
+  }
+  .thumbs-row { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+  .thumb {
+    width:130px; min-width:130px; height:98px;
+    background:linear-gradient(135deg,#8fa3c8,#b3c0d5);
+    border-radius:11px; cursor:pointer; flex-shrink:0;
+    border:1.77px solid transparent;
+    transition: border-color .18s;
+  }
+  .thumb.active { border-color:#0B1956; }
+
+  /* ─── FACILITIES ─── */
+  .facilities-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  }
+  .facility-chip {
+    display:flex; align-items:center; gap:10px;
+    background:#ECF0F9; border-radius:10.55px; padding:14px 16px;
+    height:55px; overflow:hidden;
+  }
+  .facility-text { font-family:'Open Sans',sans-serif; font-weight:600; font-size:15px; color:#0B1956; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* ─── DOCTORS ─── */
+  .doctors-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+  }
+  .doctor-card {
+    background:#fff; border:2.26px solid #E5E7EB; border-radius:24px;
+    overflow:hidden; position:relative;
+  }
+  .doctor-img {
+    width:100%; height:220px;
+    background:linear-gradient(135deg,#8090b0,#a4b5cc);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .verified-badge {
+    position:absolute; top:18px; left:18px;
+    background:#00B74A; border-radius:15px;
+    padding:6px 14px; display:flex; align-items:center; gap:6px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:#fff;
+    box-shadow:0px 30px 37px -7.5px rgba(0,0,0,.1);
+  }
+  .doctor-body { padding:22px 24px 22px; }
+  .doc-tags { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .doc-tag {
+    display:flex; align-items:center; gap:7px;
+    padding:6px 14px; border-radius:15px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:#0B1956;
+  }
+  .doc-tag-blue { background:#ECF0F9; }
+  .doc-tag-lav  { background:#F8EFFA; }
+  .doc-fee-lbl { font-family:'Inter',sans-serif; font-weight:400; font-size:15px; color:#303231; margin-bottom:2px; }
+  .doc-fee-amt { font-family:'Inter',sans-serif; font-weight:700; font-size:26px; color:#0B1956; margin-bottom:16px; }
+  .doc-btns { display:flex; gap:10px; }
+  .btn-consult {
+    flex:1; height:44px; background:#0B1956; border-radius:20px; border:none;
+    font-family:'Inter',sans-serif; font-weight:700; font-size:15px; color:#fff; cursor:pointer;
+    transition: background .18s, transform .1s;
+  }
+  .btn-consult:hover { background:#162980; }
+  .btn-details {
+    flex:1; height:56px; background:#fff; border:2.26px solid #0B1956; border-radius:20px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:17px; color:#364153; cursor:pointer;
+    transition: background .18s;
+  }
+  .btn-details:hover { background:#f5f7ff; }
+
+  /* ─── REVIEWS ─── */
+  .review-item { padding:16px; border-radius:10px; margin-bottom:0; }
+  .review-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+  .reviewer-name { font-family:'Open Sans',sans-serif; font-weight:600; font-size:16px; color:#0B1956; }
+  .reviewer-loc  { font-family:'Open Sans',sans-serif; font-weight:400; font-size:14px; color:#0B1956; }
+  .review-stars  { display:flex; gap:2px; }
+  .review-text   { font-family:'Inter',sans-serif; font-weight:400; font-size:15px; line-height:22px; color:#303231; }
+  .review-divider { height:1px; background:#D4CFCF; margin:4px 0; }
+
+  /* ─── BOTTOM ACTION BAR ─── */
+  .action-bar {
+    position:fixed; bottom:0; left:var(--sidebar-width); right:0;
+    height:72px; background:#FFFFFF;
+    box-shadow: 0px -2px 12px rgba(0,0,0,.08);
+    border-radius: 0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 36px; z-index:90;
+  }
+  .action-price-wrap { display:flex; flex-direction:column; }
+  .action-amount { font-family:'Inter',sans-serif; font-weight:700; font-size:24px; color:#0B1956; line-height:32px; }
+  .action-lbl    { font-family:'Open Sans',sans-serif; font-weight:400; font-size:14px; color:#0B1956; line-height:18px; }
+  .btn-select {
+    height:44px; padding:0 28px;
+    background:#0B1956; border-radius:10px; border:none;
+    font-family:'Open Sans',sans-serif; font-weight:700; font-size:16px; color:#FFFFFF;
+    cursor:pointer; box-shadow:0px 12px 18px -3.6px rgba(0,0,0,.1);
+    transition: transform .12s, box-shadow .12s, background .18s;
+  }
+  .btn-select:hover { transform:translateY(-2px); box-shadow:0px 16px 24px -4px rgba(0,0,0,.2); background:#162980; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1100px) {
+    .sidebar { transform:translateX(-100%); transition:transform .3s cubic-bezier(.22,1,.36,1); animation:none; z-index:200; }
+    .sidebar.open { transform:translateX(0); }
+    .menu-toggle { display:flex !important; }
+    .main { margin-left:0 !important; }
+    .action-bar { left:0 !important; }
+    .nav-center { padding-left:12px; }
+    .welcome-text { font-size:22px; }
+  }
+
+  @media (max-width: 900px) {
+    .overview-inner { flex-direction:column; }
+    .hosp-img { width:100%; min-width:unset; }
+    .cost-box { align-self:flex-start; margin-left:0; margin-top:16px; }
+    .insurance-grid { grid-template-columns:repeat(2,1fr); }
+    .facilities-grid { grid-template-columns:repeat(2,1fr); }
+    .doctors-grid { grid-template-columns:repeat(2,1fr); }
+    .includes-grid { grid-template-columns:1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .topnav { padding:0 12px; }
+    .nav-center { display:none; }
+    .search-bar { width:160px; height:38px; padding:0 12px; }
+    .content-area { padding:16px 14px 24px; }
+    .card { padding:16px; }
+    .hosp-name { font-size:20px; line-height:28px; }
+    .section-title { font-size:20px; }
+    .insurance-grid { grid-template-columns:1fr; }
+    .facilities-grid { grid-template-columns:1fr; }
+    .doctors-grid { grid-template-columns:1fr; }
+    .photo-main { height:240px; }
+    .stats-row { flex-wrap:wrap; }
+    .stat-cell { min-width:45%; border-left:none; border-top:.796px solid #8F95B1; }
+    .stat-cell:nth-child(odd) { border-top:.796px solid #8F95B1; }
+    .action-bar { padding:0 16px; height:62px; }
+    .action-amount { font-size:18px; }
+    .btn-select { font-size:14px; padding:0 16px; height:38px; }
+    .doc-btns { flex-direction:column; }
+  }
+
+  @media (max-width: 400px) {
+    .search-bar { display:none; }
+  }
+
+/* ── SCROLL REVEAL ── */
+.sr { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.sr.revealed { opacity: 1; transform: translateY(0); }
+.sr-d1 { transition-delay: 0.05s; }
+.sr-d2 { transition-delay: 0.12s; }
+.sr-d3 { transition-delay: 0.19s; }
+.sr-d4 { transition-delay: 0.26s; }
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<header class="topnav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center"><span class="welcome-text">Welcome Michael!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Search" autocomplete="off">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <button class="bell-btn">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <!-- Dashboard -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <!-- Package Selection - active -->
+    <div class="nav-item active">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#0B1956" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </div>
+    <!-- Payments -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </div>
+    <!-- My Journey -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <a href="arrival_trial.html" class="nav-label">My Journey</a>
+    </div>
+    <!-- Medical Records -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </div>
+    <!-- Hospitals & Doctors -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </div>
+    <!-- Appointments -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </div>
+    <!-- Messages -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </div>
+    <!-- Support -->
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+  <div class="content-area">
+
+    <!-- Back Button -->
+    <button class="back-btn sr sr-d1" onclick="window.location.href='screen2_main.html'">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to Hospitals
+    </button>
+
+    <!-- ── HOSPITAL OVERVIEW ── -->
+    <div class="card sr" style="">
+      <div class="overview-inner">
+        <!-- Left: image + badges -->
+        <div style="display:flex;flex-direction:column;gap:12px;flex-shrink:0;width:280px;">
+          <div class="hosp-img">
+            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=560&h=420&fit=crop&auto=format" alt="Zen Multispecialty Hospital" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" />
+          </div>
+          <div class="badges-row">
+            <div class="badge badge-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2"/></svg>
+              Joint Replacement
+            </div>
+            <div class="badge badge-lace">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#0B1956" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2"/></svg>
+              NABH Certified
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: info -->
+        <div class="hosp-info">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <div class="hosp-name">Zen Multispecialty Hospital</div>
+              <div class="stars-row">
+                <div class="star-icons">
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+                </div>
+                <span class="rating-num">4.8</span>
+                <span class="reviews-text">(2,847 reviews)</span>
+              </div>
+              <div class="hosp-desc">Leading multi-specialty hospital with world-class infrastructure and international patient care services.</div>
+            </div>
+            <div class="cost-box">
+              <div class="cost-amount">$3,900</div>
+              <div class="cost-lbl">Treatment Cost</div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-row">
+            <div class="stat-cell">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#0B1956" stroke-width="1.8" fill="none"/><circle cx="12" cy="9" r="2.5" stroke="#0B1956" stroke-width="1.8" fill="none"/></svg>
+              <div class="stat-val">12.3 km</div>
+              <div class="stat-lbl">From Airport</div>
+            </div>
+            <div class="stat-cell">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="17" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/><line x1="7" y1="12" x2="17" y2="12" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div class="stat-val">500</div>
+              <div class="stat-lbl">Total Beds</div>
+            </div>
+            <div class="stat-cell">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div class="stat-val">40</div>
+              <div class="stat-lbl">Years</div>
+            </div>
+            <div class="stat-cell">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="#0B1956" stroke-width="1.8"/><line x1="8" y1="2" x2="8" y2="6" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="2" x2="16" y2="6" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div class="stat-val">1983</div>
+              <div class="stat-lbl">Established</div>
+            </div>
+          </div>
+
+          <!-- Specialties -->
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div class="spec-label-row">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="1.8"/><path d="M12 7v10M7 12h10" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span class="spec-title">Specialties</span>
+            </div>
+            <div class="spec-chips">
+              <div class="spec-chip">General</div>
+              <div class="spec-chip">Oncology</div>
+              <div class="spec-chip">Neurology</div>
+              <div class="spec-chip">Orthopedic</div>
+              <div class="spec-chip">Cardiology</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TREATMENT COST INCLUDES ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="20" height="22" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.30434 12.9231C5.92061 12.9231 4.59354 12.3558 3.61509 11.346C2.63664 10.3361 2.08696 8.96655 2.08696 7.53846V3.23077C2.08696 2.94515 2.19689 2.67123 2.39258 2.46927C2.58827 2.26731 2.85369 2.15385 3.13043 2.15385H4.17391C4.45066 2.15385 4.71607 2.04038 4.91176 1.83842C5.10745 1.63646 5.21739 1.36254 5.21739 1.07692C5.21739 0.791305 5.10745 0.517386 4.91176 0.315423C4.71607 0.113461 4.45066 0 4.17391 0H3.13043C2.30019 0 1.50395 0.340384 0.916883 0.94627C0.329813 1.55216 0 2.37392 0 3.23077V7.53846C0.00134131 8.7551 0.288805 9.95322 0.837704 11.0299C1.3866 12.1066 2.18053 13.0298 3.1513 13.72C4.08493 14.5678 4.84196 15.6026 5.37649 16.7614C5.91101 17.9202 6.21189 19.1791 6.26087 20.4615C6.26087 22.4609 7.03043 24.3783 8.40026 25.792C9.77009 27.2058 11.628 28 13.5652 28C15.5024 28 17.3603 27.2058 18.7302 25.792C20.1 24.3783 20.8696 22.4609 20.8696 20.4615V19.2338C21.8532 18.9717 22.7104 18.3484 23.2806 17.4806C23.8508 16.6128 24.0947 15.5603 23.9667 14.5202C23.8387 13.48 23.3475 12.5238 22.5853 11.8307C21.823 11.1376 20.842 10.7552 19.8261 10.7552C18.8102 10.7552 17.8291 11.1376 17.0669 11.8307C16.3046 12.5238 15.8134 13.48 15.6854 14.5202C15.5574 15.5603 15.8014 16.6128 16.3715 17.4806C16.9417 18.3484 17.799 18.9717 18.7826 19.2338V20.4615C18.7826 21.8896 18.2329 23.2592 17.2545 24.269C16.276 25.2788 14.9489 25.8462 13.5652 25.8462C12.1815 25.8462 10.8544 25.2788 9.87596 24.269C8.89751 23.2592 8.34782 21.8896 8.34782 20.4615C8.39944 19.1775 8.70357 17.9177 9.24173 16.7587C9.77989 15.5998 10.5408 14.5659 11.4783 13.72C12.4452 13.0274 13.235 12.1032 13.7802 11.0266C14.3254 9.95008 14.6097 8.75319 14.6087 7.53846V3.23077C14.6087 2.37392 14.2789 1.55216 13.6918 0.94627C13.1047 0.340384 12.3085 0 11.4783 0H10.4348C10.158 0 9.89262 0.113461 9.69693 0.315423C9.50124 0.517386 9.3913 0.791305 9.3913 1.07692C9.3913 1.36254 9.50124 1.63646 9.69693 1.83842C9.89262 2.04038 10.158 2.15385 10.4348 2.15385H11.4783C11.755 2.15385 12.0204 2.26731 12.2161 2.46927C12.4118 2.67123 12.5217 2.94515 12.5217 3.23077V7.53846C12.5217 8.24558 12.3868 8.94577 12.1246 9.59906C11.8624 10.2524 11.4781 10.846 10.9936 11.346C10.5091 11.846 9.93396 12.2426 9.30095 12.5132C8.66795 12.7838 7.9895 12.9231 7.30434 12.9231ZM19.8261 17.2308C19.2726 17.2308 18.7418 17.0038 18.3504 16.5999C17.959 16.196 17.7391 15.6482 17.7391 15.0769C17.7391 14.5057 17.959 13.9578 18.3504 13.5539C18.7418 13.15 19.2726 12.9231 19.8261 12.9231C20.3796 12.9231 20.9104 13.15 21.3018 13.5539C21.6932 13.9578 21.913 14.5057 21.913 15.0769C21.913 15.6482 21.6932 16.196 21.3018 16.5999C20.9104 17.0038 20.3796 17.2308 19.8261 17.2308Z" fill="#0B1956"/>
+</svg>
+
+        </div>
+        <div class="section-title sr">Treatment Cost Includes</div>
+      </div>
+      <div class="includes-grid">
+        <div class="include-item"><div class="bullet"></div><div class="include-text">Pre-operative consultation &amp; tests</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">2-3 days Post-operative physiotherapy</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">Surgery by senior consultant</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">Operation theatre charges</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">Premium Implants</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">Follow-up consultations</div></div>
+        <div class="include-item"><div class="bullet"></div><div class="include-text">All medications during stay</div></div>
+        <div class="include-item"><div class="bullet dark"></div><div class="include-text">Four nutritious meals daily</div></div>
+      </div>
+      <div class="insurance-note">
+        <strong>Insurance:</strong> Accepted by major international insurance providers. Cashless treatment available for pre-approved cases.
+      </div>
+    </div>
+
+    <!-- ── ACCEPTED INSURANCE PROVIDERS ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2244_22915)">
+<path d="M1.24805 23.9426L7.11941 28.4826C7.98284 29.1495 9.0709 29.5147 10.1944 29.5145H25.6728C26.7779 29.5145 27.674 28.6832 27.674 27.658C27.674 25.6075 25.8818 23.9426 23.6692 23.9426H12.9091M19.8231 2.21207C19.5045 2.21207 19.199 2.32948 18.9737 2.53846C18.7484 2.74745 18.6219 3.0309 18.6219 3.32645V6.46234H15.2442C14.9256 6.46234 14.6201 6.57974 14.3948 6.78873C14.1696 6.99772 14.043 7.28117 14.043 7.57672V11.1985C14.043 11.494 14.1696 11.7775 14.3948 11.9865C14.6201 12.1955 14.9256 12.3129 15.2442 12.3129H18.6219V15.4465C18.6219 15.7421 18.7484 16.0255 18.9737 16.2345C19.199 16.4435 19.5045 16.5609 19.8231 16.5609H23.7269C24.0455 16.5609 24.351 16.4435 24.5763 16.2345C24.8015 16.0255 24.9281 15.7421 24.9281 15.4465V12.3129H28.3058C28.6244 12.3129 28.9299 12.1955 29.1552 11.9865C29.3804 11.7775 29.507 11.494 29.507 11.1985V7.57672C29.507 7.28117 29.3804 6.99772 29.1552 6.78873C28.9299 6.57974 28.6244 6.46234 28.3058 6.46234H24.9281V3.32422C24.9281 3.02867 24.8015 2.74522 24.5763 2.53623C24.351 2.32725 24.0455 2.20984 23.7269 2.20984L19.8231 2.21207Z" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.45512 21.7145L10.2569 23.3861C10.4935 23.6056 10.7744 23.7797 11.0835 23.8985C11.3927 24.0173 11.724 24.0785 12.0587 24.0785C12.3933 24.0785 12.7246 24.0173 13.0338 23.8985C13.3429 23.7797 13.6238 23.6056 13.8604 23.3861C14.097 23.1666 14.2847 22.906 14.4128 22.6192C14.5408 22.3324 14.6067 22.0249 14.6067 21.7145C14.6067 21.4041 14.5408 21.0967 14.4128 20.8099C14.2847 20.523 14.097 20.2624 13.8604 20.0429L11.0641 17.4486C10.1632 16.6126 8.94133 16.1428 7.66715 16.1426H1.24805" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_2244_22915">
+<rect width="30" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
+
+        </div>
+        <div class="section-title sr">Accepted Insurance Providers</div>
+      </div>
+      <div class="insurance-grid">
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+
+          <span class="insure-chip-text">Star Health Insurance</span>
+        </div>
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+          <span class="insure-chip-text">ICICI Lombard</span>
+        </div>
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+          <span class="insure-chip-text">HDFC Ergo</span>
+        </div>
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+          <span class="insure-chip-text">Max Bupa</span>
+        </div>
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+          <span class="insure-chip-text">Religare Health</span>
+        </div>
+        <div class="insure-chip">
+          <svg width="13" height="10" viewBox="0 0 13 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.93751 7.45314L0.984378 4.50001L0 5.48439L3.93751 9.4219L12.375 0.984377L11.3907 0L3.93751 7.45314Z" fill="#0B1956"/>
+</svg>
+          <span class="insure-chip-text">Aditya Birla Health</span>
+        </div>
+      </div>
+      <div class="insure-note">* Please verify coverage details with your insurance provider before proceeding</div>
+    </div>
+
+    <!-- ── HOSPITAL PHOTOS ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="23" height="23" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M23.6688 26.5021V3.83531C23.6688 3.08385 23.3703 2.36318 22.8389 1.83182C22.3076 1.30047 21.5869 1.00195 20.8354 1.00195H6.66866C5.91721 1.00195 5.19653 1.30047 4.66518 1.83182C4.13382 2.36318 3.83531 3.08385 3.83531 3.83531V26.5021M23.6688 26.5021H26.5021M23.6688 26.5021H16.5854M3.83531 26.5021H1.00195M3.83531 26.5021H10.9187M16.5854 26.5021V19.4187C16.5854 19.043 16.4361 18.6827 16.1705 18.417C15.9048 18.1513 15.5444 18.0021 15.1687 18.0021H12.3354C11.9596 18.0021 11.5993 18.1513 11.3336 18.417C11.0679 18.6827 10.9187 19.043 10.9187 19.4187V26.5021M16.5854 26.5021H10.9187M9.50201 6.66866H10.9187M9.50201 12.3354H10.9187M16.5854 6.66866H18.0021M16.5854 12.3354H18.0021" stroke="#0B1956" stroke-width="2.00397" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+        </div>
+        <div class="section-title sr">Hospital Photos</div>
+      </div>
+      <div class="photo-main" id="mainPhoto" style="background:#000;">
+        <img id="mainPhotoImg" src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=1200&h=840&fit=crop&auto=format" alt="Hospital Photo 1" style="width:100%;height:100%;object-fit:cover;transition:opacity .35s;"/>
+        <button class="photo-nav left" onclick="changePhoto(-1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="photo-nav right" onclick="changePhoto(1)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="photo-counter" id="photoCounter">1 / 9</div>
+      </div>
+      <div class="thumbs-row">
+        <div class="thumb active" onclick="selectThumb(0,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(1,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(2,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(3,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(4,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(5,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(6,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(7,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+        <div class="thumb" onclick="selectThumb(8,this)" style="background:#aaa;overflow:hidden;"><img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=260&h=196&fit=crop&auto=format" style="width:100%;height:100%;object-fit:cover;" /></div>
+      </div>
+    </div>
+
+    <!-- ── FACILITIES & AMENITIES ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.74975 14.0003H19.2498M13.9998 8.75028V19.2503M3.58725 16.7128L11.5253 24.6508C12.1816 25.3069 13.0717 25.6755 13.9998 25.6755C14.9278 25.6755 15.8179 25.3069 16.4743 24.6508L24.4123 16.7128C25.0684 16.0564 25.437 15.1664 25.437 14.2383C25.437 13.3102 25.0684 12.4201 24.4123 11.7638L16.4743 3.82578C15.8179 3.16963 14.9278 2.80103 13.9998 2.80103C13.0717 2.80103 12.1816 3.16963 11.5253 3.82578L3.58725 11.7638C2.9311 12.4201 2.5625 13.3102 2.5625 14.2383C2.5625 15.1664 2.9311 16.0564 3.58725 16.7128Z" stroke="#0B1956" stroke-width="1.75"/>
+</svg>
+
+        </div>
+        <div class="section-title sr">Facilities &amp; Amenities</div>
+      </div>
+      <div class="facilities-grid">
+        <div class="facility-chip">
+          <svg width="18" height="18" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2244_22992)">
+<path d="M0.998047 18.356L5.69514 21.8366C6.38588 22.348 7.25633 22.6279 8.15515 22.6278H20.5379C21.4219 22.6278 22.1388 21.9904 22.1388 21.2044C22.1388 19.6324 20.7051 18.356 18.935 18.356H10.3269M15.8581 1.69589C15.6032 1.69589 15.3588 1.78591 15.1786 1.94613C14.9984 2.10635 14.8971 2.32366 14.8971 2.55025V4.95443H12.195C11.9401 4.95443 11.6957 5.04444 11.5155 5.20467C11.3353 5.36489 11.234 5.5822 11.234 5.80879V8.58547C11.234 8.81206 11.3353 9.02937 11.5155 9.1896C11.6957 9.34982 11.9401 9.43984 12.195 9.43984H14.8971V11.8423C14.8971 12.0689 14.9984 12.2862 15.1786 12.4464C15.3588 12.6067 15.6032 12.6967 15.8581 12.6967H18.9811C19.236 12.6967 19.4804 12.6067 19.6606 12.4464C19.8408 12.2862 19.9421 12.0689 19.9421 11.8423V9.43984H22.6442C22.8991 9.43984 23.1435 9.34982 23.3237 9.1896C23.5039 9.02937 23.6052 8.81206 23.6052 8.58547V5.80879C23.6052 5.5822 23.5039 5.36489 23.3237 5.20467C23.1435 5.04444 22.8991 4.95443 22.6442 4.95443H19.9421V2.54855C19.9421 2.32195 19.8408 2.10464 19.6606 1.94442C19.4804 1.7842 19.236 1.69418 18.9811 1.69418L15.8581 1.69589Z" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.7637 16.6478L8.20512 17.9293C8.39441 18.0976 8.61913 18.2311 8.86645 18.3222C9.11376 18.4133 9.37884 18.4602 9.64653 18.4602C9.91423 18.4602 10.1793 18.4133 10.4266 18.3222C10.6739 18.2311 10.8987 18.0976 11.0879 17.9293C11.2772 17.761 11.4274 17.5612 11.5298 17.3414C11.6323 17.1215 11.685 16.8858 11.685 16.6478C11.685 16.4098 11.6323 16.1741 11.5298 15.9542C11.4274 15.7343 11.2772 15.5345 11.0879 15.3662L8.85087 13.3773C8.13019 12.7363 7.15267 12.3762 6.13333 12.376H0.998047" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_2244_22992">
+<rect width="24" height="23" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
+          <span class="facility-text">Insurance &amp; TPA Support</span>
+        </div>
+        <div class="facility-chip">
+         <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M24.3667 21.2492L21.5884 22.1751C21.377 22.2458 21.1472 22.2379 20.9411 22.1529C20.7351 22.0678 20.5666 21.9114 20.4667 21.7122L17.0181 14.8159H7.40394C7.15832 14.8159 6.92276 14.7183 6.74908 14.5447C6.57541 14.3711 6.47783 14.1356 6.47783 13.8901V10.4576C4.9861 10.9027 3.70443 11.8697 2.86709 13.1817C2.02975 14.4938 1.69265 16.0632 1.91741 17.6032C2.14218 19.1432 2.91379 20.551 4.09122 21.5691C5.26865 22.5873 6.77326 23.1478 8.33004 23.1483C11.3295 23.1483 14.1286 21.0594 14.8417 18.2877C14.8721 18.17 14.9254 18.0593 14.9986 17.9621C15.0718 17.865 15.1634 17.7831 15.2682 17.7213C15.373 17.6595 15.489 17.619 15.6095 17.602C15.7299 17.585 15.8526 17.5919 15.9704 17.6223C16.0882 17.6527 16.1989 17.706 16.2961 17.7792C16.3933 17.8523 16.4752 17.9439 16.537 18.0487C16.5988 18.1534 16.6394 18.2694 16.6564 18.3898C16.6734 18.5103 16.6665 18.6329 16.636 18.7507C15.703 22.373 12.2104 25 8.33004 25C6.28171 24.9988 4.30554 24.2436 2.77872 22.8785C1.25189 21.5135 0.281337 19.6342 0.0522923 17.5993C-0.176752 15.5644 0.351755 13.5165 1.53694 11.8463C2.72212 10.1762 4.48099 9.00082 6.47783 8.54456V6.34572C5.7317 6.12333 5.09058 5.63989 4.67168 4.98379C4.25279 4.32769 4.08413 3.54278 4.19653 2.77258C4.30893 2.00239 4.69489 1.29837 5.28384 0.789267C5.87278 0.280166 6.62535 0 7.40394 0C8.18252 0 8.9351 0.280166 9.52404 0.789267C10.113 1.29837 10.4989 2.00239 10.6114 2.77258C10.7238 3.54278 10.5551 4.32769 10.1362 4.98379C9.7173 5.63989 9.07617 6.12333 8.33004 6.34572V8.33509H14.8128C15.0584 8.33509 15.294 8.43264 15.4676 8.60626C15.6413 8.77989 15.7389 9.01538 15.7389 9.26092C15.7389 9.50647 15.6413 9.74195 15.4676 9.91558C15.294 10.0892 15.0584 10.1867 14.8128 10.1867H8.33004V12.9642H17.5911C17.7629 12.9643 17.9314 13.0122 18.0776 13.1026C18.2237 13.1929 18.3419 13.3221 18.4188 13.4758L21.7644 20.1649L23.781 19.4925C24.014 19.4148 24.2683 19.4329 24.488 19.5427C24.7077 19.6525 24.8748 19.8451 24.9525 20.0781C25.0301 20.311 25.0121 20.5653 24.9022 20.7849C24.7924 21.0046 24.5997 21.1716 24.3667 21.2492Z" fill="#0B1956"/>
+</svg>
+
+
+
+          <span class="facility-text">Wheelchair Accessibility</span>
+        </div>
+        <div class="facility-chip">
+          <svg width="18" height="18" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15.6243 2.08328H6.24935C5.69681 2.08328 5.16691 2.30278 4.77621 2.69348C4.38551 3.08418 4.16602 3.61408 4.16602 4.16662V20.8333C4.16602 21.3858 4.38551 21.9157 4.77621 22.3064C5.16691 22.6971 5.69681 22.9166 6.24935 22.9166H18.7493C19.3019 22.9166 19.8318 22.6971 20.2225 22.3064C20.6132 21.9157 20.8327 21.3858 20.8327 20.8333V7.29162L15.6243 2.08328Z" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.5801 1.78223V5.94889C14.5801 6.50143 14.7996 7.03133 15.1903 7.42203C15.581 7.81273 16.1109 8.03223 16.6634 8.03223H20.8301" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.4173 9.37497H8.33398" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.6673 13.5417H8.33398" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.6673 17.7083H8.33398" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+          <span class="facility-text">In house Lab &amp; Pathology</span>
+        </div>
+        <div class="facility-chip">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.713 16.713C12.9043 16.521 13 16.2833 13 16C13 15.7167 12.904 15.4793 12.712 15.288C12.52 15.0967 12.2827 15.0007 12 15C11.7173 14.9993 11.48 15.0953 11.288 15.288C11.096 15.4807 11 15.718 11 16C11 16.282 11.096 16.5197 11.288 16.713C11.48 16.9063 11.7173 17.002 12 17C12.2827 16.998 12.5203 16.903 12.713 16.713ZM11 13H13V7H11V13ZM12 22C10.6167 22 9.31667 21.7373 8.1 21.212C6.88334 20.6867 5.825 19.9743 4.925 19.075C4.025 18.1757 3.31267 17.1173 2.788 15.9C2.26333 14.6827 2.00067 13.3827 2 12C1.99933 10.6173 2.262 9.31733 2.788 8.1C3.314 6.88267 4.02633 5.82433 4.925 4.925C5.82367 4.02567 6.882 3.31333 8.1 2.788C9.318 2.26267 10.618 2 12 2C13.382 2 14.682 2.26267 15.9 2.788C17.118 3.31333 18.1763 4.02567 19.075 4.925C19.9737 5.82433 20.6863 6.88267 21.213 8.1C21.7397 9.31733 22.002 10.6173 22 12C21.998 13.3827 21.7353 14.6827 21.212 15.9C20.6887 17.1173 19.9763 18.1757 19.075 19.075C18.1737 19.9743 17.1153 20.687 15.9 21.213C14.6847 21.739 13.3847 22.0013 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="black"/>
+</svg>
+
+          <span class="facility-text">24/7 Emergency &amp; Trauma Center</span>
+        </div>
+        <div class="facility-chip">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M18 8h1a4 4 0 0 1 0 8h-1" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" stroke="#0B1956" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 1v3M10 1v3M14 1v3" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="facility-text">Multi-cuisine Cafeteria</span>
+        </div>
+        <div class="facility-chip">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2a5 5 0 0 1 5 5c0 4-5 10-5 10S7 11 7 7a5 5 0 0 1 5-5z" stroke="#0B1956" stroke-width="1.8"/><circle cx="12" cy="7" r="2" stroke="#0B1956" stroke-width="1.8"/><path d="M5 18l-2 4h18l-2-4" stroke="#0B1956" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="facility-text">Physiotherapy Center</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AVAILABLE DOCTORS ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5.97337 19.4381C5.54602 19.6999 5.22495 20.1043 5.06688 20.5799C4.90881 21.0554 4.9239 21.5716 5.10951 22.0371C5.29511 22.5026 5.63928 22.8876 6.0812 23.1239C6.52312 23.3603 7.03436 23.4329 7.5246 23.3288C8.01484 23.2248 8.45253 22.9508 8.76034 22.5553C9.06816 22.1598 9.22629 21.6683 9.2068 21.1675C9.18731 20.6667 8.99145 20.1889 8.65383 19.8185C8.31621 19.4482 7.85855 19.2091 7.36171 19.1434C7.33517 19.0484 7.31085 18.9527 7.28875 18.8565C7.19228 18.4188 7.11664 17.9768 7.06208 17.532C7.00353 17.0823 6.97042 16.6296 6.96292 16.1762C6.96177 16.0517 6.96531 15.9272 6.97354 15.8029C7.24601 15.7245 7.51872 15.6544 7.79167 15.5925C8.10404 15.5217 8.28963 15.89 8.43908 16.189L8.5 16.3087H16.8222C16.9844 16.0012 17.352 15.5111 17.7083 15.5925C18.0889 15.6794 18.4688 15.7817 18.848 15.8992L18.8459 15.9C18.8445 15.8985 18.8445 15.899 18.8459 15.9014C18.8487 15.9113 18.8643 15.958 18.8799 16.0572C18.8979 16.1724 18.9097 16.32 18.9153 16.4999C18.9252 16.8569 18.9047 17.2911 18.8629 17.7289C18.8204 18.1659 18.7574 18.5888 18.6865 18.9224C18.671 18.9966 18.6554 19.0641 18.6398 19.125H17.7083C17.5768 19.1251 17.4479 19.1618 17.3361 19.2309C17.2242 19.3001 17.1339 19.3991 17.0751 19.5167L16.3668 20.9334C16.3175 21.0317 16.2918 21.1401 16.2917 21.25V22.6667C16.2917 22.8545 16.3663 23.0347 16.4991 23.1675C16.632 23.3004 16.8121 23.375 17 23.375H18.4167V21.9583H17.7083V21.4172L18.1461 20.5417H20.1039L20.5417 21.4172V21.9583H19.8333V23.375H21.25C21.4379 23.375 21.618 23.3004 21.7509 23.1675C21.8837 23.0347 21.9583 22.8545 21.9583 22.6667V21.25C21.9582 21.1401 21.9325 21.0317 21.8832 20.9334L21.1749 19.5167C21.1161 19.3991 21.0258 19.3001 20.9139 19.2309C20.8021 19.1618 20.6732 19.1251 20.5417 19.125H20.0912C20.167 18.7475 20.23 18.3069 20.2725 17.8649C20.3192 17.3875 20.3433 16.8923 20.3313 16.4603L20.3306 16.4404C23.1554 17.634 25.5 19.5968 25.5 21.6537V25.5H0V21.6537C0 19.5061 2.55708 17.4604 5.54696 16.2867C5.55475 16.7273 5.59654 17.2253 5.65675 17.7076C5.72192 18.2282 5.81046 18.746 5.90821 19.1725C5.92946 19.2636 5.95118 19.3521 5.97337 19.4381ZM7.08333 21.969C7.46442 21.969 7.79167 21.6573 7.79167 21.25C7.79167 20.8434 7.46442 20.531 7.08333 20.531C6.70225 20.531 6.375 20.8427 6.375 21.25C6.375 21.6566 6.70225 21.969 7.08333 21.969ZM12.75 12.75C14.2529 12.75 15.6942 12.153 16.7569 11.0903C17.8196 10.0276 18.4167 8.58623 18.4167 7.08333C18.4167 5.58044 17.8196 4.1391 16.7569 3.07639C15.6942 2.01369 14.2529 1.41667 12.75 1.41667C11.2471 1.41667 9.80577 2.01369 8.74306 3.07639C7.68036 4.1391 7.08333 5.58044 7.08333 7.08333C7.08333 8.58623 7.68036 10.0276 8.74306 11.0903C9.80577 12.153 11.2471 12.75 12.75 12.75ZM12.75 14.1667C16.6621 14.1667 19.8333 10.9955 19.8333 7.08333C19.8333 3.17121 16.6621 0 12.75 0C8.83788 0 5.66667 3.17121 5.66667 7.08333C5.66667 10.9955 8.83788 14.1667 12.75 14.1667Z" fill="#0B1956"/>
+</svg>
+
+        </div>
+        <div class="section-title sr">Available Doctors</div>
+      </div>
+      <div class="doctors-grid">
+        <!-- Doctor 1 -->
+        <div class="doctor-card">
+          <div class="doctor-img" style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=440&h=440&fit=crop&auto=format&face" alt="Doctor" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div class="verified-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Verified
+          </div>
+          <div class="doctor-body">
+            <div class="doc-tags">
+              <div class="doc-tag doc-tag-blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.76"/><line x1="3" y1="9" x2="21" y2="9" stroke="#0B1956" stroke-width="1.76"/></svg>
+                15 years
+              </div>
+              <div class="doc-tag doc-tag-lav">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5581 3.832C11.0307 3.29613 11.6554 2.91689 12.3489 2.74476C13.0424 2.57263 13.7719 2.61576 14.4403 2.86842C15.1087 3.12109 15.6843 3.57129 16.0905 4.15914C16.4968 4.74699 16.7144 5.44461 16.7144 6.15916C16.7144 6.87372 16.4968 7.57134 16.0905 8.15919C15.6843 8.74704 15.1087 9.19724 14.4403 9.44991C13.7719 9.70257 13.0424 9.7457 12.3489 9.57357C11.6554 9.40144 11.0307 9.0222 10.5581 8.48632M13.1966 18.4722H2.64258V17.5927C2.64258 16.1931 3.19855 14.8509 4.18817 13.8613C5.1778 12.8716 6.52003 12.3157 7.91957 12.3157C9.31912 12.3157 10.6613 12.8716 11.651 13.8613C12.6406 14.8509 13.1966 16.1931 13.1966 17.5927V18.4722ZM13.1966 18.4722H18.4736V17.5927C18.4737 16.6663 18.23 15.7562 17.7669 14.9539C17.3038 14.1516 16.6376 13.4853 15.8354 13.0221C15.0332 12.5589 14.1231 12.315 13.1968 12.3149C12.2704 12.3149 11.3603 12.5587 10.5581 13.0219M11.4376 6.15916C11.4376 7.0922 11.0669 7.98702 10.4072 8.64677C9.74742 9.30652 8.8526 9.67717 7.91957 9.67717C6.98654 9.67717 6.09173 9.30652 5.43197 8.64677C4.77222 7.98702 4.40158 7.0922 4.40158 6.15916C4.40158 5.22613 4.77222 4.33131 5.43197 3.67156C6.09173 3.01181 6.98654 2.64116 7.91957 2.64116C8.8526 2.64116 9.74742 3.01181 10.4072 3.67156C11.0669 4.33131 11.4376 5.22613 11.4376 6.15916Z" stroke="#0B1956" stroke-width="1.759" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+                1,200+
+              </div>
+            </div>
+            <div class="doc-fee-lbl">Consultation Fee</div>
+            <div class="doc-fee-amt">$28</div>
+            <div class="doc-btns">
+              <button class="btn-consult">Book Consultation</button>
+            </div>
+          </div>
+        </div>
+        <!-- Doctor 2 -->
+        <div class="doctor-card">
+          <div class="doctor-img" style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=440&h=440&fit=crop&auto=format&face" alt="Doctor" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div class="verified-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Verified
+          </div>
+          <div class="doctor-body">
+            <div class="doc-tags">
+              <div class="doc-tag doc-tag-blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.76"/><line x1="3" y1="9" x2="21" y2="9" stroke="#0B1956" stroke-width="1.76"/></svg>
+                17 years
+              </div>
+              <div class="doc-tag doc-tag-lav">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5581 3.832C11.0307 3.29613 11.6554 2.91689 12.3489 2.74476C13.0424 2.57263 13.7719 2.61576 14.4403 2.86842C15.1087 3.12109 15.6843 3.57129 16.0905 4.15914C16.4968 4.74699 16.7144 5.44461 16.7144 6.15916C16.7144 6.87372 16.4968 7.57134 16.0905 8.15919C15.6843 8.74704 15.1087 9.19724 14.4403 9.44991C13.7719 9.70257 13.0424 9.7457 12.3489 9.57357C11.6554 9.40144 11.0307 9.0222 10.5581 8.48632M13.1966 18.4722H2.64258V17.5927C2.64258 16.1931 3.19855 14.8509 4.18817 13.8613C5.1778 12.8716 6.52003 12.3157 7.91957 12.3157C9.31912 12.3157 10.6613 12.8716 11.651 13.8613C12.6406 14.8509 13.1966 16.1931 13.1966 17.5927V18.4722ZM13.1966 18.4722H18.4736V17.5927C18.4737 16.6663 18.23 15.7562 17.7669 14.9539C17.3038 14.1516 16.6376 13.4853 15.8354 13.0221C15.0332 12.5589 14.1231 12.315 13.1968 12.3149C12.2704 12.3149 11.3603 12.5587 10.5581 13.0219M11.4376 6.15916C11.4376 7.0922 11.0669 7.98702 10.4072 8.64677C9.74742 9.30652 8.8526 9.67717 7.91957 9.67717C6.98654 9.67717 6.09173 9.30652 5.43197 8.64677C4.77222 7.98702 4.40158 7.0922 4.40158 6.15916C4.40158 5.22613 4.77222 4.33131 5.43197 3.67156C6.09173 3.01181 6.98654 2.64116 7.91957 2.64116C8.8526 2.64116 9.74742 3.01181 10.4072 3.67156C11.0669 4.33131 11.4376 5.22613 11.4376 6.15916Z" stroke="#0B1956" stroke-width="1.759" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                1,500+
+              </div>
+            </div>
+            <div class="doc-fee-lbl">Consultation Fee</div>
+            <div class="doc-fee-amt">$30</div>
+            <div class="doc-btns">
+              <button class="btn-consult">Book Consultation</button>
+            </div>
+          </div>
+        </div>
+        <!-- Doctor 3 -->
+        <div class="doctor-card">
+          <div class="doctor-img" style="overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=440&h=440&fit=crop&auto=format&face" alt="Doctor" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <div class="verified-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Verified
+          </div>
+          <div class="doctor-body">
+            <div class="doc-tags">
+              <div class="doc-tag doc-tag-blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="1.76"/><line x1="3" y1="9" x2="21" y2="9" stroke="#0B1956" stroke-width="1.76"/></svg>
+                10 years
+              </div>
+              <div class="doc-tag doc-tag-lav">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5581 3.832C11.0307 3.29613 11.6554 2.91689 12.3489 2.74476C13.0424 2.57263 13.7719 2.61576 14.4403 2.86842C15.1087 3.12109 15.6843 3.57129 16.0905 4.15914C16.4968 4.74699 16.7144 5.44461 16.7144 6.15916C16.7144 6.87372 16.4968 7.57134 16.0905 8.15919C15.6843 8.74704 15.1087 9.19724 14.4403 9.44991C13.7719 9.70257 13.0424 9.7457 12.3489 9.57357C11.6554 9.40144 11.0307 9.0222 10.5581 8.48632M13.1966 18.4722H2.64258V17.5927C2.64258 16.1931 3.19855 14.8509 4.18817 13.8613C5.1778 12.8716 6.52003 12.3157 7.91957 12.3157C9.31912 12.3157 10.6613 12.8716 11.651 13.8613C12.6406 14.8509 13.1966 16.1931 13.1966 17.5927V18.4722ZM13.1966 18.4722H18.4736V17.5927C18.4737 16.6663 18.23 15.7562 17.7669 14.9539C17.3038 14.1516 16.6376 13.4853 15.8354 13.0221C15.0332 12.5589 14.1231 12.315 13.1968 12.3149C12.2704 12.3149 11.3603 12.5587 10.5581 13.0219M11.4376 6.15916C11.4376 7.0922 11.0669 7.98702 10.4072 8.64677C9.74742 9.30652 8.8526 9.67717 7.91957 9.67717C6.98654 9.67717 6.09173 9.30652 5.43197 8.64677C4.77222 7.98702 4.40158 7.0922 4.40158 6.15916C4.40158 5.22613 4.77222 4.33131 5.43197 3.67156C6.09173 3.01181 6.98654 2.64116 7.91957 2.64116C8.8526 2.64116 9.74742 3.01181 10.4072 3.67156C11.0669 4.33131 11.4376 5.22613 11.4376 6.15916Z" stroke="#0B1956" stroke-width="1.759" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                980+
+              </div>
+            </div>
+            <div class="doc-fee-lbl">Consultation Fee</div>
+            <div class="doc-fee-amt">$35</div>
+            <div class="doc-btns">
+              <button class="btn-consult">Book Consultation</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PATIENT REVIEWS ── -->
+    <div class="card sr" style="">
+      <div class="section-head">
+        <div class="section-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="4" width="24" height="20" rx="3" stroke="#0B1956" stroke-width="2"/><path d="M2 10h24" stroke="#0B1956" stroke-width="2"/><circle cx="8" cy="17" r="2" fill="#0B1956"/><circle cx="14" cy="17" r="2" fill="#0B1956"/><circle cx="20" cy="17" r="2" fill="#0B1956"/></svg>
+        </div>
+        <div class="section-title sr">Patient Reviews</div>
+      </div>
+
+      <!-- Review 1 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format&face" alt="Sarah Williams" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+            <div>
+              <div class="reviewer-name">Sarah Williams</div>
+              <div class="reviewer-loc">USA · March 2026</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+          </div>
+        </div>
+        <div class="review-text">Excellent hospital with world-class facilities. The doctors were very professional and the staff was extremely caring. My surgery was successful.</div>
+      </div>
+      <div class="review-divider"></div>
+
+      <!-- Review 2 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format&face" alt="Ahmed Al-Rashid" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+            <div>
+              <div class="reviewer-name">Ahmed Al-Rashid</div>
+              <div class="reviewer-loc">UAE · February 2026</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+          </div>
+        </div>
+        <div class="review-text">Outstanding care and attention to detail. The hospital exceeded all my expectations. The experienced team made my treatment journey comfortable.</div>
+      </div>
+      <div class="review-divider"></div>
+
+      <!-- Review 3 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&auto=format&face" alt="John Peterson" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;" />
+            <div>
+              <div class="reviewer-name">John Peterson</div>
+              <div class="reviewer-loc">UK · January 2026</div>
+            </div>
+          </div>
+          <div class="review-stars">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="#FDC700"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FDC700" stroke-width="1.5"><path d="M12 2l3 6.5L22 10l-5 5 1.2 7L12 18.5 5.8 22 7 15 2 10l7-1.5z"/></svg>
+          </div>
+        </div>
+        <div class="review-text">Great hospital with excellent post-operative care. The physiotherapy department was particularly impressive.</div>
+      </div>
+
+    </div>
+
+  </div><!-- /content-area -->
+</main>
+
+<!-- ── BOTTOM ACTION BAR ── -->
+<footer class="action-bar">
+  <div class="action-price-wrap">
+    <div class="action-amount">$3,900</div>
+    <div class="action-lbl">Treatment Cost</div>
+  </div>
+  <button class="btn-select">Select Hospital</button>
+</footer>
+
+<style>
+  /* ── Modal ── */
+  .photo-modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.92);
+    z-index:999; align-items:center; justify-content:center;
+  }
+  .photo-modal-overlay.open { display:flex; }
+  .modal-img-wrap { position:relative; max-width:90vw; max-height:90vh; display:flex; align-items:center; justify-content:center; }
+  .modal-img-wrap img { max-width:90vw; max-height:82vh; object-fit:contain; border-radius:10px; }
+  .modal-close {
+    position:fixed; top:20px; right:24px; background:rgba(255,255,255,.15);
+    border:none; border-radius:50%; width:44px; height:44px; color:#fff; font-size:22px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+  }
+  .modal-close:hover { background:rgba(255,255,255,.28); }
+  .modal-nav {
+    position:fixed; top:50%; transform:translateY(-50%);
+    width:48px; height:48px; background:rgba(255,255,255,.15); border:none;
+    border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background .18s;
+  }
+  .modal-nav:hover { background:rgba(255,255,255,.28); }
+  .modal-nav.left  { left:20px; }
+  .modal-nav.right { right:20px; }
+  .modal-counter {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:rgba(0,0,0,.5); border-radius:999px; padding:6px 18px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:15px; color:#fff;
+  }
+  /* ── Doctor name overlay ── */
+  .doctor-name-overlay {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(to top, rgba(11,25,86,.85) 0%, transparent 100%);
+    padding:28px 18px 14px;
+    pointer-events:none;
+  }
+  .doctor-name-overlay span {
+    font-family:'Inter',sans-serif; font-weight:700; font-size:17px; color:#fff;
+    display:block; line-height:1.2;
+  }
+  .doctor-name-overlay small {
+    font-family:'Inter',sans-serif; font-weight:400; font-size:13px; color:rgba(255,255,255,.8);
+  }
+  /* ── Spec chip hover ── */
+  .spec-chip { cursor:pointer; transition:background .18s, transform .12s; }
+  .spec-chip:hover { background:#e8d9f7; transform:translateY(-1px); }
+  .spec-chip.selected { background:#0B1956; color:#fff; }
+  /* ── Insurance chip hover ── */
+  .insure-chip { cursor:pointer; transition:background .18s; }
+  .insure-chip:hover { background:#d8dff2; }
+  /* ── Include item hover ── */
+  .include-item { cursor:default; border-radius:8px; padding:4px 8px; transition:background .14s; margin:-4px -8px; }
+  .include-item:hover { background:#f0f3fa; }
+  /* ── Facility chip hover ── */
+  .facility-chip { cursor:pointer; transition:background .18s, transform .12s; }
+  .facility-chip:hover { background:#d8dff2; transform:translateY(-1px); }
+</style>
+
+<!-- ── Photo Lightbox Modal ── -->
+<div class="photo-modal-overlay" id="photoModal">
+  <button class="modal-close" id="modalClose">&#x2715;</button>
+  <div class="modal-img-wrap">
+    <img id="modalImg" src="" alt="Hospital Photo" />
+  </div>
+  <button class="modal-nav left" id="modalPrev">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="modal-nav right" id="modalNext">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <div class="modal-counter" id="modalCounter">1 / 9</div>
+</div>
+
+<!-- ── Consultation Modal ── -->
+<div class="photo-modal-overlay" id="consultModal" style="align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:36px 32px;max-width:420px;width:90%;position:relative;">
+    <button onclick="document.getElementById('consultModal').classList.remove('open')" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#666;">&#x2715;</button>
+    <div style="font-family:'Open Sans',sans-serif;font-weight:700;font-size:22px;color:#0B1956;margin-bottom:6px;" id="consultDocName">Book Consultation</div>
+    <div style="font-family:'Open Sans',sans-serif;font-size:14px;color:#666;margin-bottom:24px;" id="consultDocFee"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:#0B1956;display:block;margin-bottom:6px;">Select Date</label>
+        <input type="date" id="consultDate" style="width:100%;padding:10px 14px;border:1.5px solid #D0D5E8;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;color:#0B1956;outline:none;" />
+      </div>
+      <div>
+        <label style="font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:#0B1956;display:block;margin-bottom:6px;">Select Time</label>
+        <select id="consultTime" style="width:100%;padding:10px 14px;border:1.5px solid #D0D5E8;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;color:#0B1956;outline:none;background:#fff;">
+          <option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option>
+          <option>12:00 PM</option><option>02:00 PM</option><option>03:00 PM</option>
+          <option>04:00 PM</option><option>05:00 PM</option>
+        </select>
+      </div>
+      <button onclick="confirmConsult()" style="width:100%;height:50px;background:#0B1956;border:none;border-radius:14px;font-family:'Inter',sans-serif;font-weight:700;font-size:16px;color:#fff;cursor:pointer;margin-top:6px;transition:background .18s;" onmouseover="this.style.background='#162980'" onmouseout="this.style.background='#0B1956'">Confirm Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confirm Modal ── -->
+<div class="photo-modal-overlay" id="confirmModal" style="align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:40px 32px;max-width:380px;width:90%;text-align:center;position:relative;">
+    <div style="width:64px;height:64px;background:#E6F9EE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#00B74A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div style="font-family:'Open Sans',sans-serif;font-weight:700;font-size:22px;color:#0B1956;margin-bottom:8px;">Booking Confirmed!</div>
+    <div style="font-family:'Open Sans',sans-serif;font-size:15px;color:#555;margin-bottom:24px;" id="confirmMsg"></div>
+    <button onclick="document.getElementById('confirmModal').classList.remove('open')" style="padding:12px 32px;background:#0B1956;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:#fff;cursor:pointer;">Done</button>
+  </div>
+</div>
+
+<!-- ── Select Hospital Modal ── -->
+<div class="photo-modal-overlay" id="selectModal" style="align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;padding:40px 32px;max-width:380px;width:90%;text-align:center;position:relative;">
+    <div style="width:64px;height:64px;background:#E7E8EE;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg width="32" height="32" viewBox="0 0 80 80" fill="none"><rect x="10" y="28" width="60" height="46" rx="3" stroke="#0B1956" stroke-width="4"/><rect x="30" y="10" width="20" height="20" rx="2" stroke="#0B1956" stroke-width="4"/><line x1="40" y1="10" x2="40" y2="30" stroke="#0B1956" stroke-width="4"/><line x1="30" y1="20" x2="50" y2="20" stroke="#0B1956" stroke-width="4"/></svg>
+    </div>
+    <div style="font-family:'Open Sans',sans-serif;font-weight:700;font-size:22px;color:#0B1956;margin-bottom:8px;">Hospital Selected!</div>
+    <div style="font-family:'Open Sans',sans-serif;font-size:15px;color:#555;margin-bottom:8px;">Zen Multispecialty Hospital has been added to your treatment plan.</div>
+    <div style="font-family:'Inter',sans-serif;font-weight:700;font-size:18px;color:#0B1956;background:#ECF0F9;border-radius:10px;padding:10px 0;margin-bottom:24px;">Treatment Cost: $3,900</div>
+    <button onclick="document.getElementById('selectModal').classList.remove('open')" style="padding:12px 32px;background:#0B1956;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:#fff;cursor:pointer;">Continue</button>
+  </div>
+</div>
+
+<script>
+  // ── Sidebar toggle ──
+  const menuToggle     = document.getElementById('menuToggle');
+  const sidebar        = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    menuToggle.classList.add('open');
+    sidebarOverlay.classList.add('visible');
+    requestAnimationFrame(() => sidebarOverlay.classList.add('open'));
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    menuToggle.classList.remove('open');
+    sidebarOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    sidebarOverlay.addEventListener('transitionend', () => sidebarOverlay.classList.remove('visible'), { once: true });
+  }
+  menuToggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+  sidebarOverlay.addEventListener('click', closeSidebar);
+  window.addEventListener('resize', () => { if (window.innerWidth > 1100) closeSidebar(); });
+
+  // ── Sidebar nav items ──
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ── Photo gallery with real images ──
+  const photoUrls = [
+    'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=1200&h=840&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200&h=840&fit=crop&auto=format',
+  ];
+  let currentPhoto = 0;
+  const thumbEls = document.querySelectorAll('.thumb');
+  const mainPhotoImg = document.getElementById('mainPhotoImg');
+
+  function updatePhoto(idx) {
+    currentPhoto = (idx + photoUrls.length) % photoUrls.length;
+    mainPhotoImg.style.opacity = '0';
+    setTimeout(() => {
+      mainPhotoImg.src = photoUrls[currentPhoto];
+      mainPhotoImg.style.opacity = '1';
+    }, 160);
+    document.getElementById('photoCounter').textContent = (currentPhoto+1) + ' / 9';
+    document.getElementById('modalCounter').textContent = (currentPhoto+1) + ' / 9';
+    document.getElementById('modalImg').src = photoUrls[currentPhoto];
+    thumbEls.forEach((t,i) => t.classList.toggle('active', i === currentPhoto));
+    thumbEls[currentPhoto].scrollIntoView({ behavior:'smooth', block:'nearest', inline:'nearest' });
+  }
+  function changePhoto(dir) { updatePhoto(currentPhoto + dir); }
+  function selectThumb(idx) { updatePhoto(idx); }
+
+  // ── Lightbox ──
+  document.getElementById('mainPhotoImg').addEventListener('click', () => {
+    document.getElementById('modalImg').src = photoUrls[currentPhoto];
+    document.getElementById('modalCounter').textContent = (currentPhoto+1) + ' / 9';
+    document.getElementById('photoModal').classList.add('open');
+  });
+  document.getElementById('modalClose').addEventListener('click', () => document.getElementById('photoModal').classList.remove('open'));
+  document.getElementById('modalPrev').addEventListener('click', () => { updatePhoto(currentPhoto-1); });
+  document.getElementById('modalNext').addEventListener('click', () => { updatePhoto(currentPhoto+1); });
+  document.getElementById('photoModal').addEventListener('click', e => { if(e.target === document.getElementById('photoModal')) document.getElementById('photoModal').classList.remove('open'); });
+  document.addEventListener('keydown', e => {
+    if(document.getElementById('photoModal').classList.contains('open')) {
+      if(e.key === 'ArrowLeft') updatePhoto(currentPhoto-1);
+      if(e.key === 'ArrowRight') updatePhoto(currentPhoto+1);
+      if(e.key === 'Escape') document.getElementById('photoModal').classList.remove('open');
+    }
+  });
+
+  // ── Doctor names & fees data ──
+  const doctors = [
+    { name:'Dr. Arjun Sharma', specialty:'Orthopedic Surgeon', fee:'$28' },
+    { name:'Dr. Priya Nair', specialty:'Neurologist', fee:'$30' },
+    { name:'Dr. Rajesh Gupta', specialty:'Cardiologist', fee:'$35' },
+  ];
+
+  // ── Add name overlays to doctor cards ──
+  document.querySelectorAll('.doctor-card').forEach((card, i) => {
+    const imgWrap = card.querySelector('.doctor-img');
+    const overlay = document.createElement('div');
+    overlay.className = 'doctor-name-overlay';
+    overlay.innerHTML = `<span>${doctors[i].name}</span><small>${doctors[i].specialty}</small>`;
+    imgWrap.style.position = 'relative';
+    imgWrap.appendChild(overlay);
+    card.querySelector('.doc-fee-amt').textContent = doctors[i].fee;
+  });
+
+  // ── Consultation buttons ──
+  document.querySelectorAll('.btn-consult').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      document.getElementById('consultDocName').textContent = 'Book with ' + doctors[i].name;
+      document.getElementById('consultDocFee').textContent = doctors[i].specialty + ' · Fee: ' + doctors[i].fee;
+      // Set min date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('consultDate').min = today;
+      document.getElementById('consultDate').value = today;
+      document.getElementById('consultModal').classList.add('open');
+    });
+  });
+
+  // ── View Details buttons ──
+  document.querySelectorAll('.btn-details').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      btn.textContent = '✓ Viewed';
+      btn.style.background = '#ECF0F9';
+      setTimeout(() => { btn.textContent = 'View Details'; btn.style.background = ''; }, 2000);
+    });
+  });
+
+  // ── Confirm consultation ──
+  function confirmConsult() {
+    const date = document.getElementById('consultDate').value;
+    const time = document.getElementById('consultTime').value;
+    const name = document.getElementById('consultDocName').textContent.replace('Book with ','');
+    if(!date) { document.getElementById('consultDate').style.borderColor='#e55'; setTimeout(()=>document.getElementById('consultDate').style.borderColor='',1500); return; }
+    document.getElementById('consultModal').classList.remove('open');
+    const d = new Date(date);
+    const dateStr = d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('confirmMsg').textContent = `Your consultation with ${name} is booked for ${dateStr} at ${time}.`;
+    document.getElementById('confirmModal').classList.add('open');
+  }
+
+  // ── Select Hospital button ──
+  document.querySelector('.btn-select').addEventListener('click', () => {
+    document.getElementById('selectModal').classList.add('open');
+  });
+
+  // ── Specialties toggle ──
+  document.querySelectorAll('.spec-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      this.classList.toggle('selected');
+    });
+  });
+
+  // ── Search bar ──
+  document.querySelector('.search-input').addEventListener('keydown', e => {
+    if(e.key === 'Enter' && e.target.value.trim()) {
+      const v = e.target.value.trim();
+      e.target.value = '';
+      e.target.placeholder = `Searching "${v}"…`;
+      setTimeout(() => { e.target.placeholder = 'Search'; }, 1800);
+    }
+  });
+
+  // ── Bell button ──
+  document.querySelector('.bell-btn').addEventListener('click', function() {
+    this.style.background = '#ECF0F9';
+    setTimeout(() => { this.style.background = ''; }, 300);
+  });
+
+  // ── Keyboard: close modals on Escape ──
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') {
+      ['consultModal','confirmModal','selectModal'].forEach(id => document.getElementById(id).classList.remove('open'));
+    }
+  });
+</script>
+
+<script>
+/* scroll reveal */
+(function () {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -36px 0px' });
+  function init() { document.querySelectorAll('.sr').forEach(function (el) { io.observe(el); }); }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+})();
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>

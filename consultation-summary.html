@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare - Medical Diagnosis Summary</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-900: #050B24; --blue-500: #0B1956; --blue-100: #B3B8CB; --blue-50: #E7E8EE;
+  --sapphire-50: #ECF0F9; --lavender-100: #F8EFFA; --lavender-800: #746279; --lavender-900: #584B5C;
+  --grey-600: #2C2E2D; --grey-500: #303231; --grey-400: #595B5A; --grey-100: #CCCCCC; --grey-50: #EAEBEA;
+  --white: #FFFFFF;
+  --nav-height: 75px;
+  --sidebar-width: 260px;
+  --shadow-card: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.10);
+  --shadow-nav: 0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);
+}
+
+/* ── RESET & BASE ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  font-family: 'Open Sans', sans-serif;
+  background: #ECF0F9;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* PAGE LOAD ANIMATIONS */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-24px);}to{opacity:1;transform:translateX(0);}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TOP NAV (from discharge.html) ── */
+.top-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);background:#fff;box-shadow:var(--shadow-nav);display:flex;align-items:center;padding:0 24px 0 28px;z-index:100;animation:fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;}
+.logo-area{display:flex;align-items:center;gap:8px;flex-shrink:0;width:auto;cursor:pointer;border-radius:8px;padding:4px;transition:background .18s;}
+.logo-area:hover .logo-name .one,.logo-area:hover .logo-name .care,.logo-area:hover .logo-subtitle{color:#B3B8CB;}
+.logo-svg-stroke{transition:stroke .18s;}
+.logo-svg-fill{transition:fill .18s;}
+.logo-area:hover .logo-svg-stroke{stroke:#B3B8CB;}
+.logo-area:hover .logo-svg-fill{fill:#B3B8CB;}
+.logo-name .one,.logo-name .care,.logo-subtitle{transition:color .18s;}
+.logo-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:44px;}
+.logo-text{display:flex;flex-direction:column;}
+.logo-name{font-family:'Satoshi','Open Sans',sans-serif;font-size:28px;line-height:1;letter-spacing:-0.5px;}
+.logo-name .one{font-weight:400;color:#0B1956;}
+.logo-name .care{font-weight:700;color:#0B1956;}
+.logo-subtitle{font-family:'Open Sans',sans-serif;font-size:14px;font-weight:400;color:#0B1956;line-height:1.4;}
+.nav-center{flex:1;display:flex;justify-content:flex-start;padding-left:118px;}
+.welcome-text{font-family:'Open Sans',sans-serif;font-weight:700;font-size:28px;line-height:40px;color:#0B1956;white-space:nowrap;}
+.nav-right{display:flex;align-items:center;gap:16px;flex-shrink:0;margin-left:auto;}
+.search-bar{display:flex;align-items:center;width:280px;height:44px;background:#EAEBEA;border-radius:28px;padding:0 16px;gap:8px;transition:box-shadow .18s;cursor:text;}
+.search-input{flex:1;height:auto;background:transparent;border:none;outline:none;padding:0;font-family:'Open Sans',sans-serif;font-weight:400;font-size:14px;line-height:1;color:#49454F;letter-spacing:0;}
+.search-input::placeholder{color:#49454F;font-weight:600;}
+.search-icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bell-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;background:none;border:none;}
+
+/* HAMBURGER TOGGLE */
+.menu-toggle{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:8px;flex-shrink:0;transition:background .18s;}
+.menu-toggle:hover{background:#f0f2f9;}
+.menu-toggle span{display:block;width:22px;height:2px;background:#0B1956;border-radius:2px;transition:all .3s;}
+.menu-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.menu-toggle.open span:nth-child(2){opacity:0;}
+.menu-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* OVERLAY */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49;opacity:0;pointer-events:none;transition:opacity .3s;}
+.sidebar-overlay.active{opacity:1;pointer-events:all;}
+
+/* ── SIDEBAR (from discharge.html) ── */
+.sidebar{position:fixed;left:0;top:var(--nav-height);width:var(--sidebar-width);height:calc(100vh - var(--nav-height));background:#0B1956;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;z-index:50;animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+.sidebar-nav{padding:16px 16px 8px;display:flex;flex-direction:column;gap:2px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:12px 20px;height:auto;border-radius:10px;cursor:pointer;transition:background .18s;text-decoration:none;}
+.nav-item.active{background:#fff;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);border-radius:8px;}
+.nav-item:not(.active):hover{background:rgba(255,255,255,.08);border-radius:8px;}
+.nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nav-label{font-family:'Open Sans',sans-serif;font-weight:400;font-size:15px;line-height:24px;letter-spacing:.15px;color:#E7E8EE;}
+.nav-item.active .nav-label{font-weight:700;color:#0B1956;}
+.sidebar-footer{border-top:.866px solid #E5E7EB;padding:12px 16px;}
+.user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.user-avatar{width:48px;height:48px;background:#B3B8CB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.user-details{display:flex;flex-direction:column;}
+.user-name{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:1.2;color:#fff;}
+.user-id{font-family:'Open Sans',sans-serif;font-weight:400;font-size:13px;line-height:25px;color:#B3B8CB;}
+.logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:auto;padding:10px 16px;border:1px solid #fff;border-radius:10px;cursor:pointer;margin-bottom:12px;background:transparent;transition:background .18s,box-shadow .18s,transform .1s;}
+.logout-btn:hover{background:rgba(255,255,255,.1);box-shadow:0 2px 10px rgba(0,0,0,.2);transform:translateY(-1px);}
+.logout-btn:active{background:rgba(255,255,255,.18);transform:translateY(0);}
+.logout-label{font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+/* ── MAIN ── */
+.main-content { margin-left: var(--sidebar-width); padding-top: var(--nav-height); width: calc(100% - var(--sidebar-width)); overflow-x: clip; }
+.dashboard-layout { display: flex; flex-direction: column; align-items: flex-start; padding: 30px 40px 50px; width: 100%; min-height: calc(100vh - 75px); background: #ECF0F9; box-sizing: border-box; gap: 22px; }
+
+/* ── CARDS ── */
+.card {
+  background: #FFFFFF;
+  border: 0.767047px solid #E5E7EB;
+  box-shadow: 0px 9.8182px 12.2727px -7.36365px rgba(0,0,0,0.1);
+  border-radius: 19.6364px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── SECTION HEADER ── */
+.section-header { display: flex; flex-direction: row; align-items: center; gap: 14px; width: 100%; }
+.section-icon-circle { width: 44px; height: 44px; background: #E7E8EE; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.section-title-group { display: flex; flex-direction: column; gap: 2px; }
+.section-title { font-weight: 700; font-size: 16px; line-height: 22px; color: #0B1956; }
+.section-subtitle { font-weight: 400; font-size: 12px; line-height: 18px; letter-spacing: 0.15px; color: #303231; }
+
+/* ── META INFO BAR ── */
+.meta-info-bar { display: flex; flex-direction: row; align-items: center; gap: 0; width: 100%; background: #ECF0F9; border-radius: 12px; padding: 16px 20px; }
+.meta-item { display: flex; flex-direction: row; align-items: center; gap: 12px; flex: 1; }
+.meta-item + .meta-item { border-left: 1px solid #D1D9F0; padding-left: 24px; margin-left: 24px; }
+.meta-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.meta-label { font-weight: 400; font-size: 11px; line-height: 16px; letter-spacing: 0.15px; color: #303231; }
+.meta-value { font-weight: 700; font-size: 13px; line-height: 20px; color: #0B1956; }
+
+/* ── SUMMARY CARD ── */
+.summary-card { padding: 22px 26px; display: flex; flex-direction: column; gap: 16px; }
+.summary-card-actions { display: flex; flex-direction: row; gap: 6px; }
+.icon-btn { width: 38px; height: 38px; background: #E7E8EE; border-radius: 9px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+.icon-btn:hover { background: #D1D9F0; }
+.summary-header-row { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100%; }
+
+/* ── DIAGNOSIS CARD ── */
+.diagnosis-card { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.diagnosis-inner-box { background: #ECF0F9; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.diagnosis-main-row { display: flex; flex-direction: row; align-items: flex-start; gap: 14px; }
+.diagnosis-icon-sq { width: 46px; height: 46px; background: #0B1956; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.diagnosis-text-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.diagnosis-title { font-weight: 700; font-size: 16px; line-height: 22px; color: #0B1956; }
+.diagnosis-body { font-weight: 400; font-size: 12px; line-height: 20px; letter-spacing: 0.15px; color: #303231; }
+
+/* Severity + ICD row */
+.diagnosis-metrics-row { display: flex; flex-direction: row; gap: 16px; width: 100%; }
+.metric-box { background: #FFFFFF; border: 0.767px solid #E5E7EB; border-radius: 9px; padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.metric-label { font-weight: 700; font-size: 13px; line-height: 18px; color: #0B1956; }
+.severity-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.severity-track { flex: 1; height: 8px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
+.severity-fill { height: 100%; width: 85%; background: #0B1956; border-radius: 99px; }
+.severity-text { font-weight: 700; font-size: 12px; color: #595B5A; white-space: nowrap; }
+.icd-code { font-weight: 700; font-size: 17px; line-height: 24px; color: #0B1956; }
+
+/* Stats row */
+.stats-row { display: flex; flex-direction: row; gap: 12px; width: 100%; }
+.stat-card { background: #FBF7FC; box-shadow: 0px 1.55823px 4.6747px rgba(0,0,0,0.1), 0px 1.55823px 3.11647px -1.55823px rgba(0,0,0,0.1); border-radius: 9px; padding: 14px 16px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.stat-label { font-weight: 700; font-size: 11px; line-height: 16px; color: #595B5A; }
+.stat-value { font-weight: 700; font-size: 15px; line-height: 22px; color: #0B1956; }
+
+/* ── TREATMENT PLAN CARD ── */
+.treatment-card { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.treatment-block { background: #ECF0F9; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.treatment-main-row { display: flex; flex-direction: row; align-items: flex-start; gap: 14px; }
+.treatment-text-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.treatment-title { font-weight: 700; font-size: 16px; line-height: 22px; color: #0B1956; }
+.treatment-body { font-weight: 400; font-size: 12px; line-height: 20px; letter-spacing: 0.15px; color: #303231; }
+.procedure-detail-box { background: #FFFFFF; border: 0.767px solid #E5E7EB; border-radius: 9px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+.procedure-detail-title { font-weight: 700; font-size: 13px; line-height: 20px; color: #0B1956; }
+.procedure-list { display: flex; flex-direction: column; gap: 6px; }
+.procedure-list-item { display: flex; flex-direction: row; align-items: flex-start; gap: 8px; }
+.list-check-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.list-item-text { font-weight: 700; font-size: 12px; line-height: 20px; color: #2C2E2D; }
+
+/* Rehab block */
+.rehab-block { background: #ECF0F9; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.timeline-list { display: flex; flex-direction: column; gap: 14px; }
+.timeline-item { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; }
+.timeline-num { width: 28px; height: 28px; background: #0B1956; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 12px; color: #FFFFFF; }
+.timeline-text-group { display: flex; flex-direction: column; gap: 2px; }
+.timeline-week { font-weight: 700; font-size: 13px; line-height: 18px; color: #0B1956; }
+.timeline-desc { font-weight: 400; font-size: 11px; line-height: 17px; color: #303231; }
+
+/* ── RECOMMENDATIONS CARD ── */
+.reco-card { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.reco-section-title { font-weight: 700; font-size: 16px; line-height: 22px; color: #0B1956; display: flex; align-items: center; gap: 8px; }
+.reco-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.reco-box { background: #ECF0F9; border-radius: 9px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.reco-box-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; line-height: 20px; color: #0B1956; }
+.reco-list { display: flex; flex-direction: column; gap: 6px; list-style: none; }
+.reco-list li { display: flex; align-items: flex-start; gap: 6px; font-weight: 400; font-size: 12px; line-height: 18px; color: #2C2E2D; }
+.reco-list li::before { content: "›"; font-size: 14px; color: #595B5A; flex-shrink: 0; line-height: 18px; }
+
+/* ── CLINICAL OUTCOMES ── */
+.outcomes-card { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.outcomes-title { font-weight: 700; font-size: 16px; line-height: 22px; color: #0B1956; }
+.outcomes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.outcome-box { background: #FBF7FC; box-shadow: 0px 1.55823px 4.6747px rgba(0,0,0,0.1), 0px 1.55823px 3.11647px -1.55823px rgba(0,0,0,0.1); border-radius: 9px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.outcome-number { font-weight: 700; font-size: 28px; line-height: 34px; color: #0B1956; text-align: center; }
+.outcome-label { font-weight: 400; font-size: 12px; line-height: 18px; color: #0B1956; text-align: center; }
+
+/* ── CTA CARD ── */
+.cta-card { background: #0B1956; border-radius: 14px; padding: 22px 26px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 20px; width: 100%; box-shadow: 0px 24px 30px -6px rgba(0,0,0,0.1), 0px 9.8px 12.3px -7.4px rgba(0,0,0,0.1); }
+.cta-text-group { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.cta-title { font-weight: 700; font-size: 15px; line-height: 22px; color: #FFFFFF; }
+.cta-body { font-weight: 400; font-size: 12px; line-height: 18px; color: #EAEBEA; max-width: 600px; }
+.cta-btn { background: #FFFFFF; border-radius: 12px; border: none; padding: 14px 16px; display: flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; max-width: 320px; transition: all 0.2s; }
+.cta-btn:hover { background: #ECF0F9; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
+.cta-btn span { font-weight: 700; font-size: 11px; line-height: 17px; color: #0B1956; text-align: center; }
+
+/* ── DISCLAIMER ── */
+.disclaimer-card { background: #FFFFFF; border-radius: 9px; padding: 14px 18px; display: flex; flex-direction: row; align-items: flex-start; gap: 10px; width: 100%; }
+.disclaimer-title { font-weight: 700; font-size: 12px; line-height: 18px; color: #595B5A; }
+.disclaimer-body { font-weight: 400; font-size: 11px; line-height: 17px; color: #595B5A; margin-top: 3px; }
+
+/* ── CARD SCROLL-IN ANIMATION ── */
+.card, .cta-card, .disclaimer-card { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.2s; }
+.card--visible { opacity: 1; transform: translateY(0); }
+
+/* ── TOAST ── */
+#toastContainer { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.oc-toast { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 30px; font-weight: 600; font-size: 13px; color: #fff; background: #0B1956; box-shadow: 0 8px 24px rgba(11,25,86,0.25); opacity: 0; transform: translateY(12px) scale(0.96); transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; white-space: nowrap; }
+.oc-toast--show { opacity: 1; transform: translateY(0) scale(1); }
+.oc-toast--success { background: #15803d; }
+.oc-toast--error   { background: #b91c1c; }
+.oc-toast-icon { font-weight: 700; font-size: 14px; }
+
+/* ── NOTIFICATION PANEL ── */
+.notif-panel { position: absolute; top: calc(100% + 10px); right: 0; width: 320px; background: #fff; border-radius: 16px; box-shadow: 0 16px 48px rgba(11,25,86,0.18); z-index: 500; overflow: hidden; display: none; border: 1px solid #E5E7EB; }
+.notif-panel--open { display: block; animation: fadeDown 0.2s ease; }
+@keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.notif-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 10px; border-bottom: 1px solid #F0F0F0; }
+.notif-panel-title { font-weight: 700; font-size: 14px; color: #0B1956; }
+.notif-mark-all { font-size: 11px; font-weight: 600; color: #0B1956; background: none; border: none; cursor: pointer; opacity: 0.7; }
+.notif-mark-all:hover { opacity: 1; }
+.notif-list { max-height: 280px; overflow-y: auto; }
+.notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border-bottom: 1px solid #F7F7F7; position: relative; cursor: pointer; transition: background 0.15s; }
+.notif-item:hover { background: #F7F9FF; }
+.notif-item.notif-unread { background: #F5F7FF; }
+.notif-item-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.notif-item-body { flex: 1; }
+.notif-item-text { font-size: 12px; font-weight: 500; color: #303231; line-height: 17px; }
+.notif-item-time { font-size: 11px; color: #9CA3AF; margin-top: 3px; }
+.notif-unread-dot { width: 8px; height: 8px; background: #0B1956; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+
+/* ── MODAL SYSTEM ── */
+.oc-modal { position: fixed; inset: 0; background: rgba(11,25,86,0.52); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease; }
+.oc-modal--open { opacity: 1; visibility: visible; }
+.oc-modal-box { background: #fff; border-radius: 20px; padding: 32px; width: 90%; max-width: 460px; position: relative; box-shadow: 0 24px 64px rgba(11,25,86,0.22); transform: scale(0.92) translateY(16px); transition: transform 0.25s ease; }
+.oc-modal--open .oc-modal-box { transform: scale(1) translateY(0); }
+.oc-modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #ECF0F9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #0B1956; transition: background 0.2s; }
+.oc-modal-close:hover { background: #D1D9F0; }
+.oc-modal-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.oc-modal-title { font-weight: 700; font-size: 18px; color: #0B1956; margin-bottom: 8px; }
+.oc-modal-body  { font-weight: 400; font-size: 13px; color: #595B5A; line-height: 20px; margin-bottom: 24px; }
+.oc-modal-btns  { display: flex; gap: 10px; }
+.oc-btn-primary { flex: 1; height: 44px; background: #0B1956; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+.oc-btn-primary:hover { background: #1a2d6e; }
+.oc-btn-secondary { flex: 1; height: 44px; background: #fff; color: #0B1956; border: 1.5px solid #D1D9F0; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+.oc-btn-secondary:hover { background: #ECF0F9; }
+
+/* share modal */
+.share-link-row { display: flex; align-items: center; gap: 8px; background: #ECF0F9; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; }
+.share-link-url { flex: 1; font-size: 12px; color: #0B1956; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#copyLinkBtn { background: #0B1956; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+#copyLinkBtn:hover { background: #1a2d6e; }
+.share-options { display: flex; gap: 10px; }
+.share-opt-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: 1.5px solid #E5E7EB; border-radius: 10px; background: #fff; cursor: pointer; font-size: 11px; font-weight: 600; color: #0B1956; transition: all 0.2s; }
+.share-opt-btn:hover { background: #ECF0F9; border-color: #0B1956; }
+
+/* ── SCROLL TO TOP ── */
+#scrollTopBtn { position: fixed; bottom: 32px; right: 32px; width: 42px; height: 42px; background: #0B1956; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; box-shadow: 0 6px 20px rgba(11,25,86,0.28); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; }
+#scrollTopBtn.scrolltop--visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+#scrollTopBtn:hover { background: #1a2d6e; }
+
+/* ── HOVER EFFECTS ── */
+.stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11,25,86,0.14); }
+.outcome-box { transition: transform 0.2s, box-shadow 0.2s; }
+.outcome-box:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(11,25,86,0.12); }
+
+/* ── RESPONSIVE ── */
+/* Collapsible sidebar ≤1100px */
+@media(max-width:1100px){
+  .menu-toggle{display:flex;}
+  .nav-center{display:none;}
+  .search-bar{width:200px;}
+  .sidebar{transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:none;}
+  .sidebar.open{transform:translateX(0);box-shadow:6px 0 32px rgba(0,0,0,.2);}
+  .sidebar-overlay{display:block;}
+  .main-content{margin-left:0 !important;width:100% !important;padding-left:24px;padding-right:24px;}
+}
+@media (max-width: 899px) {
+  :root { --nav-height: 64px; }
+  .top-nav { padding: 8px 16px; }
+  .search-bar { width: 40px; height: 40px; border-radius: 50%; padding: 0; justify-content: center; }
+  .search-input { display: none; }
+  .search-icon-btn { width: 40px; height: 40px; }
+  .bell-btn { width: 40px; height: 40px; }
+  .main-content { margin-left: 0; padding-top: var(--nav-height); width: 100%; }
+  .dashboard-layout { padding: 24px 20px 40px; }
+  .reco-grid { grid-template-columns: 1fr; }
+  .outcomes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  :root { --nav-height: 56px; }
+    .top-nav{padding:6px 12px;gap:6px;}
+      .logo-icon{width:26px;height:32px;}
+      .logo-icon svg{width:26px;height:32px;}
+      .logo-name{font-size:18px;line-height:24px;}
+      .logo-subtitle{font-size:11px;line-height:16px;}
+      .nav-right{gap:6px;}
+      .search-bar{width:34px;height:34px;border-radius:50%;padding:0;justify-content:center;}
+      .search-input{display:none;}
+      .search-icon-btn{width:34px;height:34px;}
+      .bell-btn{width:34px;height:34px;}
+      .bell-btn svg{width:20px;height:20px;}
+       .sidebar {
+    top: var(--nav-height);
+    height: calc(100vh - var(--nav-height));
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 50;
+    animation: none; }/* disable load animation on mobile — drawer handles its own transform */
+  .main-content{margin-left:0;padding:12px 12px 32px;}
+  .main-content { margin-left: 0; width: 100%; }
+  .dashboard-layout { padding: 16px 14px 40px; gap: 14px; }
+  .reco-grid, .outcomes-grid { grid-template-columns: 1fr; }
+  .stats-row { flex-direction: column; }
+  .cta-card { flex-direction: column; }
+  .diagnosis-metrics-row { flex-direction: column; }
+  .meta-item + .meta-item { border-left: none; padding-left: 0; margin-left: 0; border-top: 1px solid #D1D9F0; padding-top: 12px; margin-top: 12px; }
+  .meta-info-bar { flex-direction: column; align-items: flex-start; }
+}
+@media(max-width:380px){
+  .logo-subtitle{display:none;}
+}
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST CONTAINER ── -->
+<div id="toastContainer"></div>
+
+<!-- ── SCROLL TO TOP ── -->
+<button id="scrollTopBtn" title="Back to top" aria-label="Scroll to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- ── INFO MODAL ── -->
+<div class="oc-modal" id="infoModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#ECF0F9;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#0B1956" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="oc-modal-title" id="infoModalTitle">Detail</div>
+    <div class="oc-modal-body"  id="infoModalBody"></div>
+    <div class="oc-modal-btns">
+      <button class="oc-btn-primary oc-modal-close">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SHARE MODAL ── -->
+<div class="oc-modal" id="shareModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#ECF0F9;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#0B1956" stroke-width="2"/><circle cx="6" cy="12" r="2.5" stroke="#0B1956" stroke-width="2"/><circle cx="18" cy="19" r="2.5" stroke="#0B1956" stroke-width="2"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4" stroke="#0B1956" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="oc-modal-title">Share Report</div>
+    <div class="oc-modal-body">Share this diagnosis summary with a family member or second-opinion doctor.</div>
+    <div class="share-link-row">
+      <span class="share-link-url">https://onecare.health/report/MT-123456/diagnosis</span>
+      <button id="copyLinkBtn">Copy Link</button>
+    </div>
+    <div class="share-options">
+      <button class="share-opt-btn" onclick="showToast('Email share initiated','success')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#0B1956" stroke-width="2"/><path d="M3 6l9 7 9-7" stroke="#0B1956" stroke-width="2"/></svg>
+        Email
+      </button>
+      <button class="share-opt-btn" onclick="showToast('WhatsApp share initiated','success')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/><path d="M8 13s1 2 4 2 4-2 4-2" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/></svg>
+        WhatsApp
+      </button>
+      <button class="share-opt-btn" onclick="showToast('PDF exported','success')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M8 13l4 4 4-4" stroke="#0B1956" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18h16" stroke="#0B1956" stroke-width="2" stroke-linecap="round"/></svg>
+        Export PDF
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA MODAL ── -->
+<div class="oc-modal" id="ctaModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#E7F5EC;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/></svg>
+    </div>
+    <div class="oc-modal-title">Proceed to Package Selection?</div>
+    <div class="oc-modal-body">You'll be taken to the cost overview and package selection screen where you can customise your treatment plan, choose a hospital and room type, and get a full cost estimate.</div>
+    <div style="background:#ECF0F9;border-radius:10px;padding:14px 16px;margin-bottom:20px;">
+      <div style="font-size:11px;color:#595B5A;margin-bottom:6px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Selected Procedure</div>
+      <div style="font-weight:700;font-size:14px;color:#0B1956;">Total Knee Arthroplasty (TKA) · ICD M17.11</div>
+      <div style="font-size:12px;color:#303231;margin-top:2px;">Dr. Rajesh Kumar · Feb 10, 2026</div>
+    </div>
+    <div class="oc-modal-btns">
+      <button class="oc-btn-secondary oc-modal-close">Review Again</button>
+      <button class="oc-btn-primary" id="ctaConfirmBtn">Yes, Proceed →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOGOUT MODAL ── -->
+<div class="oc-modal" id="logoutModal">
+  <div class="oc-modal-box">
+    <button class="oc-modal-close">✕</button>
+    <div class="oc-modal-icon" style="background:#FEF3C7;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M10 5H5v15h5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/><path d="M16 17l4-4.5-4-4.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="9" y1="12.5" x2="20" y2="12.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="oc-modal-title">Log Out?</div>
+    <div class="oc-modal-body">You'll be signed out of the OneCare Patient Portal. Make sure you've downloaded any reports you need before leaving.</div>
+    <div class="oc-modal-btns">
+      <button class="oc-btn-secondary oc-modal-close">Stay Signed In</button>
+      <button class="oc-btn-primary" id="logoutConfirmBtn" style="background:#b91c1c;">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ══════════════════════════════════════════
+     TOP NAV  —  from discharge.html
+     ══════════════════════════════════════════ -->
+<header class="top-nav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center"><span class="welcome-text">Welcome Michael!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search" autocomplete="off">
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="bell-btn" id="notifBtn" style="position:relative;">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR  —  from discharge.html
+     ══════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <div class="nav-item active">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#0B1956" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#0B1956" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#0B1956" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#0B1956" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <span class="nav-label">My Journey</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </div>
+  </nav>
+  <!-- SIDEBAR FOOTER — from discharge.html -->
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="dashboard-layout">
+
+    <!-- ── 1. MEDICAL DIAGNOSIS SUMMARY CARD ── -->
+    <div class="card summary-card">
+      <div class="summary-header-row">
+        <div class="section-header">
+          <div class="section-icon-circle">
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+              <path d="M7.79237 28.5721C7.10359 28.5721 6.44301 28.2985 5.95597 27.8115C5.46893 27.3244 5.19531 26.6639 5.19531 25.9751V5.19862C5.19531 4.50984 5.46893 3.84927 5.95597 3.36223C6.44301 2.87518 7.10359 2.60157 7.79237 2.60157H18.1806C18.5916 2.6009 18.9988 2.68156 19.3785 2.8389C19.7583 2.99624 20.1031 3.22714 20.3933 3.51833L25.0524 8.17745C25.3444 8.46768 25.5759 8.81287 25.7337 9.1931C25.8915 9.57333 25.9724 9.98106 25.9718 10.3927V25.9751C25.9718 26.6639 25.6981 27.3244 25.2111 27.8115C24.7241 28.2985 24.0635 28.5721 23.3747 28.5721H7.79237Z" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18.1797 2.60156V9.0942C18.1797 9.43859 18.3165 9.76888 18.56 10.0124C18.8035 10.2559 19.1338 10.3927 19.4782 10.3927H25.9709" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="9" y1="17" x2="23" y2="17" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="9" y1="22" x2="19" y2="22" stroke="#0B1956" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="section-title-group">
+            <div class="section-title">Medical Diagnosis Summary</div>
+            <div class="section-subtitle">Post-Consultation Report &amp; Treatment Plan</div>
+          </div>
+        </div>
+        <div class="summary-card-actions">
+          <button class="icon-btn" title="Download">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M8 13l4 4 4-4" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18h16" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn" title="Print">
+            <svg width="16" height="16" viewBox="0 0 25 25" fill="none"><path d="M6.13584 18.4077H4.09038C3.54789 18.4077 3.02762 18.1922 2.64402 17.8086C2.26042 17.425 2.04492 16.9047 2.04492 16.3622V11.2486C2.04492 10.7061 2.26042 10.1858 2.64402 9.80223C3.02762 9.41863 3.54789 9.20312 4.09038 9.20312H20.454C20.9965 9.20312 21.5168 9.41863 21.9004 9.80223C22.284 10.1858 22.4995 10.7061 22.4995 11.2486V16.3622C22.4995 16.9047 22.284 17.425 21.9004 17.8086C21.5168 18.1922 20.9965 18.4077 20.454 18.4077H18.4086" stroke="#0B1956" stroke-width="2.04546" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.13672 9.20598V3.0696C6.13672 2.79836 6.24447 2.53822 6.43627 2.34643C6.62807 2.15463 6.8882 2.04688 7.15945 2.04688H17.3867C17.658 2.04688 17.9181 2.15463 18.1099 2.34643C18.3017 2.53822 18.4095 2.79836 18.4095 3.0696V9.20598" stroke="#0B1956" stroke-width="2.04546" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.3867 14.3203H7.15945C6.59461 14.3203 6.13672 14.7782 6.13672 15.343V21.4794C6.13672 22.0443 6.59461 22.5021 7.15945 22.5021H17.3867C17.9516 22.5021 18.4095 22.0443 18.4095 21.4794V15.343C18.4095 14.7782 17.9516 14.3203 17.3867 14.3203Z" stroke="#0B1956" stroke-width="2.04546" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" title="Share">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#0B1956" stroke-width="2.04"/><circle cx="6" cy="12" r="2.5" stroke="#0B1956" stroke-width="2.04"/><circle cx="18" cy="19" r="2.5" stroke="#0B1956" stroke-width="2.04"/><path d="M8.5 10.5l7-4M8.5 13.5l7 4" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="meta-info-bar">
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#0B1956" stroke-width="2.04"/><path d="M4 20c0-4 3.582-7 8-7s8 3 8 7" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">Consulting Doctor</div>
+            <div class="meta-value">Dr. Rajesh Kumar</div>
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="2.04"/><path d="M3 10h18" stroke="#0B1956" stroke-width="2.04"/><path d="M8 2v4M16 2v4" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">Consultation Date</div>
+            <div class="meta-value">Feb 10, 2026</div>
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2.04"/><path d="M12 7v5l3 3" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg></div>
+          <div>
+            <div class="meta-label">Time</div>
+            <div class="meta-value">10:00 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. PRIMARY DIAGNOSIS CARD ── -->
+    <div class="card diagnosis-card">
+      <div class="section-header">
+        <div class="section-icon-circle">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2.04"/><path d="M12 8v4M12 16h.01" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg>
+        </div>
+        <div class="section-title-group">
+          <div class="section-title">Primary Diagnosis</div>
+          <div class="section-subtitle">Medical condition identified</div>
+        </div>
+      </div>
+      <div class="diagnosis-inner-box">
+        <div class="diagnosis-main-row">
+          <div class="diagnosis-icon-sq">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none"><path d="M17.9961 3.27344V6.54537" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.18164 3.27344V6.54537" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.18134 4.90625H6.54537C5.6776 4.90625 4.84537 5.25097 4.23176 5.86458C3.61816 6.47818 3.27344 7.31041 3.27344 8.17818V14.722C3.27344 17.3254 4.3076 19.822 6.14842 21.6629C7.98924 23.5037 10.4859 24.5378 13.0892 24.5378C15.6925 24.5378 18.1892 23.5037 20.0301 21.6629C21.8709 19.822 22.905 17.3254 22.905 14.722V8.17818C22.905 7.31041 22.5603 6.47818 21.9467 5.86458C21.3331 5.25097 20.5009 4.90625 19.6331 4.90625H17.9971" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.0879 24.5407C13.0879 27.144 14.1221 29.6407 15.9629 31.4815C17.8037 33.3224 20.3004 34.3565 22.9037 34.3565C25.507 34.3565 28.0037 33.3224 29.8445 31.4815C31.6853 29.6407 32.7195 27.144 32.7195 24.5407V19.6328" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/><path d="M32.7212 19.6298C34.5282 19.6298 35.9931 18.1649 35.9931 16.3579C35.9931 14.5508 34.5282 13.0859 32.7212 13.0859C30.9141 13.0859 29.4492 14.5508 29.4492 16.3579C29.4492 18.1649 30.9141 19.6298 32.7212 19.6298Z" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="diagnosis-text-group">
+            <div class="diagnosis-title">Knee Replacement Surgery Required</div>
+            <div class="diagnosis-body">Based on the comprehensive evaluation, clinical examination, and review of medical imaging, the patient presents with severe osteoarthritis of the right knee joint with significant cartilage degeneration, bone-on-bone contact, and limited range of motion. Conservative treatment options have been exhausted without adequate relief.</div>
+          </div>
+        </div>
+        <div class="diagnosis-metrics-row">
+          <div class="metric-box" style="flex: 1.5;">
+            <div class="metric-label">Severity Level</div>
+            <div class="severity-bar-wrap">
+              <div class="severity-track"><div class="severity-fill"></div></div>
+              <span class="severity-text">Severe</span>
+            </div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">ICD-10 Code</div>
+            <div class="icd-code">M17.11</div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Pain Level</div><div class="stat-value">8/10 (Severe)</div></div>
+          <div class="stat-card"><div class="stat-label">Range of Motion</div><div class="stat-value">30% Limited</div></div>
+          <div class="stat-card"><div class="stat-label">Joint Stability</div><div class="stat-value">Compromised</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3. RECOMMENDED TREATMENT PLAN ── -->
+    <div class="card treatment-card">
+      <div class="section-header">
+        <div class="section-icon-circle">
+          <svg width="24" height="24" viewBox="0 0 30 30" fill="none"><path d="M26.7475 12.2731C27.3079 15.0231 26.9085 17.8821 25.6161 20.3733C24.3236 22.8646 22.2162 24.8374 19.6452 25.9629C17.0742 27.0883 14.1951 27.2984 11.488 26.558C8.78091 25.8176 6.40943 24.1716 4.76907 21.8943C3.12871 19.6171 2.31861 16.8463 2.47388 14.0441C2.62914 11.2419 3.74038 8.57757 5.62228 6.49549C7.50418 4.41341 10.043 3.03942 12.8153 2.60265C15.5876 2.16587 18.4259 2.69271 20.8568 4.09532" stroke="#0B1956" stroke-width="2.45395" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.041 13.4951L14.7219 17.176L26.9917 4.90625" stroke="#0B1956" stroke-width="2.45395" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="section-title-group">
+          <div class="section-title">Recommended Treatment Plan</div>
+          <div class="section-subtitle">Optimal treatment approach</div>
+        </div>
+      </div>
+      <div class="treatment-block">
+        <div class="treatment-main-row">
+          <div class="diagnosis-icon-sq">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none"><path d="M31.0849 22.9019C33.5225 20.5134 35.9928 17.6504 35.9928 13.9041C35.9928 11.5177 35.0448 9.22907 33.3574 7.54165C31.67 5.85423 29.3813 4.90625 26.995 4.90625C24.1157 4.90625 22.0871 5.72423 19.6331 8.17818C17.1792 5.72423 15.1506 4.90625 12.2713 4.90625C9.88488 4.90625 7.59625 5.85423 5.90884 7.54165C4.22142 9.22907 3.27344 11.5177 3.27344 13.9041C3.27344 17.6668 5.72739 20.5297 8.18134 22.9019L19.6331 34.3536L31.0849 22.9019Z" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="treatment-text-group">
+            <div class="treatment-title">Total Knee Arthroplasty (TKA)</div>
+            <div class="treatment-body">Total Knee Replacement surgery is recommended as the most effective treatment for your condition. This procedure involves replacing the damaged knee joint surfaces with prosthetic components made of metal and plastic. The surgery will restore function, reduce pain, and improve your quality of life significantly.</div>
+          </div>
+        </div>
+        <div class="procedure-detail-box">
+          <div class="procedure-detail-title">Procedure Details:</div>
+          <div class="procedure-list">
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Type: Primary Total Knee Replacement</span></div>
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Approach: Minimally Invasive Technique</span></div>
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Prosthesis: Advanced Ceramic-on-Polyethylene Implant</span></div>
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Anesthesia: Spinal/Epidural with Sedation</span></div>
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Duration: Approximately 1.5 – 2 hours</span></div>
+            <div class="procedure-list-item"><div class="list-check-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2C2E2D" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#2C2E2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="list-item-text">Hospital Stay: 3-4 days post-operative</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="rehab-block">
+        <div class="treatment-main-row">
+          <div class="diagnosis-icon-sq">
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none"><path d="M35.9928 19.6331H31.9356C31.2206 19.6316 30.5248 19.8643 29.9546 20.2956C29.3844 20.727 28.9712 21.3332 28.7782 22.0216L24.9336 35.6983C24.9089 35.7833 24.8572 35.8579 24.7864 35.911C24.7156 35.9641 24.6295 35.9928 24.541 35.9928C24.4525 35.9928 24.3664 35.9641 24.2956 35.911C24.2248 35.8579 24.1732 35.7833 24.1484 35.6983L15.1178 3.56791C15.0931 3.48296 15.0414 3.40833 14.9706 3.35524C14.8998 3.30214 14.8137 3.27344 14.7252 3.27344C14.6367 3.27344 14.5506 3.30214 14.4798 3.35524C14.409 3.40833 14.3574 3.48296 14.3326 3.56791L10.4881 17.2446C10.2958 17.9303 9.885 18.5346 9.31811 18.9657C8.75122 19.3967 8.05916 19.6311 7.34699 19.6331H3.27344" stroke="white" stroke-width="3.27193" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="treatment-text-group">
+            <div class="treatment-title">Post-Operative Physiotherapy Program</div>
+            <div class="treatment-body">A comprehensive physiotherapy rehabilitation program is essential for optimal recovery. The program will begin within 24 hours post-surgery and continue for 6-12 weeks, focusing on restoring strength, flexibility, and function to your knee joint.</div>
+          </div>
+        </div>
+        <div class="procedure-detail-box">
+          <div class="procedure-detail-title">Rehabilitation Timeline:</div>
+          <div class="timeline-list">
+            <div class="timeline-item"><div class="timeline-num">1</div><div class="timeline-text-group"><div class="timeline-week">Week 1-2: Early Mobilization</div><div class="timeline-desc">Gentle range of motion exercises, walking with assistance, pain management</div></div></div>
+            <div class="timeline-item"><div class="timeline-num">2</div><div class="timeline-text-group"><div class="timeline-week">Week 3-6: Progressive Strengthening</div><div class="timeline-desc">Resistance exercises, balance training, gradual increase in activity</div></div></div>
+            <div class="timeline-item"><div class="timeline-num">3</div><div class="timeline-text-group"><div class="timeline-week">Week 7-12: Functional Recovery</div><div class="timeline-desc">Advanced exercises, stair climbing, return to daily activities</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. ADDITIONAL RECOMMENDATIONS ── -->
+    <div class="card reco-card">
+      <div class="reco-section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#0B1956" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#0B1956" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#0B1956" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#0B1956" stroke-width="2"/></svg>
+        Additional Recommendations &amp; Considerations
+      </div>
+      <div class="reco-grid">
+        <div class="reco-box">
+          <div class="reco-box-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#0B1956" stroke-width="2" stroke-linecap="round"/></svg>Pre-Operative Preparation</div>
+          <ul class="reco-list"><li>Complete blood tests and cardiac evaluation</li><li>Stop blood thinners 5 days before surgery</li><li>Attend pre-operative physiotherapy session</li><li>Arrange home care assistance for 2 weeks</li></ul>
+        </div>
+        <div class="reco-box">
+          <div class="reco-box-title"><svg width="16" height="16" viewBox="0 0 27 25" fill="none"><path d="M22.0851 14.7233C23.9133 12.9319 25.7661 10.7847 25.7661 7.97492C25.7661 6.18515 25.0551 4.46868 23.7895 3.20311C22.5239 1.93755 20.8075 1.22656 19.0177 1.22656C16.8582 1.22656 15.3368 1.84005 13.4963 3.68051C11.6558 1.84005 10.1344 1.22656 7.97492 1.22656C6.18515 1.22656 4.46868 1.93755 3.20311 3.20311C1.93755 4.46868 1.22656 6.18515 1.22656 7.97492C1.22656 10.797 3.06702 12.9442 4.90749 14.7233L13.4963 23.3121L22.0851 14.7233Z" stroke="#0B1956" stroke-width="2.45395" stroke-linecap="round" stroke-linejoin="round"/></svg>Post-Operative Care</div>
+          <ul class="reco-list"><li>Daily physiotherapy sessions for first week</li><li>Pain management medication as prescribed</li><li>Blood clot prevention protocol</li><li>Follow-up appointments at 2, 6, and 12 weeks</li></ul>
+        </div>
+        <div class="reco-box">
+          <div class="reco-box-title"><svg width="16" height="16" viewBox="0 0 30 30" fill="none"><path d="M12.884 25.1498L25.1537 12.8801C25.7271 12.3182 26.1833 11.6483 26.4961 10.909C26.8089 10.1697 26.9721 9.37569 26.9761 8.57295C26.9802 7.77021 26.8251 6.97463 26.5198 6.23222C26.2144 5.4898 25.765 4.81527 25.1973 4.24764C24.6297 3.68002 23.9552 3.23054 23.2128 2.92522C22.4703 2.61989 21.6748 2.46477 20.872 2.46883C20.0693 2.47288 19.2753 2.63603 18.536 2.94884C17.7967 3.26165 17.1268 3.71791 16.5649 4.29124L4.29515 16.561C3.72182 17.1229 3.26555 17.7928 2.95274 18.5321C2.63994 19.2714 2.47679 20.0654 2.47273 20.8681C2.46868 21.6709 2.6238 22.4664 2.92912 23.2088C3.23445 23.9513 3.68392 24.6258 4.25155 25.1934C4.81918 25.761 5.4937 26.2105 6.23612 26.5158C6.97854 26.8212 7.77412 26.9763 8.57686 26.9722C9.3796 26.9682 10.1736 26.805 10.9129 26.4922C11.6522 26.1794 12.3221 25.7232 12.884 25.1498Z" stroke="#0B1956" stroke-width="2.45395" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.4297 10.4297L19.0185 19.0185" stroke="#0B1956" stroke-width="2.45395" stroke-linecap="round" stroke-linejoin="round"/></svg>Prescribed Medications</div>
+          <ul class="reco-list"><li>Pain relief: Tramadol 50mg as needed</li><li>Anti-inflammatory: Celecoxib 200mg daily</li><li>Blood thinner: Rivaroxaban 10mg daily</li><li>Antibiotic prophylaxis as per protocol</li></ul>
+        </div>
+        <div class="reco-box">
+          <div class="reco-box-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#0B1956" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="#0B1956" stroke-width="2"/><circle cx="12" cy="12" r="1.5" fill="#0B1956"/></svg>Expected Outcomes</div>
+          <ul class="reco-list"><li>90-95% reduction in knee pain</li><li>Significant improvement in mobility</li><li>Return to normal daily activities in 3 months</li><li>Implant longevity: 15-20 years average</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. SUCCESS RATE & CLINICAL OUTCOMES ── -->
+    <div class="card outcomes-card">
+      <div class="outcomes-title">Success Rate &amp; Clinical Outcomes</div>
+      <div class="outcomes-grid">
+        <div class="outcome-box"><div class="outcome-number">96%</div><div class="outcome-label">Success Rate</div></div>
+        <div class="outcome-box"><div class="outcome-number">3-4</div><div class="outcome-label">Days Hospital Stay</div></div>
+        <div class="outcome-box"><div class="outcome-number">6-12</div><div class="outcome-label">Weeks Recovery</div></div>
+        <div class="outcome-box"><div class="outcome-number">98%</div><div class="outcome-label">Patient Satisfaction</div></div>
+      </div>
+    </div>
+
+    <!-- ── 6. CTA ── -->
+    <div class="cta-card">
+      <div class="cta-text-group">
+        <div class="cta-title">Ready to Proceed?</div>
+        <div class="cta-body">Continue to package selection to customize your treatment plan and schedule your surgery.</div>
+      </div>
+      <button class="cta-btn">
+        <span>Go ahead with cost overview and package selection</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#0B1956" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <!-- ── 7. DISCLAIMER ── -->
+    <div class="disclaimer-card">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="9" stroke="#595B5A" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#595B5A" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <div class="disclaimer-title">Important Medical Disclaimer:</div>
+        <div class="disclaimer-body">This diagnosis and treatment plan is based on the virtual consultation and available medical records. A final confirmation will be made after in-person examination and review of complete diagnostic imaging upon your arrival in India. The treatment plan may be adjusted based on additional findings.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   ONECARE — MEDICAL DIAGNOSIS SUMMARY  ·  INTERACTIVE JS
+   ═══════════════════════════════════════════════════════ */
+
+// ─── HAMBURGER (discharge.html pattern) ──────────────────────────────────────
+(function(){
+  var toggle  = document.getElementById('menuToggle');
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active');    toggle.classList.add('open');    document.body.style.overflow='hidden'; }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow=''; }
+  toggle.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+  overlay.addEventListener('click', closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){
+    item.addEventListener('click', function(){ if(window.innerWidth<=1100) closeSidebar(); });
+  });
+})();
+
+// ─── NAV ITEM ACTIVE STATE ────────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function () {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ─── SEARCH ──────────────────────────────────────────────────────────────────
+const searchItems = [
+  'Knee Replacement', 'Dr. Rajesh Kumar', 'TKA', 'Physiotherapy',
+  'Tramadol', 'Celecoxib', 'Rivaroxaban', 'ICD M17.11',
+  'Package Selection', 'Pain Management', 'Osteoarthritis',
+  'Pre-Operative', 'Post-Operative', 'Rehabilitation'
+];
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    showToast(`Searching for "${this.value.trim()}"…`);
+  }
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `oc-toast oc-toast--${type}`;
+  t.innerHTML = `<span class="oc-toast-icon">${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span><span>${msg}</span>`;
+  container.appendChild(t);
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('oc-toast--show')));
+  setTimeout(() => { t.classList.remove('oc-toast--show'); setTimeout(() => t.remove(), 350); }, 3000);
+}
+
+// ─── NOTIFICATION BELL ───────────────────────────────────────────────────────
+const notifBtn = document.getElementById('notifBtn');
+let notifPanelOpen = false;
+
+const notifPanel = document.createElement('div');
+notifPanel.className = 'notif-panel';
+notifPanel.innerHTML = `
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-mark-all" id="markAllRead">Mark all read</button>
+  </div>
+  <div class="notif-list">
+    <div class="notif-item notif-unread">
+      <div class="notif-item-icon" style="background:#E7F5EC"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Your diagnosis report is ready for review.</div><div class="notif-item-time">2 mins ago</div></div>
+      <div class="notif-unread-dot"></div>
+    </div>
+    <div class="notif-item notif-unread">
+      <div class="notif-item-icon" style="background:#FEF3C7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 8v4M12 16h.01" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#F59E0B" stroke-width="2"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Appointment reminder: Dr. Rajesh Kumar on Feb 10.</div><div class="notif-item-time">1 hour ago</div></div>
+      <div class="notif-unread-dot"></div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-item-icon" style="background:#ECF0F9"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#0B1956" stroke-width="2"/><path d="M3 10h18" stroke="#0B1956" stroke-width="2"/></svg></div>
+      <div class="notif-item-body"><div class="notif-item-text">Package selection step is now available.</div><div class="notif-item-time">Yesterday</div></div>
+    </div>
+  </div>`;
+notifBtn.appendChild(notifPanel);
+
+notifBtn.addEventListener('click', function (e) {
+  e.stopPropagation();
+  notifPanelOpen = !notifPanelOpen;
+  notifPanel.classList.toggle('notif-panel--open', notifPanelOpen);
+});
+document.addEventListener('click', () => {
+  notifPanelOpen = false;
+  notifPanel.classList.remove('notif-panel--open');
+});
+document.getElementById('markAllRead').addEventListener('click', function (e) {
+  e.stopPropagation();
+  document.querySelectorAll('.notif-unread').forEach(n => n.classList.remove('notif-unread'));
+  document.querySelectorAll('.notif-unread-dot').forEach(d => d.remove());
+  showToast('All notifications marked as read', 'success');
+});
+
+// ─── ICON BUTTONS (Download / Print / Share) ──────────────────────────────────
+document.querySelectorAll('.icon-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const title = this.getAttribute('title');
+    if (title === 'Download') {
+      this.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#22C55E" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      showToast('Report downloaded successfully', 'success');
+      setTimeout(() => {
+        this.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M8 13l4 4 4-4" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 18h16" stroke="#0B1956" stroke-width="2.04" stroke-linecap="round"/></svg>`;
+      }, 2000);
+    } else if (title === 'Print') {
+      showToast('Opening print dialog…', 'info');
+      setTimeout(() => window.print(), 400);
+    } else if (title === 'Share') {
+      openModal('shareModal');
+    }
+  });
+});
+
+// ─── LOGOUT ───────────────────────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  openModal('logoutModal');
+});
+
+// ─── CTA BUTTON ───────────────────────────────────────────────────────────────
+document.querySelector('.cta-btn').addEventListener('click', function () {
+  openModal('ctaModal');
+});
+
+// ─── SEVERITY BAR ANIMATION ──────────────────────────────────────────────────
+(function animateSeverityBar() {
+  const fill = document.querySelector('.severity-fill');
+  if (!fill) return;
+  fill.style.width = '0%';
+  setTimeout(() => {
+    fill.style.transition = 'width 1.2s cubic-bezier(.4,0,.2,1)';
+    fill.style.width = '85%';
+  }, 600);
+})();
+
+// ─── OUTCOME COUNTER ANIMATION ────────────────────────────────────────────────
+function animateCounter(el, target) {
+  if (target.includes('-')) return;
+  const num = parseFloat(target);
+  const pct = target.includes('%');
+  const dur = 1400;
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(num * ease) + (pct ? '%' : '');
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const outcomeObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.querySelectorAll('.outcome-number').forEach(el => {
+      animateCounter(el, el.dataset.target);
+    });
+    outcomeObserver.unobserve(entry.target);
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.outcome-number').forEach(el => {
+  el.dataset.target = el.textContent.trim();
+});
+const outcomesCard = document.querySelector('.outcomes-card');
+if (outcomesCard) outcomeObserver.observe(outcomesCard);
+
+// ─── CARD SCROLL-IN ANIMATION ─────────────────────────────────────────────────
+const cardObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('card--visible');
+      cardObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.card, .cta-card, .disclaimer-card').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 60}ms`;
+  cardObserver.observe(el);
+});
+
+// ─── STAT CARDS — CLICK ───────────────────────────────────────────────────────
+const statDetails = {
+  'Pain Level':      'Patient reports consistent pain rated 8/10. Requires immediate surgical intervention.',
+  'Range of Motion': 'Current ROM is 30% of normal. Target post-surgery ROM: 90–120°.',
+  'Joint Stability': 'Ligament laxity detected. Stability expected to normalize post TKA.'
+};
+document.querySelectorAll('.stat-card').forEach(card => {
+  card.style.cursor = 'pointer';
+  card.addEventListener('click', function () {
+    const label = this.querySelector('.stat-label').textContent.trim();
+    if (statDetails[label]) openInfoModal(label, statDetails[label]);
+  });
+});
+
+// ─── MODAL SYSTEM ─────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('oc-modal--open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('oc-modal--open'); }
+
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('oc-modal')) closeModal(e.target.id);
+  if (e.target.classList.contains('oc-modal-close')) closeModal(e.target.closest('.oc-modal').id);
+});
+
+function openInfoModal(title, body) {
+  document.getElementById('infoModalTitle').textContent = title;
+  document.getElementById('infoModalBody').textContent  = body;
+  openModal('infoModal');
+}
+
+document.getElementById('ctaConfirmBtn').addEventListener('click', function () {
+  closeModal('ctaModal');
+  showToast('Redirecting to package selection…', 'success');
+  setTimeout(function () { window.location.href = 'package-selection.html'; }, 800);
+});
+
+document.getElementById('copyLinkBtn').addEventListener('click', function () {
+  navigator.clipboard?.writeText(window.location.href).catch(() => {});
+  this.textContent = 'Copied!';
+  setTimeout(() => { this.textContent = 'Copy Link'; }, 2000);
+  showToast('Link copied to clipboard', 'success');
+});
+
+document.getElementById('logoutConfirmBtn').addEventListener('click', function () {
+  closeModal('logoutModal');
+  showToast('Logging out…', 'info');
+});
+
+// ─── SCROLL-TO-TOP ─────────────────────────────────────────────────────────────
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', function () {
+  scrollTopBtn.classList.toggle('scrolltop--visible', window.scrollY > 300);
+});
+scrollTopBtn.addEventListener('click', function () {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>

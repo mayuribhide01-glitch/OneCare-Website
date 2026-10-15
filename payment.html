@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OneCare Patient Portal – Payments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-900: #050B24; --blue-500: #0B1956; --blue-300: #5C658E;
+      --blue-100: #B3B8CB; --blue-50: #E7E8EE; --sapphire-50: #ECF0F9;
+      --grey-600: #2C2E2D; --grey-500: #303231; --grey-400: #595B5A;
+      --grey-300: #747675; --grey-200: #A0A1A0; --grey-100: #CCCCCC; --grey-50: #EAEBEA;
+      --white: #FFFFFF;
+      --nav-height: 75px;
+      --sidebar-width: 260px;
+      --shadow-nav: 0 1.56px 4.67px rgba(0,0,0,.10), 0 1.56px 3.12px -1.56px rgba(0,0,0,.10);
+      --shadow-card: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.10);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; background: var(--sapphire-50); color: var(--grey-600); min-height: 100vh; overflow-x: hidden; }
+
+    /* PAGE LOAD ANIMATIONS */
+    @keyframes fadeSlideDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeSlideLeft { from { opacity:0; transform:translateX(-24px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes fadeSlideUp   { from { opacity:0; transform:translateY(20px); }  to { opacity:1; transform:translateY(0); } }
+
+    /* ── TOP NAV (from booking.html) ── */
+    .top-nav { position:fixed; top:0; left:0; right:0; height:var(--nav-height); background:#fff; box-shadow:0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1); display:flex; align-items:center; padding:0 24px 0 28px; z-index:100; animation:fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+    .logo-area { display:flex; align-items:center; gap:8px; flex-shrink:0; width:auto; cursor:pointer; border-radius:8px; padding:4px; transition:background .18s; }
+    .logo-area:hover .logo-name .one,.logo-area:hover .logo-name .care,.logo-area:hover .logo-subtitle { color:#B3B8CB; }
+    .logo-svg-stroke { transition:stroke .18s; }
+    .logo-svg-fill   { transition:fill .18s; }
+    .logo-area:hover .logo-svg-stroke { stroke:#B3B8CB; }
+    .logo-area:hover .logo-svg-fill   { fill:#B3B8CB; }
+    .logo-name .one,.logo-name .care,.logo-subtitle { transition:color .18s; }
+    .logo-icon { display:flex; align-items:center; justify-content:center; flex-shrink:0; width:36px; height:44px; }
+    .logo-text { display:flex; flex-direction:column; }
+    .logo-name { font-family:'Satoshi','Open Sans',sans-serif; font-size:28px; line-height:1; letter-spacing:-0.5px; }
+    .logo-name .one  { font-weight:400; color:#0B1956; }
+    .logo-name .care { font-weight:700; color:#0B1956; }
+    .logo-subtitle { font-family:'Open Sans',sans-serif; font-size:14px; font-weight:400; color:#0B1956; line-height:1.4; }
+    .nav-center { flex:1; display:flex; justify-content:flex-start; padding-left:118px; }
+    .welcome-text { font-family:'Open Sans',sans-serif; font-weight:700; font-size:28px; line-height:40px; color:#0B1956; white-space:nowrap; }
+    .nav-right { display:flex; align-items:center; gap:16px; flex-shrink:0; margin-left:auto; }
+    .search-bar { display:flex; align-items:center; width:280px; height:44px; background:#EAEBEA; border-radius:28px; padding:0 16px; gap:8px; transition:box-shadow .18s; cursor:text; }
+    .search-input { flex:1; height:auto; background:transparent; border:none; outline:none; padding:0; font-family:'Open Sans',sans-serif; font-weight:400; font-size:14px; line-height:1; color:#49454F; letter-spacing:0; }
+    .search-input::placeholder { color:#49454F; font-weight:600; }
+    .search-icon-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .bell-btn { width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:50%; }
+
+    /* HAMBURGER TOGGLE */
+    .menu-toggle { display:none; flex-direction:column; justify-content:center; align-items:center; gap:5px; width:40px; height:40px; cursor:pointer; border:none; background:transparent; padding:4px; border-radius:8px; flex-shrink:0; transition:background .18s; }
+    .menu-toggle:hover { background:#f0f2f9; }
+    .menu-toggle span { display:block; width:22px; height:2px; background:#0B1956; border-radius:2px; transition:all .3s; }
+    .menu-toggle.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .menu-toggle.open span:nth-child(2) { opacity:0; }
+    .menu-toggle.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    /* OVERLAY */
+    .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:49; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .sidebar-overlay.active { opacity:1; pointer-events:all; }
+
+    /* ── SIDEBAR (from booking.html) ── */
+    .sidebar { position:fixed; left:0; top:var(--nav-height); width:var(--sidebar-width); height:calc(100vh - var(--nav-height)); background:#0B1956; box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1); display:flex; flex-direction:column; overflow:hidden; z-index:50; animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+    .sidebar-nav { padding:16px 16px 8px; display:flex; flex-direction:column; gap:2px; flex:1; }
+    .nav-item { display:flex; align-items:center; gap:14px; padding:12px 20px; height:auto; border-radius:10px; cursor:pointer; transition:background .18s; text-decoration:none; }
+    .nav-item.active { background:#fff; box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1); border-radius:8px; }
+    .nav-item:not(.active):hover { background:rgba(255,255,255,.08); border-radius:8px; }
+    .nav-icon { width:20px; height:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .nav-label { font-family:'Open Sans',sans-serif; font-weight:400; font-size:15px; line-height:24px; letter-spacing:.15px; color:#E7E8EE; }
+    .nav-item.active .nav-label { font-weight:700; color:#0B1956; }
+    .sidebar-footer { border-top:.866px solid #E5E7EB; padding:12px 16px; }
+    .user-info { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .user-avatar { width:48px; height:48px; background:#B3B8CB; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .user-details { display:flex; flex-direction:column; }
+    .user-name { font-family:'Open Sans',sans-serif; font-weight:700; font-size:16px; line-height:1.2; color:#fff; }
+    .user-id { font-family:'Open Sans',sans-serif; font-weight:400; font-size:13px; line-height:25px; color:#B3B8CB; }
+    .logout-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:auto; padding:10px 16px; border:1px solid #fff; border-radius:10px; cursor:pointer; margin-bottom:12px; background:transparent; transition:background .18s,box-shadow .18s,transform .1s; }
+    .logout-btn:hover { background:rgba(255,255,255,.1); box-shadow:0 2px 10px rgba(0,0,0,.2); transform:translateY(-1px); }
+    .logout-btn:active { background:rgba(255,255,255,.18); transform:translateY(0); }
+    .logout-label { font-family:'Open Sans',sans-serif; font-weight:500; font-size:14px; line-height:24px; letter-spacing:.15px; color:#fff; }
+
+    /* ── MAIN ── */
+    .main-content { margin-top:var(--nav-height); margin-left:var(--sidebar-width); padding:32px 40px 40px; min-height:calc(100vh - var(--nav-height)); display:flex; flex-direction:column; }
+
+    /* ── PAYMENT CONTAINER ── */
+    .payment-container { background: var(--white); border-radius: 18px; box-shadow: 0 22px 28px -6px rgba(0,0,0,.10), 0 9px 11px -7px rgba(0,0,0,.10); padding: 40px 48px 36px; flex: 1; display: flex; flex-direction: column; }
+
+    /* ── STEPPER ── */
+    .stepper { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin-bottom: 36px; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; flex: 1; max-width: 160px; }
+    .step-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Open Sans', sans-serif; font-weight: 700; font-size: 16px; position: relative; z-index: 2; flex-shrink: 0; }
+    .step-circle.active { background: var(--blue-500); color: var(--white); box-shadow: 0 0 0 4px rgba(11,25,86,0.15); }
+    .step-circle.inactive { background: var(--grey-50); color: var(--grey-300); }
+    .step-circle.completed { background: var(--blue-500); color: var(--white); }
+    .step-label { font-size: 12px; font-weight: 400; color: var(--grey-500); text-align: center; line-height: 1.3; }
+    .step-label.inactive { color: var(--grey-200); }
+    .step-connector { flex: 1; height: 2px; background: var(--grey-200); margin-top: 22px; max-width: 120px; }
+
+    /* ── HEADINGS ── */
+    .payment-heading { text-align: center; margin-bottom: 6px; font-size: 28px; font-weight: 600; color: var(--blue-500); line-height: 1.3; }
+    .payment-subheading { text-align: center; margin-bottom: 28px; font-size: 15px; font-weight: 400; color: var(--grey-400); }
+
+    /* ── PAYMENT METHODS ── */
+    .methods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 780px; margin: 0 auto 28px; width: 100%; }
+    .method-btn { display: flex; align-items: center; gap: 16px; padding: 22px 24px; border-radius: 14px; cursor: pointer; transition: all .18s; position: relative; background: var(--white); border: 1.8px solid var(--grey-100); }
+    .method-btn:hover { border-color: var(--blue-300); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .method-btn.selected { background: var(--sapphire-50); border: 2px solid var(--blue-300); box-shadow: var(--shadow-card); }
+    .method-btn.cash { grid-column: 1; }
+    .method-icon-wrap { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .method-icon-wrap.selected-bg { background: var(--white); }
+    .method-icon-wrap.default-bg { background: var(--blue-50); }
+    .method-icon-wrap svg { width: 24px; height: 24px; color: var(--blue-500); }
+    .method-text { flex: 1; min-width: 0; }
+    .method-title { font-size: 15px; font-weight: 700; color: var(--blue-500); line-height: 1.4; margin-bottom: 2px; }
+    .method-desc { font-size: 13px; font-weight: 400; color: var(--grey-400); }
+    .check-badge { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-500); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .check-badge svg { width: 14px; height: 14px; color: var(--white); }
+
+    /* ── FOOTER BUTTONS ── */
+    .payment-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 24px; max-width: 780px; width: 100%; margin-left: auto; margin-right: auto; }
+    .btn-back { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; background: var(--grey-50); border: none; color: var(--grey-500); font-size: 16px; font-weight: 400; font-family: 'Open Sans', sans-serif; cursor: pointer; transition: background .15s; text-decoration: none; }
+    .btn-back:hover { background: #d8d9d8; }
+    .btn-back svg { width: 18px; height: 18px; }
+    .btn-continue { display: inline-flex; align-items: center; gap: 10px; padding: 12px 28px; border-radius: 10px; background: var(--blue-500); border: none; color: var(--white); font-size: 16px; font-weight: 400; font-family: 'Open Sans', sans-serif; cursor: pointer; transition: background .15s; text-decoration: none; }
+    .btn-continue:hover { background: var(--blue-900); color: var(--white); }
+    .btn-continue svg { width: 18px; height: 18px; }
+    .secure-note { text-align: center; font-size: 13px; color: #6A7282; padding: 16px 0 0; margin-top: 16px; }
+
+    /* ── BILLING FORM ── */
+    .billing-form-wrap { max-width: 640px; width: 100%; margin: 0 auto; background: var(--sapphire-50); border-radius: 16px; border: 1px solid #D8E0F0; padding: 32px 36px 36px; display: flex; flex-direction: column; gap: 24px; }
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--blue-500); }
+    .form-label svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--blue-300); }
+    .form-input { width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid #D8E0F0; background: var(--white); font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--grey-600); outline: none; transition: border-color .18s, box-shadow .18s; }
+    .form-input::placeholder { color: var(--grey-200); }
+    .form-input:focus { border-color: var(--blue-300); box-shadow: 0 0 0 3px rgba(92,101,142,0.12); }
+    .form-input.error { border-color: #EF4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+    .field-error { font-size: 12px; color: #EF4444; margin-top: 4px; display: none; align-items: center; gap: 4px; }
+    .field-error.show { display: flex; }
+    textarea.form-input { resize: none; height: 110px; line-height: 1.6; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .input-with-icon { position: relative; display: flex; align-items: center; }
+    .input-with-icon .form-input { padding-right: 44px; }
+    .input-suffix { position: absolute; right: 14px; display: flex; align-items: center; pointer-events: none; }
+    .save-card-row { display: flex; align-items: center; padding: 4px 0; }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .toggle-input { display: none; }
+    .toggle-track { width: 40px; height: 22px; border-radius: 11px; background: var(--grey-100); position: relative; transition: background .2s; flex-shrink: 0; }
+    .toggle-input:checked + .toggle-track { background: var(--blue-500); }
+    .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s; }
+    .toggle-input:checked + .toggle-track .toggle-thumb { transform: translateX(18px); }
+    .toggle-label { font-size: 13.5px; color: var(--grey-500); }
+    .emi-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .emi-option { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 12px 8px; border: 1.8px solid var(--grey-100); border-radius: 10px; cursor: pointer; transition: all .15s; font-size: 14px; font-weight: 600; color: var(--blue-500); }
+    .emi-option input { display: none; }
+    .emi-option small { font-size: 11.5px; color: var(--grey-400); font-weight: 400; }
+    .emi-option:has(input:checked) { border-color: var(--blue-500); background: var(--sapphire-50); }
+    .cash-info-banner { display: flex; gap: 14px; align-items: flex-start; background: rgba(11,25,86,0.06); border-radius: 12px; padding: 16px 18px; border: 1px solid rgba(11,25,86,0.1); }
+    .cash-info-icon { color: var(--blue-500); flex-shrink: 0; margin-top: 2px; }
+    .cash-info-title { font-size: 14px; font-weight: 700; color: var(--blue-500); margin-bottom: 4px; }
+    .cash-info-text { font-size: 13px; color: var(--grey-400); line-height: 1.5; }
+    .method-form { display: none; }
+    .method-form.active { display: flex; }
+
+    /* ── SECURITY SCREEN ── */
+    .security-wrap { max-width: 640px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .sec-card { background: var(--sapphire-50); border: 1.5px solid #D8E0F0; border-radius: 16px; padding: 28px 32px; }
+    .sec-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .sec-card-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--blue-500); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sec-card-icon svg { width: 22px; height: 22px; color: #fff; }
+    .sec-card-title { font-size: 17px; font-weight: 700; color: var(--blue-500); }
+    .sec-card-desc { font-size: 13px; color: var(--grey-400); margin-bottom: 18px; line-height: 1.5; }
+    .otp-input { width: 100%; padding: 13px 16px; border-radius: 10px; border: 1.5px solid #D8E0F0; background: var(--white); font-family: 'Open Sans', sans-serif; font-size: 15px; letter-spacing: 3px; color: var(--grey-600); outline: none; transition: border-color .18s; }
+    .otp-input::placeholder { letter-spacing: 0; color: var(--grey-200); font-size: 14px; }
+    .otp-input:focus { border-color: var(--blue-300); box-shadow: 0 0 0 3px rgba(92,101,142,0.12); }
+    .otp-input.error { border-color: #EF4444; }
+    .resend-btn { background: none; border: none; color: var(--blue-500); font-size: 14px; font-weight: 600; font-family: 'Open Sans', sans-serif; cursor: pointer; margin-top: 14px; display: block; width: 100%; text-align: center; padding: 4px; }
+    .resend-btn:hover { opacity: 0.7; }
+    .summary-card { background: var(--white); border: 1.5px solid #D8E0F0; border-radius: 16px; padding: 28px 32px; }
+    .summary-header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+    .summary-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--blue-50); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .summary-icon svg { width: 22px; height: 22px; color: var(--blue-500); }
+    .summary-title { font-size: 17px; font-weight: 700; color: var(--blue-500); }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--grey-50); font-size: 14px; }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .label { color: var(--grey-400); }
+    .summary-row .value { color: var(--grey-600); }
+    .summary-row.total { padding-top: 14px; margin-top: 4px; }
+    .summary-row.total .label { color: var(--blue-500); font-weight: 700; font-size: 15px; }
+    .summary-row.total .value { color: var(--blue-500); font-weight: 700; font-size: 20px; }
+    .terms-note { text-align: center; font-size: 13px; color: var(--grey-400); margin-top: 4px; }
+    .terms-note a { color: var(--blue-500); font-weight: 600; text-decoration: none; }
+    .terms-note a:hover { text-decoration: underline; }
+
+    /* ── SUCCESS SCREEN ── */
+    @keyframes successPop { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    .success-heading { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 28px; }
+    .success-icon-wrap { flex-shrink: 0; animation: successPop 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; }
+    .success-title { font-size: 28px; font-weight: 700; color: var(--blue-500); line-height: 1.2; margin-bottom: 4px; }
+    .success-sub { font-size: 14px; color: var(--grey-400); }
+    .txn-card { max-width: 640px; width: 100%; margin: 0 auto 16px; background: var(--sapphire-50); border: 1.5px solid #D8E0F0; border-radius: 16px; padding: 24px 28px; }
+    .txn-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .txn-id-label { font-size: 13px; color: var(--grey-400); margin-bottom: 4px; }
+    .txn-id-value { font-size: 15px; font-weight: 600; color: var(--blue-500); }
+    .txn-divider { height: 1px; background: #D8E0F0; margin: 14px 0; }
+    .txn-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 14px; }
+    .txn-label { color: var(--grey-400); }
+    .txn-value { color: var(--grey-600); }
+    .txn-total { padding-top: 6px; }
+    .txn-amount { font-size: 24px; font-weight: 700; color: var(--blue-500); }
+    .whats-next-card { max-width: 640px; width: 100%; margin: 0 auto 8px; background: var(--white); border: 1.5px solid #D8E0F0; border-radius: 16px; padding: 20px 28px; }
+    .whats-next-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .whats-next-title { font-size: 15px; font-weight: 700; color: var(--blue-500); }
+    .whats-next-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .whats-next-list li { font-size: 13.5px; color: var(--grey-400); padding-left: 14px; position: relative; }
+    .whats-next-list li::before { content: '•'; position: absolute; left: 0; color: var(--blue-300); }
+    .success-footer { max-width: 640px; margin-left: auto; margin-right: auto; }
+
+    /* ── SCREEN TRANSITION ── */
+    .screen { display: none; flex-direction: column; flex: 1; opacity: 0; transform: translateY(16px); transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1), transform 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+    .screen.active { display: flex; }
+    .screen.visible { opacity: 1; transform: translateY(0); }
+
+    /* Confetti */
+    #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+
+    /* ── SCROLL / LOAD REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0s; }
+    .reveal-d2 { transition-delay: 0.12s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .menu-toggle { display: flex; }
+      .nav-center { display: none; }
+      .search-bar { width: 200px; }
+      .sidebar { transform: translateX(-100%); transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: none; animation: none; }
+      .sidebar.open { transform: translateX(0); box-shadow: 6px 0 32px rgba(0,0,0,.2); }
+      .sidebar-overlay { display: block; }
+      .main-content { margin-left: 0; padding: 28px 24px 40px 24px; }
+    }
+    @media (max-width: 899px) {
+      :root { --nav-height: 64px; }
+      .top-nav { padding: 8px 16px; }
+      .logo-icon { width: 30px; height: 36px; }
+      .logo-icon svg { width: 30px; height: 36px; }
+      .logo-name { font-size: 22px; }
+      .logo-subtitle { font-size: 12px; }
+      .search-bar { width: 40px; height: 40px; border-radius: 50%; padding: 0; justify-content: center; }
+      .search-input { display: none; }
+      .search-icon-btn { width: 40px; height: 40px; }
+      .bell-btn { width: 40px; height: 40px; }
+      .main-content { margin-left: 0; padding: 20px 16px 40px; }
+      .payment-container { padding: 24px 20px; border-radius: 14px; }
+      .stepper { margin-bottom: 24px; }
+      .step-circle { width: 36px; height: 36px; font-size: 14px; }
+      .step-connector { margin-top: 18px; max-width: 40px; }
+      .step-label { font-size: 10px; }
+      .payment-heading { font-size: 20px; }
+      .payment-subheading { font-size: 13px; margin-bottom: 20px; }
+      .methods-grid { grid-template-columns: 1fr; max-width: 100%; gap: 12px; margin-bottom: 20px; }
+      .method-btn.cash { grid-column: 1; }
+      .method-btn { padding: 16px 14px; gap: 12px; }
+      .payment-footer { flex-direction: column; gap: 12px; align-items: stretch; padding-top: 16px; }
+      .btn-back, .btn-continue { width: 100%; justify-content: center; }
+      .billing-form-wrap { padding: 20px 16px; }
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      :root { --nav-height: 56px; }
+      .top-nav { padding: 6px 12px; gap: 6px; }
+      .logo-icon { width: 26px; height: 32px; }
+      .logo-icon svg { width: 26px; height: 32px; }
+      .logo-name { font-size: 18px; line-height: 24px; }
+      .logo-subtitle { font-size: 11px; line-height: 16px; }
+      .nav-right { gap: 6px; }
+      .search-bar { width: 34px; height: 34px; border-radius: 50%; padding: 0; justify-content: center; }
+      .search-input { display: none; }
+      .search-icon-btn { width: 34px; height: 34px; }
+      .bell-btn { width: 34px; height: 34px; }
+      .bell-btn svg { width: 20px; height: 20px; }
+      .sidebar {
+    top: var(--nav-height);
+    height: calc(100vh - var(--nav-height));
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 50;
+    animation: none; /* disable load animation on mobile — drawer handles its own transform */
+
+  }
+      .main-content { margin-left: 0; padding: 12px 12px 32px; }
+    }
+    @media (max-width: 380px) {
+      .logo-subtitle { display: none; }
+    }
+  </style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV (from booking.html) -->
+<header class="top-nav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo-area">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </div>
+  <div class="nav-center"><span class="welcome-text">Welcome Michael!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Search">
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="bell-btn">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR (from booking.html) -->
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="4" width="10" height="10" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="4" width="9" height="6" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="18" y="15" width="9" height="12" rx="1" stroke="#E7E8EE" stroke-width="2.6"/><rect x="4" y="18" width="10" height="9" rx="1" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Package Selection</span>
+    </a>
+    <a class="nav-item active" href="#">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#0B1956" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#0B1956" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Payments</span>
+    </a>
+    <a class="nav-item" href="discharge.html">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg></div>
+      <span class="nav-label">My Journey</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Medical Records</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg></div>
+      <span class="nav-label">Appointments</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <span class="nav-label">Messages</span>
+    </a>
+    <a class="nav-item" href="#">
+      <div class="nav-icon"><svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg></div>
+      <span class="nav-label">Support</span>
+    </a>
+  </nav>
+  <!-- SIDEBAR FOOTER (from booking.html) -->
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name">Michael</span>
+        <span class="user-id">Patient ID: MT-123456</span>
+      </div>
+    </div>
+    <button class="logout-btn">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+
+  <!-- SCREEN 1: PAYMENT METHOD -->
+  <div id="screen-1" class="screen active visible">
+    <div class="payment-container reveal reveal-d1">
+      <div class="stepper">
+        <div class="step"><div class="step-circle active">1</div><div class="step-label">Payment<br>Method</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">2</div><div class="step-label inactive">Payment<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">3</div><div class="step-label inactive">Billing<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">4</div><div class="step-label inactive">Security</div></div>
+      </div>
+      <h2 class="payment-heading">Choose Payment Method</h2>
+      <p class="payment-subheading">Select your preferred payment option</p>
+      <div class="methods-grid">
+        <div class="method-btn selected" data-method="card" onclick="selectMethod(this)">
+          <div class="method-icon-wrap selected-bg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2"/><path d="M2 10h20" stroke-width="2"/></svg></div>
+          <div class="method-text"><div class="method-title">Credit/Debit Card</div><div class="method-desc">Pay securely with your card</div></div>
+          <div class="check-badge"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="method-btn" data-method="bank" onclick="selectMethod(this)">
+          <div class="method-icon-wrap default-bg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="2"/><rect x="9" y="12" width="6" height="9" stroke-width="2"/></svg></div>
+          <div class="method-text"><div class="method-title">International Bank Transfer</div><div class="method-desc">Direct bank transfer</div></div>
+        </div>
+        <div class="method-btn" data-method="emi" onclick="selectMethod(this)">
+          <div class="method-icon-wrap default-bg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-width="2"/><path d="M9 9h.01M15 15h.01M15 9L9 15" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="method-text"><div class="method-title">Credit Card based EMI</div><div class="method-desc">Pay in easy installments</div></div>
+        </div>
+        <div class="method-btn" data-method="insurance" onclick="selectMethod(this)">
+          <div class="method-icon-wrap default-bg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="method-text"><div class="method-title">Insurance</div><div class="method-desc">Insurance coverage payment</div></div>
+        </div>
+        <div class="method-btn cash" data-method="cash" onclick="selectMethod(this)">
+          <div class="method-icon-wrap default-bg"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="2" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg></div>
+          <div class="method-text"><div class="method-title">Cash</div><div class="method-desc">Pay with cash at the counter</div></div>
+        </div>
+      </div>
+      <div class="payment-footer">
+        <a href="viewpayment.html" class="btn-back"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>
+        <button class="btn-continue" onclick="goToPaymentDetails()">Continue<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14m0 0l-7-7m7 7l-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <p class="secure-note">🔒 Secure payment processing &bull; All transactions are encrypted</p>
+  </div>
+
+  <!-- SCREEN 1b: PAYMENT DETAILS -->
+  <div id="screen-1b" class="screen">
+    <div class="payment-container">
+      <div class="stepper">
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Method</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle active">2</div><div class="step-label">Payment<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">3</div><div class="step-label inactive">Billing<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">4</div><div class="step-label inactive">Security</div></div>
+      </div>
+      <h2 class="payment-heading" id="details-heading">Card Details</h2>
+      <p class="payment-subheading" id="details-subheading">Enter your card information securely</p>
+
+      <!-- Card Form -->
+      <div id="form-card" class="billing-form-wrap method-form">
+        <div class="form-field">
+          <label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2"/><path d="M2 10h20" stroke-width="2"/></svg>Card Number</label>
+          <input type="text" class="form-input" data-required placeholder="0000  0000  0000  0000" maxlength="22" oninput="formatCardNumber(this)" />
+          <span class="field-error">Please enter card number</span>
+        </div>
+        <div class="form-field">
+          <label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="2"/><circle cx="12" cy="7" r="4" stroke-width="2"/></svg>Cardholder Name</label>
+          <input type="text" class="form-input" data-required placeholder="Name as on card" />
+          <span class="field-error">Please enter cardholder name</span>
+        </div>
+        <div class="form-row-2">
+          <div class="form-field">
+            <label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg>Expiry Date</label>
+            <input type="text" class="form-input" data-required placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" />
+            <span class="field-error">Please enter expiry date</span>
+          </div>
+          <div class="form-field">
+            <label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke-width="2" stroke-linecap="round"/></svg>CVV</label>
+            <input type="password" class="form-input" data-required placeholder="• • •" maxlength="4" />
+            <span class="field-error">Please enter CVV</span>
+          </div>
+        </div>
+        <div class="save-card-row">
+          <label class="toggle-wrap">
+            <input type="checkbox" class="toggle-input" />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-label">Save card for future payments</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Bank Form -->
+      <div id="form-bank" class="billing-form-wrap method-form" style="display:none">
+        <div class="form-field"><label class="form-label">Bank Name</label><input type="text" class="form-input" data-required placeholder="Enter bank name" /><span class="field-error">Please enter bank name</span></div>
+        <div class="form-field"><label class="form-label">Account Number / IBAN</label><input type="text" class="form-input" data-required placeholder="Enter IBAN or account number" /><span class="field-error">Please enter IBAN</span></div>
+        <div class="form-field"><label class="form-label">SWIFT / BIC Code</label><input type="text" class="form-input" data-required placeholder="e.g. HDFCINBB" /><span class="field-error">Please enter SWIFT/BIC code</span></div>
+        <div class="form-row-2">
+          <div class="form-field"><label class="form-label">Account Holder Name</label><input type="text" class="form-input" data-required placeholder="Full legal name" /><span class="field-error">Please enter account holder name</span></div>
+          <div class="form-field"><label class="form-label">Country of Bank</label><input type="text" class="form-input" data-required placeholder="e.g. India" /><span class="field-error">Please enter country</span></div>
+        </div>
+      </div>
+
+      <!-- EMI Form -->
+      <div id="form-emi" class="billing-form-wrap method-form" style="display:none">
+        <div class="form-field"><label class="form-label">Card Number</label><input type="text" class="form-input" placeholder="0000  0000  0000  0000" maxlength="22" oninput="formatCardNumber(this)" /></div>
+        <div class="form-field"><label class="form-label">Cardholder Name</label><input type="text" class="form-input" placeholder="Name as on card" /></div>
+        <div class="form-row-2">
+          <div class="form-field"><label class="form-label">Expiry Date</label><input type="text" class="form-input" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" /></div>
+          <div class="form-field"><label class="form-label">CVV</label><input type="password" class="form-input" placeholder="• • •" maxlength="4" /></div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">EMI Tenure</label>
+          <div class="emi-options">
+            <label class="emi-option"><input type="radio" name="emi" value="3" checked /><span>3 months</span><small>$4,167/mo</small></label>
+            <label class="emi-option"><input type="radio" name="emi" value="6" /><span>6 months</span><small>$2,084/mo</small></label>
+            <label class="emi-option"><input type="radio" name="emi" value="12" /><span>12 months</span><small>$1,042/mo</small></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insurance Form -->
+      <div id="form-insurance" class="billing-form-wrap method-form" style="display:none">
+        <div class="form-field"><label class="form-label">Insurance Provider</label><input type="text" class="form-input" data-required placeholder="e.g. Star Health, HDFC ERGO" /><span class="field-error">Please enter insurance provider</span></div>
+        <div class="form-field"><label class="form-label">Policy Number</label><input type="text" class="form-input" data-required placeholder="Enter policy number" /><span class="field-error">Please enter policy number</span></div>
+        <div class="form-row-2">
+          <div class="form-field"><label class="form-label">Insured Person Name</label><input type="text" class="form-input" data-required placeholder="Full name on policy" /><span class="field-error">Please enter name</span></div>
+          <div class="form-field"><label class="form-label">Coverage Amount</label><input type="text" class="form-input" data-required placeholder="e.g. $15,000" /><span class="field-error">Please enter coverage amount</span></div>
+        </div>
+      </div>
+
+      <!-- Cash Form -->
+      <div id="form-cash" class="billing-form-wrap method-form" style="display:none">
+        <div class="cash-info-banner">
+          <div class="cash-info-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+          <div><div class="cash-info-title">Cash Payment Instructions</div><div class="cash-info-text">Please visit the hospital billing counter with this reference number to complete your cash payment.</div></div>
+        </div>
+        <div class="form-field"><label class="form-label">Patient Name</label><input type="text" class="form-input" value="Michael" /></div>
+        <div class="form-field"><label class="form-label">Reference Number</label><input type="text" class="form-input" value="REF-MT123456-2026" readonly style="background:#f4f6fb;color:#8F95B1;" /></div>
+        <div class="form-field"><label class="form-label">Preferred Payment Date</label><input type="date" class="form-input" data-required /><span class="field-error">Please select payment date</span></div>
+      </div>
+
+      <div class="payment-footer">
+        <button class="btn-back" onclick="goToScreen(1)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
+        <button class="btn-continue" onclick="validateScreen1b()">Continue to Billing<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14m0 0l-7-7m7 7l-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <p class="secure-note">🔒 Secure payment processing &bull; All transactions are encrypted</p>
+  </div>
+
+  <!-- SCREEN 2: BILLING DETAILS -->
+  <div id="screen-2" class="screen">
+    <div class="payment-container">
+      <div class="stepper">
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Method</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle active">3</div><div class="step-label">Billing<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle inactive">4</div><div class="step-label inactive">Security</div></div>
+      </div>
+      <h2 class="payment-heading">Billing Details</h2>
+      <p class="payment-subheading">Enter your billing information</p>
+      <div class="billing-form-wrap">
+        <div class="form-field"><label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="2"/><circle cx="12" cy="7" r="4" stroke-width="2"/></svg>Payee Name</label><input type="text" class="form-input" data-required placeholder="Enter full name" /><span class="field-error">Please enter payee name</span></div>
+        <div class="form-field"><label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke-width="2"/></svg>Country</label><input type="text" class="form-input" data-required placeholder="Enter country" /><span class="field-error">Please enter country</span></div>
+        <div class="form-field"><label class="form-label"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="2"/><circle cx="12" cy="10" r="3" stroke-width="2"/></svg>Address</label><textarea class="form-input" data-required placeholder="Enter billing address"></textarea><span class="field-error">Please enter billing address</span></div>
+      </div>
+      <div class="payment-footer">
+        <button class="btn-back" onclick="goToScreen('1b')"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
+        <button class="btn-continue" onclick="validateScreen2()">Continue to Security<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14m0 0l-7-7m7 7l-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <p class="secure-note">🔒 Secure payment processing &bull; All transactions are encrypted</p>
+  </div>
+
+  <!-- SCREEN 3: SECURITY -->
+  <div id="screen-3" class="screen">
+    <div class="payment-container">
+      <div class="stepper">
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Method</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Billing<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle active">4</div><div class="step-label">Security</div></div>
+      </div>
+      <h2 class="payment-heading">Security &amp; Confirmation</h2>
+      <p class="payment-subheading">Verify &amp; confirm your payment</p>
+      <div class="security-wrap">
+        <div class="sec-card">
+          <div class="sec-card-header"><div class="sec-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke-width="2" stroke-linecap="round"/></svg></div><div class="sec-card-title">OTP Verification</div></div>
+          <p class="sec-card-desc">Enter the 6-digit code sent to your registered mobile number</p>
+          <input type="text" class="otp-input" id="otp-input" maxlength="6" placeholder="Enter 6-digit OTP" />
+          <span class="field-error" id="otp-error">Please enter the 6-digit OTP</span>
+          <button class="resend-btn">Resend OTP</button>
+        </div>
+        <div class="summary-card">
+          <div class="summary-header"><div class="summary-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2"/><path d="M2 10h20" stroke-width="2"/></svg></div><div class="summary-title">Payment Summary</div></div>
+          <div class="summary-row"><span class="label">Package Stage</span><span class="value">Discharge</span></div>
+          <div class="summary-row"><span class="label">Payment Method</span><span class="value">Credit Card</span></div>
+          <div class="summary-row"><span class="label">Processing Fee</span><span class="value">$0.00</span></div>
+          <div class="summary-row total"><span class="label">Total Amount</span><span class="value">$12,500</span></div>
+        </div>
+        <p class="terms-note">By confirming, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+      </div>
+      <div class="payment-footer">
+        <button class="btn-back" onclick="goToScreen(2)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
+        <button class="btn-continue" onclick="validateScreen3()">Confirm &amp; Pay<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14m0 0l-7-7m7 7l-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+    <p class="secure-note">🔒 Secure payment processing &bull; All transactions are encrypted</p>
+  </div>
+
+  <!-- SCREEN 4: SUCCESS -->
+  <div id="screen-4" class="screen">
+    <div class="payment-container">
+      <div class="stepper">
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Method</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Payment<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Billing<br>Details</div></div>
+        <div class="step-connector"></div>
+        <div class="step"><div class="step-circle completed"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="step-label">Security</div></div>
+      </div>
+      <div class="success-heading">
+        <div class="success-icon-wrap"><svg fill="none" viewBox="0 0 24 24" width="56" height="56"><circle cx="12" cy="12" r="12" fill="#22C55E"/><path d="M6 12.5l4 4L18 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><h2 class="success-title">Payment Successful!</h2><p class="success-sub">Your transaction has been completed successfully</p></div>
+      </div>
+      <div class="txn-card">
+        <div class="txn-top-row"><div><div class="txn-id-label">Transaction ID</div><div class="txn-id-value">TXN0930306784</div></div><svg fill="none" viewBox="0 0 24 24" stroke="#5C658E" width="22" height="22"><rect x="2" y="5" width="20" height="14" rx="2" stroke-width="2"/><path d="M2 10h20" stroke-width="2"/></svg></div>
+        <div class="txn-divider"></div>
+        <div class="txn-row"><span class="txn-label">Payment Stage</span><span class="txn-value">Discharge</span></div>
+        <div class="txn-row"><span class="txn-label">Payment Method</span><span class="txn-value">Credit Card</span></div>
+        <div class="txn-row"><span class="txn-label">Date &amp; Time</span><span class="txn-value" id="txn-datetime">—</span></div>
+        <div class="txn-divider"></div>
+        <div class="txn-row txn-total"><span class="txn-label">Paid Amount</span><span class="txn-amount">$12,500</span></div>
+      </div>
+      <div class="whats-next-card">
+        <div class="whats-next-header"><svg fill="none" viewBox="0 0 24 24" stroke="#0B1956" stroke-width="2.2" width="24" height="24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 8v4l3 3" stroke-width="2" stroke-linecap="round"/></svg><span class="whats-next-title">What's Next?</span></div>
+        <ul class="whats-next-list"><li>A confirmation email has been sent to your registered email</li><li>You can download the receipt for your records</li><li>Proceed to the discharge screen to complete your journey</li></ul>
+      </div>
+      <div class="payment-footer success-footer">
+        <button class="btn-back"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke-width="2" stroke-linecap="round"/><polyline points="7 10 12 15 17 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="12" y2="3" stroke-width="2" stroke-linecap="round"/></svg>Download Receipt</button>
+        <a href="afterdischarge.html" class="btn-continue">Go to My Journey Page<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14m0 0l-7-7m7 7l-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+    <p class="secure-note">Secure payment processing &bull; All transactions are encrypted</p>
+  </div>
+</main>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+  let selectedMethod = 'card';
+
+  // ── Collapsible sidebar toggle (from booking.html) ──
+  (function(){
+    var toggle  = document.getElementById('menuToggle');
+    var sidebar = document.querySelector('.sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('active');    toggle.classList.add('open');    document.body.style.overflow = 'hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); toggle.classList.remove('open'); document.body.style.overflow = ''; }
+    toggle.addEventListener('click', function(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); });
+    overlay.addEventListener('click', closeSidebar);
+    document.querySelectorAll('.nav-item').forEach(function(item){
+      item.addEventListener('click', function(){ if (window.innerWidth <= 1100) closeSidebar(); });
+    });
+  })();
+
+  function selectMethod(el) {
+    document.querySelectorAll('.method-btn').forEach(btn => {
+      btn.classList.remove('selected');
+      const iw = btn.querySelector('.method-icon-wrap');
+      iw.classList.remove('selected-bg'); iw.classList.add('default-bg');
+      const b = btn.querySelector('.check-badge'); if (b) b.remove();
+    });
+    el.classList.add('selected');
+    const iw = el.querySelector('.method-icon-wrap');
+    iw.classList.remove('default-bg'); iw.classList.add('selected-bg');
+    if (!el.querySelector('.check-badge')) {
+      const b = document.createElement('div'); b.className = 'check-badge';
+      b.innerHTML = '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      el.appendChild(b);
+    }
+    selectedMethod = el.dataset.method || 'card';
+  }
+
+  function goToPaymentDetails() {
+    const cfg = {
+      card:      { heading: 'Card Details',          sub: 'Enter your card information securely',    form: 'form-card' },
+      bank:      { heading: 'Bank Transfer Details', sub: 'Enter your bank account information',     form: 'form-bank' },
+      emi:       { heading: 'EMI Details',           sub: 'Set up your credit card EMI plan',        form: 'form-emi'  },
+      insurance: { heading: 'Insurance Details',     sub: 'Enter your insurance policy information', form: 'form-insurance' },
+      cash:      { heading: 'Cash Payment Details',  sub: 'Confirm your cash payment details',       form: 'form-cash' },
+    }[selectedMethod] || { heading: 'Card Details', sub: '', form: 'form-card' };
+
+    document.getElementById('details-heading').textContent    = cfg.heading;
+    document.getElementById('details-subheading').textContent = cfg.sub;
+    document.querySelectorAll('.method-form').forEach(f => { f.style.display = 'none'; f.classList.remove('active'); });
+    const f = document.getElementById(cfg.form);
+    f.style.display = 'flex'; f.classList.add('active');
+    goToScreen('1b');
+  }
+
+  function validateFields(sel) {
+    const container = document.querySelector(sel); if (!container) return true;
+    let valid = true;
+    container.querySelectorAll('[data-required]').forEach(inp => {
+      const err = inp.nextElementSibling;
+      const empty = !inp.value.trim();
+      inp.classList.toggle('error', empty);
+      if (err && err.classList.contains('field-error')) err.classList.toggle('show', empty);
+      if (empty) valid = false;
+      inp.addEventListener('input', function() { this.classList.remove('error'); const e = this.nextElementSibling; if (e && e.classList.contains('field-error')) e.classList.remove('show'); }, { once: true });
+    });
+    return valid;
+  }
+
+  function validateScreen1b() { if (validateFields('#form-' + selectedMethod)) goToScreen(2); }
+  function validateScreen2()  { if (validateFields('#screen-2 .billing-form-wrap')) goToScreen(3); }
+  function validateScreen3() {
+    const otp = document.getElementById('otp-input');
+    const err = document.getElementById('otp-error');
+    if (!otp.value.trim() || otp.value.trim().length < 6) {
+      otp.classList.add('error'); if (err) err.classList.add('show');
+      otp.addEventListener('input', function() { this.classList.remove('error'); if (err) err.classList.remove('show'); }, { once: true });
+      return;
+    }
+    confirmAndPay();
+  }
+
+  function goToScreen(num) {
+    const id  = 'screen-' + num;
+    const cur = document.querySelector('.screen.active');
+    const tgt = document.getElementById(id);
+    if (!tgt || cur === tgt) return;
+    cur.classList.remove('visible');
+    setTimeout(() => {
+      cur.classList.remove('active');
+      tgt.classList.add('active');
+      tgt.getBoundingClientRect();
+      requestAnimationFrame(() => {
+        tgt.classList.add('visible');
+        tgt.querySelectorAll('.reveal').forEach(el => {
+          el.classList.remove('visible');
+          requestAnimationFrame(() => el.classList.add('visible'));
+        });
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 380);
+  }
+
+  function formatCardNumber(inp) {
+    const c = inp.selectionStart, p = inp.value.length;
+    const d = inp.value.replace(/\D/g, '').slice(0, 16);
+    const parts = []; for (let i = 0; i < d.length; i += 4) parts.push(d.slice(i, i+4));
+    inp.value = parts.join('  ');
+    const diff = inp.value.length - p;
+    inp.setSelectionRange(c + diff, c + diff);
+  }
+  function formatExpiry(inp) {
+    let v = inp.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) v = v.slice(0, 2) + ' / ' + v.slice(2);
+    inp.value = v;
+  }
+
+  function confirmAndPay() {
+    const el = document.getElementById('txn-datetime');
+    if (el) el.textContent = new Date().toLocaleString('en-US', { month:'numeric', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true });
+    goToScreen(4);
+    setTimeout(launchConfetti, 420);
+  }
+
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const COLORS = ['#0B1956','#5C658E','#B3B8CB','#ECF0F9','#4A90D9','#ffffff','#FFD700','#FF6B6B'];
+    const pieces = Array.from({ length: 160 }, () => ({ x: Math.random() * canvas.width, y: -20 - Math.random() * canvas.height * 0.5, w: 7 + Math.random() * 8, h: 3 + Math.random() * 5, color: COLORS[Math.floor(Math.random() * COLORS.length)], rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.15, vy: 2.5 + Math.random() * 3.5, vx: (Math.random() - 0.5) * 2.5, opacity: 1, shape: Math.random() > 0.5 ? 'rect' : 'circle' }));
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); frame++;
+      pieces.forEach(p => {
+        p.y += p.vy; p.x += p.vx; p.rotation += p.rotSpeed;
+        if (frame > 156) p.opacity -= 0.018;
+        ctx.save(); ctx.globalAlpha = Math.max(0, p.opacity); ctx.translate(p.x, p.y); ctx.rotate(p.rotation); ctx.fillStyle = p.color;
+        if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0,0,p.w/2,0,Math.PI*2); ctx.fill(); } else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      if (frame < 260) requestAnimationFrame(draw); else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    draw();
+  }
+
+  window.addEventListener('resize', () => { const c = document.getElementById('confetti-canvas'); c.width = window.innerWidth; c.height = window.innerHeight; });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const f = document.getElementById('form-card'); f.style.display = 'flex'; f.classList.add('active');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  });
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>

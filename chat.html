@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneCare AI – Patient Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Open Sans',sans-serif;background:#ECF0F9;min-height:100vh;overflow-x:hidden;}
+:root{--nav-height:75px;--sidebar-width:260px;}
+
+/* PAGE LOAD ANIMATIONS */
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeSlideLeft{from{opacity:0;transform:translateX(-24px);}to{opacity:1;transform:translateX(0);}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* TOP NAV */
+.top-nav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);background:#fff;box-shadow:0px 1.558px 4.675px rgba(0,0,0,.1),0px 1.558px 3.116px -1.558px rgba(0,0,0,.1);display:flex;align-items:center;padding:0 24px 0 28px;z-index:100;animation:fadeSlideDown 0.45s cubic-bezier(0.22,1,0.36,1) both;}
+.logo-area{display:flex;align-items:center;gap:8px;flex-shrink:0;width:228px;cursor:pointer;border-radius:8px;padding:4px;transition:background .18s;}
+.logo-area:hover .logo-name .one,.logo-area:hover .logo-name .care,.logo-area:hover .logo-subtitle{color:#B3B8CB;}
+.logo-svg-stroke{transition:stroke .18s;}
+.logo-svg-fill{transition:fill .18s;}
+.logo-area:hover .logo-svg-stroke{stroke:#B3B8CB;}
+.logo-area:hover .logo-svg-fill{fill:#B3B8CB;}
+.logo-name .one, .logo-name .care, .logo-subtitle{transition:color .18s;}
+.logo-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:36px;height:44px;}
+.logo-text{display:flex;flex-direction:column;}
+.logo-name{font-family:'Satoshi','Open Sans',sans-serif;font-size:28px;line-height:1;letter-spacing:-0.5px;}
+.logo-name .one{font-weight:400;color:#0B1956;}
+.logo-name .care{font-weight:700;color:#0B1956;}
+.logo-subtitle{font-family:'Open Sans',sans-serif;font-size:14px;font-weight:400;color:#0B1956;line-height:1.4;}
+.nav-center{flex:1;display:flex;justify-content:flex-start;padding-left:40px;}
+.welcome-text{font-family:'Open Sans',sans-serif;font-weight:700;font-size:28px;line-height:40px;color:#0B1956;white-space:nowrap;}
+.nav-right{display:flex;align-items:center;gap:16px;flex-shrink:0;margin-left:auto;}
+.search-bar{display:flex;align-items:center;width:280px;height:44px;background:#EAEBEA;border-radius:28px;padding:0 16px;gap:8px;}
+.search-input{flex:1;height:auto;background:transparent;border:none;outline:none;padding:0;font-family:'Open Sans',sans-serif;font-weight:400;font-size:14px;color:#49454F;letter-spacing:0;}
+.search-input::placeholder{color:#49454F;font-weight:400;}
+.search-icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bell-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:transform .18s;}
+.bell-btn:hover{transform:scale(1.1);}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:var(--nav-height);width:var(--sidebar-width);height:calc(100vh - var(--nav-height));background:#0B1956;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1);display:flex;flex-direction:column;overflow:hidden;z-index:50;animation:fadeSlideLeft 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both;}
+.sidebar-nav{padding:16px 16px 8px;display:flex;flex-direction:column;gap:2px;flex:1;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:12px 20px;height:auto;border-radius:10px;cursor:pointer;}
+.nav-item.active{background:#fff;box-shadow:0px 15.582px 23.373px -4.675px rgba(0,0,0,.1),0px 6.233px 9.349px -6.233px rgba(0,0,0,.1);border-radius:10px;}
+.nav-item:not(.active):hover{background:rgba(255,255,255,.08);border-radius:8px;}
+.nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nav-label{font-family:'Open Sans',sans-serif;font-weight:400;font-size:15px;line-height:24px;letter-spacing:.15px;color:#E7E8EE;}
+.nav-item.active .nav-label{font-weight:700;color:#0B1956;}
+.sidebar-footer{border-top:.866px solid #E5E7EB;padding:12px 16px;}
+.user-info{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.user-avatar{width:48px;height:48px;background:#B3B8CB;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.user-details{display:flex;flex-direction:column;}
+.user-name{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:1.2;color:#fff;}
+.user-id{font-family:'Open Sans',sans-serif;font-weight:400;font-size:13px;line-height:25px;color:#B3B8CB;}
+.logout-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:auto;padding:10px 16px;border:1px solid #fff;border-radius:10px;cursor:pointer;margin-bottom:12px;transition:background .18s;}
+.logout-btn:hover{background:rgba(255,255,255,.1);}
+.logout-label{font-family:'Open Sans',sans-serif;font-weight:500;font-size:14px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+/* MAIN CONTENT */
+.main-content{margin-left:var(--sidebar-width);margin-top:var(--nav-height);padding:36px 36px 40px 36px;min-height:calc(100vh - var(--nav-height));}
+
+/* REGISTRATION SUCCESS HEADING */
+.reg-success-heading{font-family:'Open Sans',sans-serif;font-weight:700;font-size:24px;line-height:32px;color:#0B1956;margin-bottom:16px;}
+
+/* PROGRESS CARD */
+.progress-card{background:#fff;box-shadow:0px 4px 6px -1px rgba(0,0,0,.1),0px 2px 4px -2px rgba(0,0,0,.1);border-radius:10px;padding:24px 24px 0px;margin-bottom:40px;width:100%;max-width:904px;animation:fadeSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.3s both;}
+.progress-card-inner{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#B3B8CB #f0f0f0;padding-bottom:0;}
+.progress-card-inner::-webkit-scrollbar{display:block;height:5px;}
+.progress-card-inner::-webkit-scrollbar-track{background:#f0f0f0;border-radius:4px;}
+.progress-card-inner::-webkit-scrollbar-thumb{background:#B3B8CB;border-radius:4px;}
+
+/* STEP COUNTER ROW */
+.step-counter-row{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;}
+.step-counter-label{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:24px;letter-spacing:.15px;color:#0B1956;}
+.step-percent{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:24px;letter-spacing:.15px;color:#0B1956;}
+
+/* PROGRESS BAR */
+.progress-bar-track{width:100%;height:12px;background:#E5E7EB;border-radius:9999px;margin-bottom:16px;overflow:hidden;}
+.progress-bar-fill{height:12px;background:#5C658E;border-radius:9999px;width:100%;}
+
+/* STEP INDICATORS */
+.step-indicators{display:flex;flex-direction:row;justify-content:space-between;align-items:flex-start;width:100%;padding-bottom:24px;}
+.step-indicator{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.step-circle-num{width:32px;height:32px;border-radius:50%;background:#3C4778;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-circle-num span{font-family:'Open Sans',sans-serif;font-weight:400;font-size:16px;line-height:24px;text-align:center;letter-spacing:.15px;color:#fff;}
+.step-name{font-family:'Open Sans',sans-serif;font-weight:600;font-size:12px;line-height:16px;text-align:center;letter-spacing:.5px;color:#303231;}
+
+/* CONSULTATION SECTION */
+.consultation-section{max-width:904px;animation:fadeSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.45s both;}
+.consult-heading{font-family:'Open Sans',sans-serif;font-weight:700;font-size:24px;line-height:32px;color:#0B1956;margin-bottom:8px;}
+.consult-subheading{font-family:'Open Sans',sans-serif;font-weight:700;font-size:16px;line-height:24px;letter-spacing:.15px;color:#595B5A;margin-bottom:6px;}
+.consult-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:24px;}
+.consult-step-item{font-family:'Open Sans',sans-serif;font-weight:400;font-size:16px;line-height:24px;letter-spacing:.15px;color:#595B5A;}
+
+/* START BUTTON */
+.start-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:116px;height:56px;background:#0B1956;border-radius:16px;cursor:pointer;border:none;outline:none;transition:background .18s,transform .1s;}
+.start-btn:hover{background:#1a2d6b;transform:scale(1.02);}
+.start-btn:active{transform:scale(0.98);}
+.start-btn-label{font-family:'Roboto',sans-serif;font-weight:500;font-size:16px;line-height:24px;letter-spacing:.15px;color:#fff;}
+
+/* CHAT BUBBLE */
+.chat-bubble{position:fixed;right:32px;bottom:40px;width:64px;height:64px;background:#fff;border-radius:50%;box-shadow:0px 1.216px 2.432px -1.216px rgba(0,0,0,.1),0px 1.216px 3.649px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;transition:transform .18s;animation:fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) 0.6s both;}
+.chat-bubble:hover{transform:scale(1.08);}
+
+/* HAMBURGER TOGGLE */
+.menu-toggle{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;cursor:pointer;border:none;background:transparent;padding:4px;border-radius:8px;flex-shrink:0;transition:background .18s;}
+.menu-toggle:hover{background:#f0f2f9;}
+.menu-toggle span{display:block;width:22px;height:2px;background:#0B1956;border-radius:2px;transition:all .3s;}
+.menu-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.menu-toggle.open span:nth-child(2){opacity:0;}
+.menu-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* OVERLAY */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:49;opacity:0;pointer-events:none;transition:opacity .3s;}
+.sidebar-overlay.active{opacity:1;pointer-events:all;}
+
+/* ── DESKTOP 1101–1400px ── */
+@media(max-width:1400px){
+  .main-content{padding:28px 28px 40px 28px;}
+}
+
+/* ── COLLAPSIBLE SIDEBAR: ≤1100px ── */
+@media(max-width:1100px){
+  .menu-toggle{display:flex;}
+  .nav-center{display:none;}
+  .search-bar{width:200px;}
+  .sidebar{
+    transform:translateX(-100%);
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+    box-shadow:none;
+    animation:none;
+  }
+  .sidebar.open{
+    transform:translateX(0);
+    box-shadow:6px 0 32px rgba(0,0,0,.2);
+  }
+  .sidebar-overlay{display:block;}
+  .main-content{margin-left:0;padding:28px 24px 40px 24px;}
+}
+
+/* ── TABLET: ≤899px ── */
+@media(max-width:899px){
+  :root{--nav-height:64px;}
+  .top-nav{padding:8px 16px;}
+  .logo-icon{width:36px;height:44px;}
+  .logo-icon svg{width:36px;height:44px;}
+  .logo-name{font-size:22px;line-height:30px;}
+  .logo-subtitle{font-size:13px;line-height:18px;}
+  .logo-area{width:auto;}
+  .search-bar{width:40px;height:40px;border-radius:50%;padding:0;justify-content:center;}
+  .search-input{display:none;}
+  .search-icon-btn{width:40px;height:40px;}
+  .bell-btn{width:44px;height:44px;}
+  .sidebar{width:300px;}
+  .logout-btn{width:calc(300px - 50px);}
+  .main-content{margin-left:0;padding:20px 16px 40px 16px;}
+  .progress-card{max-width:100%;}
+  .consultation-section{max-width:100%;}
+  .step-name{font-size:10px;}
+}
+
+/* ── MOBILE: ≤600px ── */
+@media(max-width:600px){
+  :root{--nav-height:56px;}
+  .top-nav{padding:6px 12px;gap:6px;}
+      .logo-icon{width:26px;height:32px;}
+      .logo-icon svg{width:26px;height:32px;}
+      .logo-name{font-size:18px;line-height:24px;}
+      .logo-subtitle{font-size:11px;line-height:16px;}
+      .nav-right{gap:6px;}
+      .search-bar{width:34px;height:34px;border-radius:50%;padding:0;justify-content:center;}
+      .search-input{display:none;}
+      .search-icon-btn{width:34px;height:34px;}
+      .bell-btn{width:34px;height:34px;}
+      .bell-btn svg{width:20px;height:20px;}
+       .sidebar {
+    top: var(--nav-height);
+    height: calc(100vh - var(--nav-height));
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 50;
+    animation: none;} /* disable load animation on mobile — drawer handles its own transform */
+  .main-content{margin-left:0;padding:12px 12px 32px 12px;}
+  .reg-success-heading{font-size:18px;}
+  .progress-card{padding:14px 14px 0px;}
+  .step-counter-label{font-size:13px;}
+  .step-percent{font-size:13px;}
+  .step-circle-num{width:26px;height:26px;}
+  .step-circle-num span{font-size:13px;}
+  .step-name{font-size:9px;}
+  .consult-heading{font-size:18px;}
+  .consult-subheading{font-size:14px;}
+  .consult-step-item{font-size:14px;}
+  .chat-bubble{right:14px;bottom:18px;width:50px;height:50px;}
+  .chat-bubble svg{width:22px;height:22px;}
+}
+
+a.nav-item{color:inherit}
+/* icon colours follow the active state on every page */
+.nav-item:not(.active) svg [stroke="#0B1956"]{stroke:#E7E8EE}
+.nav-item:not(.active) svg [fill="#0B1956"]{fill:#E7E8EE}
+.nav-item.active svg [stroke="#E7E8EE"]{stroke:#0B1956}
+.nav-item.active svg [fill="#E7E8EE"]{fill:#0B1956}
+.bell-dot{position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:#FB2C36;border:2px solid #fff}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:300}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+a.nav-item.is-locked .nav-label::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#8A90B1;margin-left:8px;vertical-align:middle}
+
+/* ===== OneCare AI chat inside the jury portal shell ===== */
+.main-content.chat-main{padding:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;height:calc(100vh - var(--nav-height));min-height:0}
+.chat-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:24px 36px 16px;border-bottom:1px solid #DDE2EE}
+.chat-head h1{font-family:'Open Sans',sans-serif;font-weight:700;font-size:24px;line-height:32px;color:#0B1956}
+.chat-head p{font-size:14px;color:#595B5A}
+.chat-actions{display:flex;gap:10px;align-items:center}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border:1px solid #0B1956;border-radius:10px;background:#fff;color:#0B1956;font-family:'Roboto',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:background .18s}
+.btn-outline:hover{background:#F0F2F9}
+.history{position:relative}
+.history-menu{position:absolute;right:0;top:calc(100% + 6px);width:280px;background:#fff;border-radius:10px;box-shadow:0 10px 28px rgba(11,25,86,.16);padding:8px;z-index:20;display:none}
+.history-menu.open{display:block}
+.history-menu p{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#9CA3AF;padding:6px 10px}
+.history-menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px;font-size:14px;color:#303231;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-menu button:hover,.history-menu button.on{background:#ECF0F9}
+.chat-scroll{position:relative;overflow:auto;padding:24px 36px}
+.watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92px;opacity:.14;pointer-events:none}
+.watermark svg{width:92px;height:auto}
+.msgs{display:flex;flex-direction:column;gap:20px;max-width:1100px;position:relative}
+.msg-user{align-self:flex-end;background:#fff;border-radius:10px;padding:16px 20px;font-weight:700;font-size:15px;color:#0B1956;box-shadow:0px 4px 6px -1px rgba(0,0,0,.1),0px 2px 4px -2px rgba(0,0,0,.1);max-width:70%;animation:fadeSlideUp .35s both}
+.msg-ai{display:grid;grid-template-columns:48px minmax(0,640px);gap:14px;align-items:start;animation:fadeSlideUp .35s both}
+.msg-ai img{width:48px;height:48px;border-radius:50%;object-fit:cover}
+.msg-ai .stack{display:flex;flex-direction:column;gap:16px}
+.bubble{background:#fff;border-radius:10px;padding:18px 20px;font-size:15px;line-height:24px;color:#303231;box-shadow:0px 4px 6px -1px rgba(0,0,0,.1),0px 2px 4px -2px rgba(0,0,0,.1)}
+.bubble ul{list-style:disc;padding-left:22px}
+.bubble ol{list-style:decimal;padding-left:20px;margin-top:10px;font-size:14px;font-weight:600}
+.bubble a{color:#0B1956;font-weight:700;text-decoration:underline;word-break:break-word}
+.bubble.strong{font-weight:700}
+.typing{display:inline-flex;gap:5px;padding:4px 0}
+.typing span{width:8px;height:8px;border-radius:50%;background:#B3B8CB;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chips{position:absolute;right:36px;bottom:20px;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.chips[hidden]{display:none}
+.chips button{background:#fff;border:0;border-radius:10px;padding:16px 20px;font-family:'Open Sans',sans-serif;font-weight:700;font-size:15px;color:#0B1956;cursor:pointer;box-shadow:0px 4px 6px -1px rgba(0,0,0,.1),0px 2px 4px -2px rgba(0,0,0,.1);transition:transform .18s}
+.chips button:hover{transform:translateY(-2px)}
+.chat-bar{background:#fff;padding:16px 36px 20px;box-shadow:0 -1px 0 #E5E7EB}
+.composer{display:flex;align-items:center;gap:10px;height:56px;border:1px solid #C9C9C9;border-radius:28px;padding:0 10px 0 24px;transition:border-color .18s,box-shadow .18s}
+.composer:focus-within{border-color:#0B1956;box-shadow:0 0 0 3px rgba(11,25,86,.08)}
+.composer input[type=text]{flex:1;border:0;outline:0;font-family:'Open Sans',sans-serif;font-size:15px;color:#303231;min-width:0;background:transparent}
+.composer input::placeholder{color:#9A9A9A}
+.tool{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#595B5A;cursor:pointer;border:0;background:none}
+.tool:hover{background:#F0F2F9}
+.tool.rec{color:#FB2C36;background:#FFF0F0}
+.tool input{display:none}
+.send{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#0B1956;color:#fff;border:0;cursor:pointer}
+.send:disabled{opacity:.45;cursor:not-allowed}
+.disclaimer{font-size:12.5px;color:#595B5A;margin:10px 0 0 24px}
+@media(max-width:899px){.chat-head,.chat-scroll{padding-left:16px;padding-right:16px}.chat-bar{padding:12px 16px 14px}.chips{right:16px}.disclaimer{margin-left:6px}.msg-ai{grid-template-columns:36px minmax(0,1fr)}.msg-ai img{width:36px;height:36px}.chat-head h1{font-size:20px}}
+@media(max-width:600px){.chat-head{flex-direction:column;align-items:flex-start;padding-top:14px}.btn-outline span.hide-sm{display:none}}
+</style>
+<style id="oc-type">
+/* ===== OneCare portal type scale (shared across every dashboard screen) =====
+   H1 page title 26px · H2 section 20px · H3 card title 18px · body 14px · caption 12px */
+:root{--oc-h1:26px;--oc-h2:20px;--oc-h3:18px;--oc-body:14px;--oc-cap:12px}
+/* Dashboard (dashboard-screen.html + dashboard.html) — was 24px headings / 16px body */
+.reg-success-heading,.consult-heading{font-size:var(--oc-h2)!important;line-height:28px!important}
+.reg-success-heading{margin-bottom:14px!important}
+.consult-subheading{font-size:var(--oc-body)!important;line-height:22px!important;margin-bottom:6px!important}
+.consult-step-item{font-size:var(--oc-body)!important;line-height:22px!important}
+.consult-steps{gap:4px!important;margin-bottom:20px!important}
+.step-counter-label,.step-percent{font-size:var(--oc-body)!important}
+.step-circle-num{width:28px!important;height:28px!important}
+.step-circle-num span{font-size:13px!important}
+.step-name{font-size:var(--oc-cap)!important}
+.progress-card{padding:20px 20px 0!important;margin-bottom:28px!important}
+.step-indicators{padding-bottom:18px!important}
+.start-btn{height:48px!important;border-radius:12px!important}
+.start-btn-label{font-size:var(--oc-body)!important}
+.ai-card h3{font-size:var(--oc-h3)!important;line-height:26px!important}
+.ai-card p{font-size:var(--oc-body)!important;line-height:22px!important}
+/* H1 page titles */
+.page-title,.pkg-title,h1.page-title,h2.page-title,.payment-heading,.confirm-heading,.chat-head h1,.oc-h1{font-size:var(--oc-h1)!important;line-height:34px!important}
+.page-sub{font-size:15px!important}
+/* H2 section headings */
+.section-heading,.stage-heading,.card-heading-text,.sidebar-heading,.breakdown-title,.card-section-title,.section-title,.filter-title,.oc-h2{font-size:var(--oc-h2)!important;line-height:28px!important}
+.main-content h2:not(.page-title):not(.payment-heading):not(.confirm-heading):not(.oc-h1):not(.success-title):not(.ad-title):not(.af-title):not(.sm-title){font-size:var(--oc-h2)}
+/* H3 card titles */
+.acc-title,.acc-row-title,.info-block-title,.schedule-title,.status-card-title,.checklist-card-title,.med-list-title,.scheduler-title,.sec-card-title,.summary-title{font-size:var(--oc-h3)!important}
+.doctor-name{font-size:20px!important}
+</style>
+<style id="oc-responsive">
+/* ===================================================================
+   OneCare portal — shared responsive rules (all after-login screens)
+   Breakpoints:  ≤1100px tablet/laptop · ≤899px tablet · ≤600px phone
+   =================================================================== */
+html,body{max-width:100%;overflow-x:hidden}
+img,video,canvas{max-width:100%}
+
+@media (max-width:1100px){
+  /* Sidebar becomes an off-canvas drawer opened by the ☰ button.
+     (The page-load slide-in animation used to keep it on screen.) */
+  .sidebar,#sidebar{animation:none!important;transform:translateX(-100%)!important;transition:transform .3s cubic-bezier(.4,0,.2,1)!important;z-index:150!important}
+  .sidebar.open,#sidebar.open{transform:translateX(0)!important;box-shadow:6px 0 32px rgba(0,0,0,.2)!important}
+  .main-content,.main,main.main-content{margin-left:0!important;max-width:100%!important;min-width:0!important}
+  .menu-toggle,#menuToggle{display:flex!important}
+  .nav-center{display:none!important}
+  .top-nav{gap:10px}
+}
+@media (max-width:1100px){
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  .stage-tabs.d-flex{flex-wrap:nowrap!important;overflow-x:auto!important;height:auto!important;padding:10px!important;gap:8px!important;scrollbar-width:none}
+  .stage-tabs.d-flex::-webkit-scrollbar{display:none}
+  .stage-tabs.d-flex .stage-tab{flex:0 0 auto!important;width:auto!important;white-space:nowrap!important}
+}
+@media (max-width:899px){
+  .search-bar{width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;justify-content:center!important}
+  .search-input{display:none!important}
+  .logo-area{width:auto!important}
+  /* grids collapse to fewer columns */
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .row>[class*="col-md-6"]{flex:0 0 100%;max-width:100%}
+}
+@media (max-width:600px){
+  .main-content,.main{padding-left:12px!important;padding-right:12px!important}
+  /* Medical Diagnosis Summary */
+  .summary-header-row{flex-wrap:wrap!important;gap:12px!important}
+  .section-header{min-width:0}.section-title-group{min-width:0;flex:1}
+  .meta-info-bar{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  .meta-item{border:0!important;padding:0!important}
+  .diagnosis-main-row,.treatment-main-row{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+  .reco-grid,.outcomes-grid,.stats-row,.diagnosis-metrics-row{grid-template-columns:1fr!important;display:grid!important}
+  /* Journey tabs (Discharge / Post Care / After discharge): one scrollable row */
+  /* Booking stepper (Doctor listing / Booking / Confirmed): fits the screen */
+  .progress-steps{min-width:0!important;width:100%!important;gap:4px!important;height:auto!important}
+  .progress-steps .step-divider,.progress-steps [class*="line"],.progress-steps [class*="connector"]{flex:1 1 8px!important;min-width:8px!important;width:auto!important}
+  .progress-steps .step{flex:0 1 auto!important;min-width:0!important;gap:6px!important}
+  .progress-steps .step-info{min-width:0!important}
+  .progress-steps .step-circle{width:26px!important;height:26px!important;flex:none!important}
+  .progress-steps [class*="sub"],.progress-steps [class*="status"]{display:none!important}
+  .progress-steps [class*="label"],.progress-steps [class*="title"]{font-size:11px!important;line-height:14px!important;white-space:normal!important}
+  /* Hospital photo strip scrolls inside its own row */
+  .thumbs,.thumbs-row,.thumb-row,.thumbnails,.thumb-strip{overflow-x:auto!important;flex-wrap:nowrap!important}
+  /* Tables scroll inside their card instead of widening the page */
+  table{display:block;max-width:100%;overflow-x:auto}
+  /* Fixed bottom action bars stack neatly */
+  .bottom-bar,.action-bar,.footer-bar,.sticky-footer{flex-wrap:wrap!important;gap:8px!important}
+  .welcome-text{font-size:18px!important}
+  h1,.page-title,.pkg-title{word-break:break-word}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="top-nav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a class="logo-area" href="dashboard.html" aria-label="Patient Portal home" style="text-decoration:none">
+    <div class="logo-icon">
+      <svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name"><span class="one">one</span><span class="care">care</span></span>
+      <span class="logo-subtitle">Patient Portal</span>
+    </div>
+  </a>
+  <div class="nav-center"><span class="welcome-text" id="welcome">Welcome!</span></div>
+  <div class="nav-right">
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Search" aria-label="Search" id="portalSearch">
+      <div class="search-icon-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#49454F" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke="#49454F" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <button class="bell-btn" id="bell" aria-label="Notifications" style="border:0;background:none;position:relative">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M13 3C9.13 3 6 6.13 6 10V17L4 19V20H22V19L20 17V10C20 6.13 16.87 3 13 3Z" stroke="#0B1956" stroke-width="2" fill="none"/><path d="M11 21C11 22.1 11.9 23 13 23C14.1 23 15 22.1 15 21" stroke="#0B1956" stroke-width="2" fill="none"/></svg><span class="bell-dot" id="bellDot"></span></button>
+  </div>
+</header>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<!-- SIDEBAR (Messages active) -->
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <!-- Dashboard (active) -->
+    <a class="nav-item" href="dashboard.html" data-locked="false" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="31" height="31" viewBox="0 0 31 31" fill="none">
+          <rect x="4" y="4" width="10" height="10" rx="1" stroke="#0B1956" stroke-width="2.6"/>
+          <rect x="18" y="4" width="9" height="6" rx="1" stroke="#0B1956" stroke-width="2.6"/>
+          <rect x="18" y="15" width="9" height="12" rx="1" stroke="#0B1956" stroke-width="2.6"/>
+          <rect x="4" y="18" width="10" height="9" rx="1" stroke="#0B1956" stroke-width="2.6"/>
+        </svg>
+      </div>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <!-- Package Selection -->
+    <a class="nav-item" href="screen1_main.html" data-locked="true" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M14.2847 28.2159C14.6795 28.4439 15.1274 28.5639 15.5832 28.5639C16.0391 28.5639 16.487 28.4439 16.8818 28.2159L25.9715 23.0218C26.6935 22.4667 26.9214 22.0724 27.27 20.7754V10.3871C27.2695 9.93171 26.6935 8.69582 25.9715 8.14068L16.8818 2.94657C16.487 2.71863 15.5832 2.59863 14.2847 2.94657L5.19501 8.14068C4.8006 8.3684 4.01717 9.48441 3.89648 10.3871V20.7754C3.89695 21.2308 4.47301 22.4667 5.19501 23.0218L14.2847 28.2159Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.582 28.5663V15.5811" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.27344 9.08887L15.5836 15.5815L26.8938 9.08887" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="nav-label">Package Selection</span>
+    </a>
+    <!-- Payments -->
+    <a class="nav-item" href="viewpayment.html" data-locked="true" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="3" y="7" width="25" height="17" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="3" y1="14" x2="28" y2="14" stroke="#E7E8EE" stroke-width="2.6"/></svg>
+      </div>
+      <span class="nav-label">Payments</span>
+    </a>
+    <!-- My Journey -->
+    <a class="nav-item" href="arrival_trial.html" data-locked="true" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="31" height="31" viewBox="0 0 31 31" fill="none"><path d="M25.423 12.7125C25.423 19.0595 18.3819 25.6697 16.0175 27.7112C15.2535 27.9664 14.4895 27.7112 12.1251 25.6697C9.76064 23.6282 5.08398 19.0595 5.08398 12.7125C5.08398 6.8 9.8 2.54297 15.2535 2.54297C20.707 2.54297 25.423 6.8 25.423 12.7125Z" stroke="#E7E8EE" stroke-width="2.64407" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15.255" cy="12.712" r="3.814" stroke="#E7E8EE" stroke-width="2.64407"/></svg>
+      </div>
+      <span class="nav-label">My Journey</span>
+    </a>
+    <!-- Medical Records -->
+    <a class="nav-item" href="discharge.html" data-locked="false" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79237 28.5682C6.36 28.5682 5.19531 27.3035 5.19531 25.9712V5.19472C5.19531 3.75 6.36 2.59766 7.79237 2.59766H18.1806C18.9988 2.59699 19.7583 2.99233 20.3933 3.51442L25.0524 8.17354C25.7337 9.1892 25.9718 9.97716 25.9718 10.3888V25.9712C25.9718 27.3035 24.8071 28.5682 23.3747 28.5682H7.79237Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.1797 2.59766V9.0903C18.1797 9.77938 18.8035 10.3888 19.4782 10.3888H25.9709" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 16.8789H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.7788 22.0742H10.3906" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="nav-label">Medical Records</span>
+    </a>
+    <!-- Hospitals & Doctors -->
+    <a class="nav-item" href="Doctor-Listing_2.html" data-locked="true" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M7.79297 3.89648V19.4788" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3761 11.6877C25.5275 11.6877 27.2716 9.94354 27.2716 7.79207C27.2716 5.6406 25.5275 3.89648 23.3761 3.89648C21.2246 3.89648 19.4805 5.6406 19.4805 7.79207C19.4805 9.94354 21.2246 11.6877 23.3761 11.6877Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.79207 27.2697C9.94354 27.2697 11.6877 25.5256 11.6877 23.3741C11.6877 21.2226 9.94354 19.4785 7.79207 19.4785C5.6406 19.4785 3.89648 21.2226 3.89648 23.3741C3.89648 25.5256 5.6406 27.2697 7.79207 27.2697Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/><path d="M23.3743 11.6875C23.3743 14.787 22.143 17.7596 19.9513 19.9513C17.7596 22.143 14.787 23.3743 11.6875 23.3743" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="nav-label">Hospitals &amp; Doctors</span>
+    </a>
+    <!-- Appointments -->
+    <a class="nav-item" href="booking-confirmed.html" data-locked="true" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="31" height="31" viewBox="0 0 31 31" fill="none"><rect x="4" y="5" width="23" height="22" rx="2" stroke="#E7E8EE" stroke-width="2.6"/><line x1="4" y1="12" x2="27" y2="12" stroke="#E7E8EE" stroke-width="2.6"/><line x1="10" y1="2" x2="10" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="21" y1="2" x2="21" y2="8" stroke="#E7E8EE" stroke-width="2.6"/><line x1="15.5" y1="17" x2="15.5" y2="23" stroke="#E7E8EE" stroke-width="2.6"/></svg>
+      </div>
+      <span class="nav-label">Appointments</span>
+    </a>
+    <!-- Messages -->
+    <a class="nav-item active" href="chat.html" data-locked="false" aria-current="page" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M28.5682 22.0759C28.5682 22.7647 28.2946 23.4252 27.8076 23.9123C27.3205 24.3993 26.6599 24.6729 25.9712 24.6729H8.86695C8.17822 24.6731 7.51776 24.9468 7.03083 25.4339L4.17147 28.2932C4.04253 28.4221 3.87827 28.5099 3.69944 28.5455C3.52062 28.5811 3.33526 28.5628 3.16681 28.493C2.99836 28.4233 2.85438 28.3051 2.75307 28.1535C2.65176 28.0019 2.59768 27.8237 2.59766 27.6414V6.49354C2.59766 5.80476 2.87127 5.14419 3.35832 4.65714C3.84536 4.1701 4.50593 3.89648 5.19471 3.89648H25.9712C26.6599 3.89648 27.3205 4.1701 27.8076 4.65714C28.2946 5.14419 28.5682 5.80476 28.5682 6.49354V22.0759Z" stroke="#E7E8EE" stroke-width="2.59706" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="nav-label">Messages</span>
+    </a>
+    <!-- Support -->
+    <a class="nav-item" href="chat.html?topic=support" data-locked="false" style="text-decoration:none">
+      <div class="nav-icon">
+        <svg width="31" height="31" viewBox="0 0 31 31" fill="none"><circle cx="15.5" cy="15.5" r="11.5" stroke="#E7E8EE" stroke-width="2.6"/><path d="M12 12C12 10.343 13.343 9 15 9H16C17.657 9 19 10.343 19 12C19 13.657 17.657 15 16 15H15V18" stroke="#E7E8EE" stroke-width="2.6" stroke-linecap="round"/><circle cx="15.5" cy="22" r="1" fill="#E7E8EE"/></svg>
+      </div>
+      <span class="nav-label">Support</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        <svg width="37" height="37" viewBox="0 0 37 37" fill="none"><circle cx="18.5" cy="13" r="6" stroke="#0B1956" stroke-width="3.1"/><path d="M5 32C5 24.82 11.268 19 19 19C26.732 19 33 24.82 33 32" stroke="#0B1956" stroke-width="3.1" stroke-linecap="round"/></svg>
+      </div>
+      <div class="user-details">
+        <span class="user-name" id="userName">Patient</span>
+        <span class="user-id" id="userId">Registration pending</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="logout" style="background:none">
+      <span class="logout-label">Logout</span>
+      <svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M9 21H5C4.447 21 4 20.552 4 20V5C4 4.448 4.447 4 5 4H9" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><polyline points="16,17 21,12.5 16,8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12.5" x2="9" y2="12.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg></button>
+  </div>
+</aside>
+
+<main class="main-content chat-main">
+  <div class="chat-head">
+    <div><h1>OneCare AI</h1><p>Ask about packages, payment milestones, hospitals and travel.</p></div>
+    <div class="chat-actions">
+      <div class="history"><button class="btn-outline" id="historyBtn" aria-expanded="false" aria-controls="historyMenu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="hide-sm">History</span></button>
+        <div class="history-menu" id="historyMenu"><p>No chats yet</p></div></div>
+      <button class="btn-outline" id="newChat"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New Chat</button>
+    </div>
+  </div>
+  <div class="chat-scroll" id="scroll">
+    <div class="watermark" id="watermark"><svg width="63" height="75" viewBox="0 0 63 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clipA)">
+          <path class="logo-svg-stroke" d="M30.5922 23.9814V62.0454C30.5922 64.1223 29.7741 66.1144 28.3174 67.5845C26.8607 69.0546 24.8844 69.8825 22.8223 69.8865H17.0175C14.9528 69.8865 12.9726 69.0604 11.5126 67.5899C10.0526 66.1194 9.23242 64.125 9.23242 62.0454V31.8835C9.23242 29.7039 10.0526 27.7193 11.5135 26.3444C12.2366 25.6175 13.095 25.0413 14.0394 24.6489C14.9839 24.2565 15.9958 24.0556 17.0175 24.0576H40.1459C42.2081 24.0576 44.1859 24.8816 45.6455 26.3488C47.105 27.816 47.927 29.8065 47.931 31.8835V53.1993C47.927 55.2763 47.105 57.2668 45.6455 58.734C44.1859 60.2012 42.2081 61.0253 40.1459 61.0253H27.327C25.2623 61.0273 23.2821 60.2012 21.8222 58.7307C20.3622 57.2602 19.542 55.2657 19.542 53.1993V39.9683C19.542 37.8887 20.3622 35.8942 21.8222 34.4237C23.2821 32.9532 25.2623 32.1271 27.327 32.1271H53.7509" stroke="#0B1956" stroke-width="3.375" stroke-miterlimit="10" stroke-linecap="round"/>
+          <path class="logo-svg-fill" d="M30.2872 18.5139C34.52 18.5139 37.9513 15.0578 37.9513 10.7946C37.9513 6.53127 34.52 3.0752 30.2872 3.0752C26.0544 3.0752 22.623 6.53127 22.623 10.7946C22.623 15.0578 26.0544 18.5139 30.2872 18.5139Z" fill="#0B1956"/>
+        </g>
+        <defs><clipPath id="clipA"><rect width="48.6" height="68.85" fill="white" transform="translate(7.19336 3.0752)"/></clipPath></defs>
+      </svg></div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="chips" id="chips">
+      <button data-ask="OneCare Packages">OneCare Packages</button>
+      <button data-ask="Payment Milestones">Payment Milestones</button>
+    </div>
+  </div>
+  <div class="chat-bar">
+    <form class="composer" id="composer">
+      <label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Message AI Assistant</label>
+      <input type="text" id="q" placeholder="Message AI Assistant" autocomplete="off">
+      <button type="button" class="tool" id="mic" aria-label="Voice input" aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></svg></button>
+      <label class="tool" aria-label="Attach a file"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l8.6-8.6a4 4 0 0 1 5.7 5.7l-8.6 8.6a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg><input type="file" id="attach" accept=".pdf,.jpg,.jpeg,.png"></label>
+      <button type="submit" class="send" id="send" aria-label="Send" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 21.7a.5.5 0 0 0 .9 0L22 2.6a.5.5 0 0 0-.6-.6L2.3 8.6a.5.5 0 0 0 0 .9l8 3.2a2 2 0 0 1 1.1 1.1z"/><path d="m21.9 2.1-10.9 11"/></svg></button>
+    </form>
+    <p class="disclaimer">Disclaimer: The information provided by this chatbot is for general informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment</p>
+  </div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+
+/* ---------- Session (shared with login / register / chat) ---------- */
+var KEY='onecare:portal';
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}}
+function save(p){var n=Object.assign(load(),p);try{localStorage.setItem(KEY,JSON.stringify(n))}catch(e){}return n}
+function intent(){try{return JSON.parse(sessionStorage.getItem('onecare:intent')||'null')}catch(e){return null}}
+var s=load();
+if(!s.loggedIn){location.replace('login.html');}
+var profile=s.profile||{};
+var first=(profile.name||'Michael').split(' ')[0];
+document.getElementById('welcome').textContent=first?('Welcome '+first+'!'):'Welcome!';
+document.getElementById('userName').textContent=profile.name||'Michael';
+document.getElementById('userId').textContent=s.registered?('Patient ID: '+s.patientId):'Registration pending';
+if(s.registered){var bd=document.getElementById('bellDot');if(bd)bd.remove();}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},2400);}
+document.getElementById('bell').addEventListener('click',function(){toast(s.registered?'No new notifications':'Reminder: complete your registration to unlock packages and doctors');});
+document.getElementById('portalSearch').addEventListener('keydown',function(e){if(e.key==='Enter'&&this.value.trim())location.href='hospitals.html?q='+encodeURIComponent(this.value.trim());});
+document.getElementById('logout').addEventListener('click',function(){save({loggedIn:false});location.href='login.html';});
+/* ---------- Collapsible sidebar toggle (from jury dashboard) ---------- */
+(function(){
+  var toggle=document.getElementById('menuToggle');
+  var sidebar=document.querySelector('.sidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  function openSidebar(){sidebar.classList.add('open');overlay.classList.add('active');toggle.classList.add('open');document.body.style.overflow='hidden';}
+  function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('active');toggle.classList.remove('open');document.body.style.overflow='';}
+  toggle.addEventListener('click',function(){sidebar.classList.contains('open')?closeSidebar():openSidebar();});
+  overlay.addEventListener('click',closeSidebar);
+  document.querySelectorAll('.nav-item').forEach(function(item){item.addEventListener('click',function(){if(window.innerWidth<=1100)closeSidebar();});});
+})();
+
+/* ---------- OneCare AI (scripted prototype — swap reply() for your LLM/backend) ---------- */
+(function(){
+  var WA='https://wa.me/919876543210?text='+encodeURIComponent('Hi! I have a few questions regarding OneCare services and would like to request a call back.');
+  var AVATAR='images/ai-doctor.jpg';
+  var msgs=document.getElementById('msgs'),scroll=document.getElementById('scroll'),chips=document.getElementById('chips'),wm=document.getElementById('watermark'),input=document.getElementById('q'),send=document.getElementById('send');
+  var KB={
+    packages:function(){return ['<b>OneCare Packages</b> are structured, all-inclusive medical treatment plans designed for international patients seeking safe, affordable, and accredited care in India.<br>They are built to remove uncertainty around:<ul><li>Cost</li><li>Hospital coordination</li><li>Travel logistics</li><li>Post-treatment support</li></ul><ol><li>Pre-Treatment Support</li><li>Hospital &amp; Surgery</li><li>Travel &amp; Assistance</li><li>Payment Milestones</li><li>Post-Treatment Care</li></ol>','Three tiers are available: <b>Essential</b> (₹20,000 – ₹30,000), <b>Enhanced care</b> (₹40,000 – ₹60,000) and <b>Premium Concierge</b> (₹70,000 – ₹1,00,000). <a href="packages.html">Compare packages</a>','whatsapp'];},
+    payments:function(){return ['<b>Payment Milestones</b> keep costs predictable. You pay in stages, only as your journey progresses:<ol><li>10% — Tele-consultation</li><li>30% — Confirmation of hospital &amp; surgeon</li><li>30% — Scheduling of travel and admission</li><li>30% — At discharge</li></ol>','Every milestone appears under <a href="viewpayment.html">Payments</a> with an itemised estimate before you pay.','whatsapp'];},
+    hospitals:function(){return ['We work with 500+ JCI &amp; NABH accredited partner hospitals across India. <a href="hospitals.html">Browse hospitals</a>'];},
+    visa:function(){return ['OneCare supports your medical visa application end-to-end: an invitation letter from the hospital, a document checklist and appointment guidance. Attendant visas for up to 2 companions are included in the Enhanced and Premium packages.'];},
+    registration:function(){var st=load();return [st.registered?'Your registration is complete. Your Patient ID is <b>'+st.patientId+'</b>.':'Your registration is <b>'+(st.stepDone||0)+' of 5</b> steps complete. <a href="register.html">Continue registration</a>'];},
+    support:function(){return ['Hi! How can we help? You can ask me about packages, payments, hospitals or visas, or reach a person directly.','whatsapp'];},
+    fallback:function(){return ['I can help with packages, payment milestones, hospitals, visas and your registration. For anything specific to your medical case, our care coordinator can help.','whatsapp'];}
+  };
+  function route(t){t=t.toLowerCase();
+    if(/package|plan|tier|premium|essential|enhanced|cost|price/.test(t))return 'packages';
+    if(/payment|milestone|pay|instal|refund/.test(t))return 'payments';
+    if(/hospital|doctor|surgeon|jci|nabh/.test(t))return 'hospitals';
+    if(/visa|travel|flight|stay|hotel/.test(t))return 'visa';
+    if(/regist|profile|patient id|step/.test(t))return 'registration';
+    return 'fallback';}
+  function esc(t){return t.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function bubble(h){return h==='whatsapp'?'<div class="bubble strong">For more information, connect with our care coordinator on WhatsApp.<br><a href="'+WA+'" target="_blank" rel="noopener">Chat with a care coordinator on WhatsApp</a><br><span style="font-weight:400">or call +91 98765 43210</span></div>':'<div class="bubble">'+h+'</div>';}
+  function bottom(){scroll.scrollTo({top:scroll.scrollHeight,behavior:'smooth'})}
+  function empty(e){chips.hidden=!e;wm.style.display=e?'':'none'}
+  var thread=[],chats=[],active=-1;
+  function addUser(t){msgs.insertAdjacentHTML('beforeend','<div class="msg-user">'+esc(t)+'</div>');thread.push({role:'user',text:t})}
+  function addAi(parts){var w=document.createElement('div');w.className='msg-ai';w.innerHTML='<img src="'+AVATAR+'" alt="OneCare AI assistant"><div class="stack"><div class="bubble"><span class="typing"><span></span><span></span><span></span></span></div></div>';msgs.appendChild(w);bottom();
+    setTimeout(function(){w.querySelector('.stack').innerHTML=parts.map(bubble).join('');bottom()},650);thread.push({role:'ai',parts:parts})}
+  function ask(t,key){if(!t.trim())return;empty(false);addUser(t.trim());addAi(KB[key||route(t)]());keep(t.trim())}
+  function keep(title){if(active===-1){chats.unshift({title:title,thread:thread});active=0}else chats[active].thread=thread;drawHistory()}
+  var hm=document.getElementById('historyMenu'),hb=document.getElementById('historyBtn');
+  function drawHistory(){hm.innerHTML=chats.length?'<p>Recent</p>'+chats.map(function(c,i){return '<button data-chat="'+i+'" class="'+(i===active?'on':'')+'">'+esc(c.title)+'</button>'}).join(''):'<p>No chats yet</p>'}
+  function open(i){active=i;thread=chats[i].thread;msgs.innerHTML='';thread.forEach(function(m){m.role==='user'?msgs.insertAdjacentHTML('beforeend','<div class="msg-user">'+esc(m.text)+'</div>'):msgs.insertAdjacentHTML('beforeend','<div class="msg-ai"><img src="'+AVATAR+'" alt=""><div class="stack">'+m.parts.map(bubble).join('')+'</div></div>')});empty(false);drawHistory();hm.classList.remove('open')}
+  function newChat(){active=-1;thread=[];msgs.innerHTML='';empty(true);drawHistory();input.focus()}
+  hb.addEventListener('click',function(e){e.stopPropagation();var o=hm.classList.toggle('open');hb.setAttribute('aria-expanded',o)});
+  document.addEventListener('click',function(e){if(!e.target.closest('.history'))hm.classList.remove('open')});
+  hm.addEventListener('click',function(e){var b=e.target.closest('[data-chat]');if(b)open(+b.dataset.chat)});
+  document.getElementById('newChat').addEventListener('click',newChat);
+  chips.addEventListener('click',function(e){var b=e.target.closest('[data-ask]');if(b)ask(b.dataset.ask)});
+  document.getElementById('composer').addEventListener('submit',function(e){e.preventDefault();var v=input.value;input.value='';send.disabled=true;ask(v)});
+  input.addEventListener('input',function(){send.disabled=!input.value.trim()});
+  document.getElementById('attach').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;empty(false);addUser('📎 '+f.name);addAi(['Thanks, I have received <b>'+esc(f.name)+'</b>. Medical documents are reviewed by our clinical team, not by this assistant. You can also add it to your registration under <a href="register.html?step=3">Medical Documents</a>.']);keep(f.name);e.target.value=''});
+  var mic=document.getElementById('mic');
+  mic.addEventListener('click',function(){var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Voice input is not supported in this browser. Type your question instead.');return}
+    try{var r=new SR();r.lang='en-US';mic.classList.add('rec');mic.setAttribute('aria-pressed','true');r.onresult=function(ev){input.value=ev.results[0][0].transcript;send.disabled=false;input.focus()};r.onend=r.onerror=function(){mic.classList.remove('rec');mic.setAttribute('aria-pressed','false')};r.start()}catch(err){mic.classList.remove('rec');toast('Microphone access was blocked. Type your question instead.')}});
+  var topic=new URLSearchParams(location.search).get('topic');
+  if(topic==='packages')ask('OneCare Packages','packages');else if(topic==='payments')ask('Payment Milestones','payments');else if(topic==='support')ask('I need support','support');else input.focus();
+})();
+</script>
+<script id="oc-connect">
+/* ===== OneCare — connect every portal screen (sidebar, header, journey tabs, flow buttons) ===== */
+(function(){
+  var page=decodeURIComponent((location.pathname.split('/').pop()||'').split('?')[0]);
+  function go(url){location.href=url;}
+  var NAV={'dashboard':'dashboard.html','package selection':'package-selection.html','payments':'viewpayment.html','my journey':'arrival_trial.html',
+           'medical records':'discharge.html','hospitals & doctors':'Doctor-Listing_2.html','appointments':'booking-confirmed.html',
+           'messages':'chat.html','support':'chat.html?topic=support'};
+  var STAGES={'pre-arrival':'consultation-summary.html','arrival in india':'arrival_trial.html','treatments':'treatment_trial.html','treatment':'treatment_trial.html',
+              'recovery':'recovery_trial.html','discharge':(function(){try{return sessionStorage.getItem('onecare:dischargePaid')?'afterdischarge.html':'discharge.html'}catch(e){return 'discharge.html'}})(),
+              'post care':'postcare.html','post-care':'postcare.html'};
+  var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+  function bind(el,url,delay){
+    if(!el||el.__oc)return; el.__oc=1; el.style.cursor='pointer';
+    el.addEventListener('click',function(e){
+      if(e.target.closest('input,select,textarea'))return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if(url.split('?')[0]===page&&!delay)return;
+      delay?setTimeout(function(){go(url)},delay):go(url);
+    },true);
+  }
+  /* Session: show the logged-in patient everywhere */
+  var s={};try{s=JSON.parse(localStorage.getItem('onecare:portal')||'{}')}catch(e){}
+  if(!(s.profile&&s.profile.name)){s.profile=Object.assign({},s.profile,{name:'Michael'});}
+  if(s.profile&&s.profile.name){document.querySelectorAll('.user-name').forEach(function(n){n.textContent=s.profile.name});
+    var first=s.profile.name.split(' ')[0];document.querySelectorAll('.welcome-text').forEach(function(w){w.textContent='Welcome '+first+'!'});}
+  if(s.patientId)document.querySelectorAll('.user-id').forEach(function(n){n.textContent='Patient ID: '+s.patientId});
+
+  /* Sidebar */
+  document.querySelectorAll('.sidebar .nav-item, .sidebar-nav .nav-item, nav .nav-item').forEach(function(item){
+    var label=norm((item.querySelector('.nav-label')||item).textContent);
+    if(NAV[label])bind(item,NAV[label]);
+  });
+  /* Header: logo, bell, logout, chat bubble */
+  document.querySelectorAll('.logo-area').forEach(function(l){bind(l,'dashboard.html')});
+  document.querySelectorAll('.logout-btn,#logoutBtn').forEach(function(b){
+    if(b.__oc)return;b.__oc=1;b.style.cursor='pointer';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();
+      try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=false;localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}
+      go('login.html');},true);
+  });
+  if(page!=='dashboard.html')document.querySelectorAll('.chat-bubble').forEach(function(c){bind(c,'chat.html')});
+  document.querySelectorAll('.bell-btn').forEach(function(b){
+    if(b.__oc||b.id==='bell')return;b.__oc=1;
+    b.addEventListener('click',function(){ocToast('No new notifications')});
+  });
+
+  /* Journey stage tabs (all My Journey screens) */
+  document.querySelectorAll('.stage-tabs .stage-tab, .stage-tabs button, .stage-tabs a, .tabs-row button, .tabs-row a').forEach(function(t){
+    var k=norm(t.textContent); if(STAGES[k])bind(t,STAGES[k]);
+  });
+
+  /* Flow buttons — matched by their visible text, per screen */
+  var RULES={
+    'screen1_main.html':[['back to add-on services','package-selection.html']],
+    'screen2_main.html':[['back to city selection','screen1_main.html'],['view details','screen3_main.html'],['proceed to room selection','deposit-payment.html',1300]],
+    'screen3_main.html':[['back to hospitals','screen2_main.html'],['continue','deposit-payment.html',0,'#selectModal']],
+    'Doctor-Listing_2.html':[['book consultation','booking-screen.html'],['view full profile','booking-screen.html']],
+    'booking-confirmed.html':[['back to dashboard','dashboard.html']],
+    'payment.html':[['go to my journey page','afterdischarge.html']]
+  }[page]||[];
+  RULES.forEach(function(r){
+    var scope=r[3]?document.querySelector(r[3]):document;
+    if(!scope)return;
+    scope.querySelectorAll('button,a,[class*="btn"],[onclick]').forEach(function(b){
+      if(b.closest('.sidebar'))return;
+      if(b.parentElement&&b.parentElement.closest('button,a'))return;
+      if(norm(b.textContent)===r[0])bind(b,r[1],r[2]);
+    });
+  });
+  if(page==='package-selection.html'){
+    var sub=document.querySelector('.pkg-subtitle');
+    if(sub&&!document.getElementById('ocBrowse')){var a=document.createElement('a');a.id='ocBrowse';a.href='screen1_main.html';
+      a.textContent='Prefer to compare hospitals city by city? Browse hospitals by city →';
+      a.style.cssText='display:inline-block;margin-top:8px;font:600 13px "Open Sans",sans-serif;color:#0B1956;text-decoration:underline';
+      sub.insertAdjacentElement('afterend',a);}
+  }
+  if(page==='afterdischarge.html'){try{sessionStorage.setItem('onecare:dischargePaid','1')}catch(e){}}
+  if(page==='booking-confirmed.html'){
+    document.querySelectorAll('button,a,[class*="btn"]').forEach(function(b){
+      if(norm(b.textContent)==='join video consultation'&&!b.__oc){b.__oc=1;b.style.cursor='pointer';
+        b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();ocToast('Joining your video consultation… When the call ends you will see the consultation summary on your dashboard.');try{var st=JSON.parse(localStorage.getItem('onecare:portal')||'{}');st.loggedIn=true;st.registered=true;st.consultDone=true;st.consult={doctor:'Dr. Rajesh Kumar',date:'3/16/2026',time:'12:00 PM'};localStorage.setItem('onecare:portal',JSON.stringify(st))}catch(err){}setTimeout(function(){go('consultation-summary.html')},2200);},true);}
+    });
+  }
+  /* Tiny toast */
+  function ocToast(m){var t=document.getElementById('ocToast');if(!t){t=document.createElement('div');t.id='ocToast';
+    t.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#050B24;color:#fff;padding:12px 20px;border-radius:12px;font:14px "Open Sans",sans-serif;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';document.body.appendChild(t);}
+    t.textContent=m;t.style.opacity='1';clearTimeout(t._h);t._h=setTimeout(function(){t.style.opacity='0'},2600);}
+  window.ocToast=window.ocToast||ocToast;
+})();
+</script>
+</body>
+</html>
